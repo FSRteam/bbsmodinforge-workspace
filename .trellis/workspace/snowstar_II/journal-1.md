@@ -1,0 +1,517 @@
+# Journal - snowstar_II (Part 1)
+
+> AI development session journal
+> Started: 2026-05-24
+
+---
+
+
+
+## Session 1: Particle editor interaction and billboard fixes
+
+**Date**: 2026-05-31
+**Task**: Particle editor interaction and billboard fixes
+
+### Summary
+
+Fixed particle parser hardening, Bezier chain and curve editor interactions, textbox key repeat, billboard camera-facing parity attempts, and color palette zero-size rendering crash.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e829fe57` | (see git log) |
+| `ba95879e` | (see git log) |
+| `3757cba0` | (see git log) |
+| `0ff61d98` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 2: Port BBS Structure Addon
+
+**Date**: 2026-05-31
+**Task**: Port BBS Structure Addon
+
+### Summary
+
+Ported the BBS Structure form into the NeoForge new project, registered model/UI/rendering paths, preserved StructureForm compatibility fields, validated with Gradle build, and committed only the new/ Structure changes.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `837a466c` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 3: Finish Structure addon split
+
+**Date**: 2026-06-06
+**Task**: Finish Structure addon split
+
+### Summary
+
+Finished the standalone Structure addon split, fixed external addon registration into BBS internal events, added registration diagnostics, and validated new plus bbs-structure-addon builds.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5acfed57` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 4: Review new repository uncommitted changes
+
+**Date**: 2026-06-06
+**Task**: Review new repository uncommitted changes
+**Branch**: `master`
+
+### Summary
+
+Reviewed uncommitted source changes in new only, fixed a MorphRenderer hidePlayer ordering issue, split the work into render, particle camera, and film actor replay commits, and left local output directories uncommitted.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c1aec908` | (see git log) |
+| `f75b72b5` | (see git log) |
+| `2d4cd3dd` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 5: Fix shader world form drift
+
+**Date**: 2026-06-06
+**Task**: Fix shader world form drift
+
+### Summary
+
+Fixed shader-dependent world form drift by keeping BBS world PoseStacks camera-relative and applying the active model-view matrix through RenderSystem. Verified compileClientJava and build in the new NeoForge repository.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `258a814a` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 6: Addon API 2.0 compatibility layer
+
+**Date**: 2026-06-06
+**Task**: Addon API 2.0 compatibility layer
+
+### Summary
+
+Implemented Addon/API 2.0 public facades, diagnostics, v1 timing hardening, client hooks, particle extension bridge, demo addon, and new addon author documentation in new.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `293c0c21` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 7: Fix replay actor drift
+
+**Date**: 2026-06-06
+**Task**: Fix replay actor drift
+
+### Summary
+
+Fixed replay actor drift by skipping disabled replay update/render paths and keeping real ActorEntity positions server-owned while syncing only visual replay state on the client.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `82714440` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 8: Review new uncommitted files
+
+**Date**: 2026-06-07
+**Task**: Review new uncommitted files
+
+### Summary
+
+Reviewed uncommitted files in new only; ignored Claude local settings and local run outputs via separate gitignore commits.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b9636807` | (see git log) |
+| `e8bec756` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 9: Particle facing Blockbuster parity
+
+**Date**: 2026-06-08
+**Task**: Particle facing Blockbuster parity
+
+### Summary
+
+Fixed particle billboard facing parity with Blockbuster, kept particle form world rendering camera-relative, and validated new build.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ebe75984` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 10: Particle facing Blockbuster parity
+
+**Date**: 2026-06-08
+**Task**: Particle facing Blockbuster parity
+
+### Summary
+
+Restored Blockbuster-style particle billboard facing and fixed ParticleFormRenderer world camera-relative rendering.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ebe75984` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 11: Fix non-actor replay shader drift
+
+**Date**: 2026-06-08
+**Task**: Fix non-actor replay shader drift
+
+### Summary
+
+Fixed Iris non-actor replay drift by passing renderSectionLayer's active matrix into BBS shader replay rendering; actor path left unchanged. Validation: compileClientJava and build passed.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `257ec5f2` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 12: 同步最新 FS 到 FSR 并推送
+
+**Date**: 2026-07-15
+**Task**: 同步最新 FS 到 FSR 并推送
+
+### Summary
+
+完成 FS 2026-07-15 七提交到 NeoForge FSR 的迁移与双 agent 终审；保留旧粒子系统，修复导出参数、临时 WAV 与断线清理，干净 worktree clean build 通过并推送 cnb/main。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b815cf27` | (see git log) |
+| `838d11d9` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 13: 修复模型物理空间并优化 IK/物理骨骼
+
+**Date**: 2026-07-16
+**Task**: 修复模型物理空间并优化 IK/物理骨骼
+
+### Summary
+
+隔离摄像机/玩家与模型模拟空间和实例历史，修正 constraints→IK→physics 顺序；缓存 IK/物理拓扑并复用 renderer-owner workspace，恢复默认完全伸直及 3°/20° rest-bend 滞回。完整 build 与静态热点审计通过。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `6a5785bd` | (see git log) |
+| `8386d180` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 14: Sync latest FS fixes to NeoForge
+
+**Date**: 2026-07-19
+**Task**: Sync latest FS fixes to NeoForge
+
+### Summary
+
+Audited FS master and Minecraft branches, migrated applicable correctness, physics, audio, translucent rendering and fractional UI scale changes into new/ while keeping version 2.3.1 and legacy particle paths, passed full check/build, and recorded exact migration boundaries.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `36a8e0dd8edea23f857cfe431cc6e29ef3113cc0` | (see git log) |
+| `50b95cea2a68486faf601331aabf874dd033694d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+## Session 15: 规划插件结构性能力光影式热重载
+
+**Date**: 2026-07-23
+**Task**: `.trellis/tasks/07-23-fsr-plugin-structural-hot-reload` (planning)
+
+### Summary
+
+- 上一期 07-21 热插件运行时把 forms/clips/particles/key_mappings/entity_renderer/block_entity_renderer 六项能力拒为 RESTART_REQUIRED；本期按用户判据（凡重启后能经 FSR/Addon 通道运行的能力均可热重载）纳入热重载，采用光影包式全量 teardown+重建模型。
+- 已写 prd.md / design.md / implement.md（7 个 Phase，交由 GPT/Codex 执行）；硬边界保持：minecraft_registry/mixin/AT/coremod/JNI/native。
+- 关键事实：MapFactory.unregister 有 String/Link bug 实际不可用；FormUtilsClient.map 静态持有插件 Class；ClientApiCompat 结构性注册是一次性窗口。
+
+### Status
+
+[OK] **Planning artifacts complete** — 待用户审阅后由 GPT 执行（task 尚未 start）
+
+### Next Steps
+
+- 用户审阅三份规划文档
+- 批准后 `task.py start`，按 implement.md Phase 0 起步（dispatch prompt 须带 Active task 头）
+
+
+## Session 15: Fix dashboard morph and model editor regressions
+
+**Date**: 2026-07-23
+**Task**: Fix dashboard morph and model editor regressions
+
+### Summary
+
+Fixed dashboard menu re-entry lifecycle, transparent preview rendering, stale model-block morph submenu cleanup, transform shortcuts, gizmo ray access, and animated BOBJ render reuse. Verified compileJava compileClientJava, testUiInputMailbox, testFilmEditorMigration, check build, and git diff --check.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b6b37ad4` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

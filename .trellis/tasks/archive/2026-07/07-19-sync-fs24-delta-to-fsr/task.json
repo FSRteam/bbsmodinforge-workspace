@@ -1,0 +1,47 @@
+{
+  "id": "sync-fs24-delta-to-fsr",
+  "name": "sync-fs24-delta-to-fsr",
+  "title": "同步 FS 2.4 功能修复到 FSR",
+  "description": "",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "snowstar_II",
+  "assignee": "snowstar_II",
+  "createdAt": "2026-07-19",
+  "completedAt": "2026-07-19",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": "50b95cea2a68486faf601331aabf874dd033694d",
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": "06-20-fs2-migration-finalize",
+  "relatedFiles": [
+    "new/src",
+    ".trellis/spec/new/backend/fs-migration-baseline.md"
+  ],
+  "notes": "Version is locked; do not migrate upstream cff7d87a.",
+  "meta": {
+    "migration_bounds": {
+      "target_repo": "new",
+      "target_remote": "cnb/main",
+      "target_remote_base_commit": "b41e8eb0c586ad18a35ce0329a1d504a7e8539d4",
+      "initial_commit": "36a8e0dd8edea23f857cfe431cc6e29ef3113cc0",
+      "upstream_repo": "temp/bbs-fs-2.3",
+      "upstream_master_commit": "f76cce04a59b30017692e7725295dc987c8cc4c9",
+      "upstream_1_21_1_commit": "42313660f9ea9599741bada7293ca491f3ebcb69",
+      "upstream_1_20_1_commit": "d10c3b1f3c9ff10b689e8faacd1aa2d0073e73ca",
+      "terminal_commit": "50b95cea2a68486faf601331aabf874dd033694d",
+      "integrated_commit": "50b95cea2a68486faf601331aabf874dd033694d",
+      "version_lock": {
+        "file": "new/gradle.properties",
+        "property": "mod_version",
+        "value": "2.3.1"
+      }
+    }
+  }
+}

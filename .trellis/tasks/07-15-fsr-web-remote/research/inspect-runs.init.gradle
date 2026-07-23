@@ -1,0 +1,16 @@
+gradle.taskGraph.whenReady { graph ->
+    graph.allTasks.findAll { it.name in ['runClient', 'runServer'] }.each { task ->
+        task.doFirst {
+            println("INSPECT ${task.path}")
+            println("  mainClass=${task.mainClass.getOrNull()}")
+            println("  workingDir=${task.workingDir}")
+            println("  args=${task.args}")
+            println("  jvmArgs=${task.jvmArgs}")
+            println("  systemProperties=${task.systemProperties}")
+            println("  MOD_CLASSES=${task.environment['MOD_CLASSES']}")
+            println("  environmentKeys=${task.environment.keySet().sort()}")
+            println("  classpathCount=${task.classpath.files.size()}")
+            throw new org.gradle.api.tasks.StopExecutionException()
+        }
+    }
+}

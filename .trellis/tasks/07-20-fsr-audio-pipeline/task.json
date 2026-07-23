@@ -1,0 +1,33 @@
+{
+  "id": "fsr-audio-pipeline",
+  "name": "fsr-audio-pipeline",
+  "title": "FSR audio pipeline reliability and channel export",
+  "description": "",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "snowstar_II",
+  "assignee": "snowstar_II",
+  "createdAt": "2026-07-20",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "07-20-audio-format-contract",
+    "07-20-audio-mixer-render",
+    "07-20-audio-capture-playback",
+    "07-20-audio-export-lifecycle",
+    "07-20-premiere-audio-export",
+    "07-20-audio-verification"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}

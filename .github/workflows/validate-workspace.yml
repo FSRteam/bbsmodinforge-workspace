@@ -1,0 +1,38 @@
+name: Workspace validation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate workspace
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Validate manifest and tracked files
+        run: python scripts/validate_workspace.py
+
+      - name: Compile shared Python entry points
+        run: >-
+          python -m compileall -q
+          .trellis/scripts
+          .codex/hooks
+          .claude/hooks
+          .cursor/hooks
+          scripts

@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "repositories": [
+    {
+      "path": "new",
+      "url": "https://github.com/FSRteam/bbs-FSR.git",
+      "defaultBranch": "master",
+      "required": true,
+      "description": "Primary bbs-FSR development repository"
+    },
+    {
+      "path": "old",
+      "url": "https://github.com/Wemppy4/bbs-mod.git",
+      "defaultBranch": "master",
+      "required": false,
+      "description": "Archived upstream bbs-mod reference"
+    },
+    {
+      "path": "old2.0/bbs-fs",
+      "url": "https://github.com/Wemppy4/bbs-fs.git",
+      "defaultBranch": "master",
+      "required": false,
+      "description": "Current upstream bbs-fs reference"
+    }
+  ]
+}

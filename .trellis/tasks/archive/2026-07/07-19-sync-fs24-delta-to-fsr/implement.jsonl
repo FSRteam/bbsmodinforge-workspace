@@ -1,0 +1,6 @@
+{"file":".trellis/spec/new/backend/index.md","reason":"FSR backend spec index and required contracts"}
+{"file":".trellis/spec/new/backend/quality-guidelines.md","reason":"Rendering, simulation ownership, lifecycle, and test contracts"}
+{"file":".trellis/spec/new/backend/fs-migration-baseline.md","reason":"Pinned FS to FSR migration markers and particle policy"}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Audio/export/render/UI cross-layer data flow guidance"}
+{"file":".trellis/spec/guides/code-reuse-thinking-guide.md","reason":"Search-before-change and shared helper reuse guidance"}
+{"file":".trellis/tasks/07-19-sync-fs24-delta-to-fsr/research/upstream-delta.md","reason":"Audited commit coverage matrix and version constraints"}
