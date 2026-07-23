@@ -7,11 +7,13 @@
 - [x] Add workspace documentation and repository manifest.
 - [x] Add safe clone/update bootstrap automation.
 - [x] Add local and CI validation for manifest and tracked-file boundaries.
-- [ ] Validate ignored and tracked paths before staging.
-- [ ] Run the validator, Python byte-compilation, PowerShell parser check, and
+- [x] Validate ignored and tracked paths before staging.
+- [x] Run the validator, Python byte-compilation, PowerShell parser check, and
   `git diff --check`.
-- [ ] Commit only the shared workspace control plane.
-- [ ] Push the feature branch and create a draft Pull Request.
-- [ ] Verify GitHub Actions and configure default-branch protection when the
+- [x] Commit only the shared workspace control plane.
+- [x] Push the feature branch and create a draft Pull Request.
+- [x] Verify GitHub Actions; configure default-branch protection when the
   GitHub plan permits it (currently blocked for private repositories).
-- [ ] Record the PR URL and final validation outcome in this task.
+- [x] Record the PR URL and validation outcome in this task.
+- [ ] Merge the bootstrap Pull Request after review, then archive this task once
+  the branch-protection decision is resolved.
