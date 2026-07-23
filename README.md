@@ -58,6 +58,14 @@ git push -u origin work/<简短名称>
 
 随后在 GitHub 创建目标为 `main` 的 PR。不要直接 push 到 `main`。
 
+### 分支保护说明
+
+工作区仓库是私有仓库。GitHub Free 组织计划不允许为私有仓库启用分支保护，
+因此当前只能通过 PR 约定和 CI 检查协作；GitHub API 返回 403 时不要把仓库
+改为公开。升级到支持私有仓库分支保护的计划后，应启用至少一名审查者、
+`Validate workspace`、最新主分支、已解决对话、管理员强制执行，并禁止强制
+push 和删除 `main`。
+
 ## 并行协作约定
 
 - 每位开发者使用自己的 `.trellis/workspace/<developer>/` 日志目录。

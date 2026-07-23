@@ -33,11 +33,16 @@
 - [ ] Existing tasks, archived tasks, specs, shared journals, skills, and platform
   integration files are present in the initial Pull Request.
 - [ ] Workspace validation passes locally and in GitHub Actions.
-- [ ] The default branch requires a Pull Request, one approval, the validation
-  check, current-base synchronization, resolved conversations, and applies to
+- [ ] When the GitHub plan supports private-repository branch protection, the
+  default branch requires a Pull Request, one approval, the validation check,
+  current-base synchronization, resolved conversations, and applies to
   administrators; force pushes and deletion are disabled.
 
 ## Notes
 
 - The code repositories remain independent Git repositories and retain their own
   branches, commits, Pull Requests, and release workflows.
+- The initial private repository is on a GitHub plan that rejects branch
+  protection for private repositories. Keep the PR workflow documented and defer
+  hard enforcement until the organization upgrades or explicitly approves making
+  this metadata repository public.

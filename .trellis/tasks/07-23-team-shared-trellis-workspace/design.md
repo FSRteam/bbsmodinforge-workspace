@@ -37,9 +37,12 @@ clean and on its declared default branch.
 destinations, required shared files, and the absence of local-only tracked paths.
 CI also byte-compiles shared Python entry points.
 
-The remote default branch is protected after the bootstrap PR exists, requiring
-the `Validate workspace` check and human review. The initial GitHub-generated
-README is the only seed commit made outside a Pull Request.
+The remote default branch should be protected after the bootstrap PR exists,
+requiring the `Validate workspace` check and human review. GitHub currently
+rejects that operation for this private repository under the organization plan;
+the bootstrap PR remains the review path until a plan upgrade or an explicit
+public-repository decision. The initial GitHub-generated README is the only seed
+commit made outside a Pull Request.
 
 ## Rollback
 

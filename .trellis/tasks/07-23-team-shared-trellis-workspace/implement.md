@@ -12,5 +12,6 @@
   `git diff --check`.
 - [ ] Commit only the shared workspace control plane.
 - [ ] Push the feature branch and create a draft Pull Request.
-- [ ] Verify GitHub Actions and configure default-branch protection.
+- [ ] Verify GitHub Actions and configure default-branch protection when the
+  GitHub plan permits it (currently blocked for private repositories).
 - [ ] Record the PR URL and final validation outcome in this task.
