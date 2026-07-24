@@ -2280,6 +2280,69 @@ stages:
     script: sh ./cnb/gradle-build.sh
 ```
 
+---
+
+## Scenario: Clean commit-snapshot verification
+
+### 1. Scope / Trigger
+
+Apply when a feature branch is prepared from a dirty worktree, especially when
+the edited file also contains changes owned by another task or developer.
+
+### 2. Signatures
+
+- Committed task diff: `git diff <base>..HEAD -- <task-paths>`.
+- Clean verification worktree: `git worktree add -b <temporary-branch> <path> <commit>`.
+- PR identity: head branch, head SHA, CI run URL, artifact name, and artifact
+  expiry recorded in the task metadata.
+
+### 3. Contracts
+
+- Local compilation in a dirty worktree is not evidence that the committed PR
+  snapshot compiles; uncommitted dependencies can make it pass accidentally.
+- Before pushing, inspect `git diff <base>..HEAD` and verify every changed hunk
+  belongs to the task. For an overlapping file, compare the staged/committed
+  patch rather than relying on `git status` or the working-copy file.
+- Run the required compile and regression tests from a clean worktree at the
+  exact commit that will be pushed. A temporary worktree must use its own
+  follow-up branch and must not clean, reset, or overwrite the dirty source
+  worktree.
+- Stage explicit task paths. Do not use repository-wide staging when concurrent
+  work is present.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Dirty worktree defines a symbol used by the commit | Clean-snapshot compile must fail before push. |
+| One file mixes task and concurrent hunks | Restore or split only the unrelated committed hunks in an isolated worktree. |
+| A pushed commit needs correction | Add a follow-up commit; do not amend shared history. |
+| Clean local verification passes | Push to the PR branch and require the GitHub Actions build plus artifact-upload step to pass. |
+
+### 5. Good / Base / Bad Cases
+
+- Good: an overlapping file is corrected in a clean temporary worktree, tested,
+  committed separately, and pushed to the existing PR branch.
+- Base: a clean feature worktree stages explicit task paths and its local build
+  represents the same content as the PR head.
+- Bad: compilation succeeds only because an uncommitted theme API exists beside
+  the task, while the committed PR calls that API without its implementation.
+
+### 6. Tests Required
+
+- `git diff --check <base>..HEAD`.
+- Task-specific regression tests and compile from the clean worktree.
+- Confirm the PR head SHA equals the verified commit and the downloadable JAR
+  artifact belongs to that SHA.
+
+### 7. Wrong vs Correct
+
+Wrong: compile a dirty checkout, stage an overlapping file wholesale, and infer
+that the PR contains all symbols visible to the compiler.
+
+Correct: inspect the committed diff, validate the exact commit in a clean
+worktree, then push a narrowly scoped follow-up commit if CI exposes drift.
+
 ## Code Review Checklist
 
 <!-- What reviewers should check -->

@@ -12,15 +12,23 @@
   "assignee": "snowstar_II",
   "createdAt": "2026-07-23",
   "completedAt": null,
-  "branch": null,
-  "base_branch": "codex/bootstrap-trellis-workspace",
+  "branch": "codex/film-model-preview-followup",
+  "base_branch": "master",
   "worktree_path": null,
-  "commit": null,
-  "pr_url": null,
+  "commit": "c82b28f2af024cce47464c3bc8feee59be06d7be",
+  "pr_url": "https://github.com/FSRteam/bbs-FSR/pull/7",
   "subtasks": [],
   "children": [],
   "parent": null,
   "relatedFiles": [],
-  "notes": "",
-  "meta": {}
+  "notes": "Implementation and automated verification are complete. In-game visual and frame-time acceptance remain for manual testing with the PR JAR.",
+  "meta": {
+    "functional_commits": [
+      "5a47cee38c2ed076ae735730761760d33cd811cc",
+      "c82b28f2af024cce47464c3bc8feee59be06d7be"
+    ],
+    "ci_run": "https://github.com/FSRteam/bbs-FSR/actions/runs/30070529551",
+    "artifact": "BBS_FSR_PR-7-run-17-attempt-1",
+    "artifact_expires_at": "2026-10-22T05:50:33Z"
+  }
 }
