@@ -515,3 +515,41 @@ Fixed dashboard menu re-entry lifecycle, transparent preview rendering, stale mo
 ### Next Steps
 
 - None - task complete
+
+## 2026-07-23 FSR 主题/皮肤系统规划(Fable 会话)
+
+- 用户需求:高度 DIY 换肤(UI+动画),设置加皮肤栏,规范样例单独文件夹,规划入 Trellis 后交 GPT 执行。
+- 四项决策(用户确认):全套一步到位;动画 6 接入点全要;规范样例由本会话写到 new/docs/theme-spec/;父任务+模块子任务。
+- 建任务:07-23-fsr-theme-system(父)+ theme-core/theme-widget-tokens/theme-motion-layer/theme-skin-settings-ui/theme-builtin-packs,全部含 prd(+复杂任务 design/implement),implement.jsonl 已挂规范上下文。
+- 关键调研事实(已核实):BBSSettings 已有半主题化语义色(theme 0/1 + LIGHT_*/DARK_* 常量,62 文件);Colors.* 硬编码 146 文件 880 处;内置 assets 在 src/client/resources/assets/bbs/assets(非 main);外部 config/bbs/assets 同路径覆盖内置;Interpolations.MAP 按字符串键;UI 框架无动画层;icons.png 256×256/16 格。
+- 规范样例已写:new/docs/theme-spec/{README.md, example-theme/{theme.json,README.md,textures/README.md}},未提交(new/ 提交需用户确认)。
+- 下一步:用户审阅规划 → 按 theme-core 先行的顺序分次喂 GPT(codex),每子任务 task.py start 后执行。
+
+## 2026-07-24 主题系统实现会话(claude 主会话 + haiku 子代理)
+
+GPT 不可用,用户令本会话直接实现 07-23 主题任务树。五个子任务全部代码层完成:
+
+- **theme-core**:`ui.themes` 包(UITheme/UIThemeMotion/ThemeParser/ThemeManager)、内置
+  dark/light JSON(逐值对拍旧常量)、BBSSettings 接线(语义函数签名不变)、
+  theme→theme_id 迁移、tooltipStyle 删除(确认为死值)、图标 atlas 重映射三点、
+  `src/themeCoreTest` 单测(12 用例)。发现:内置 assets 在 client source set;
+  测试基建 = 独立 source set + JavaExec main(无 JUnit)。
+- **widget-tokens**:按常量类别分批(不按目录):七语义常量 47 处(位级恒等三规则:
+  A100|x→fn()、Axx|x→(fn()&RGB)|Axx、裸→fn()&RGB)、文字色 33 处、控件默认色
+  5 处哨兵(==WHITE→textColor())、Batcher2D 默认色/textShadow 汇聚点单点、
+  **37 处 primaryColor.get() 直连修复→accentColorRGB()**(否则主题 accent 对按钮无效)。
+  机械批派 3 个 haiku 子代理(精确 old/new 清单),framework 残留 0,全局残留 7 处全合法。
+- **motion-layer**:UITween(isSettled 短路=旧路径逐位)+ UIMotions;六接入点:hover 三控件
+  lerp、overlay 膜淡入+pose scale、context_menu scale、notification 接管既有信封
+  (主题化时长/缓动)、panel_switch veil、scrollbar 静止淡出(scrollTo 记活动时间戳、
+  悬停 snap 显形)。红线自查记 implement.md。
+- **skin-settings-ui**:UIThemeOverlayPanel(色板行列表/来源标记/坏主题通知/重载/开文件夹/
+  导出模板 my-theme-N 避让)、UIValueMap themeId 按钮特例 + primaryColor 联动
+  (改拾色器→follows=false)、UISectionHeader skins 菜单、UIKeys SKINS_* + en/zh 文案。
+- **builtin-packs**:jar 内 example(与 docs 逐字节同源,Files.mismatch 断言)+ 演示主题
+  amber(琥珀纯平弹性,三层差异断言)、ThemeManager 内置清单四主题、规范逐 key 对齐
+  校验清单全勾(零不一致)、docs README 实现状态注记更新。
+
+验证:每阶段 `./gradlew check` 全量绿(testThemeCore/testUiMotions 已入 verification 列表)。
+**待用户**:游戏内冒烟 7 条(父任务 implement.md)、确认后分五个 commit 提交。
+规约落盘:`.trellis/spec/frontend/bbs-ui-theming.md`。

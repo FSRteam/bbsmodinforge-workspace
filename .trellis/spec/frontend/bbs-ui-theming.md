@@ -1,0 +1,37 @@
+# BBS UI Theming Rules (mod UI, `new/`)
+
+> 适用范围:`new/src/client` 的 BBS 自有 UI 框架(非 web)。
+> 数据契约:`new/docs/theme-spec/README.md`;运行时:`mchorse.bbs_mod.ui.themes`。
+
+## 取色规约
+
+1. **新 UI 代码禁止硬编码语义色**。语义色一律走 `BBSSettings` 语义函数:
+   - 表面:`chromeSurface()/baseSurface()/raisedSurface()/deepSurface()/dividerColor()/inputSurface()`
+   - 文字:`textColor()/mutedTextColor()`;阴影开关 `textShadow()`
+   - 强调:`primaryColor(alpha)`(内部处理"跟随主题/用户覆盖")
+   - 状态:`positiveColor()/negativeColor()/warningColor()/activeColor()/highlightColor()/cursorColor()`
+2. 语义函数返回**完整 ARGB**(不透明)。与 alpha 面罩组合时:
+   - 需要重设 alpha:`BBSSettings.color(fn(), Colors.A75)` 或 `Colors.setA(fn(), a)`
+   - 传入"后续会 `| Axx` 补 alpha"的 API(如 `menu.action` 的 color、keyframe 通道色):
+     传 `fn() & Colors.RGB`,避免 `0xbb.. | 0xff..` 污染 alpha 位。
+3. **允许保留 `Colors.*` 常量**的场合(不是语义色):
+   - 图标 tint 的白(`batcher.icon(icon, Colors.WHITE, ...)`)——图标换色走主题贴图 atlas;
+   - gizmo 轴色(`PLANE_XZ/XY/ZY`、RED/GREEN/BLUE 作向量分量色)、关键帧/曲线通道色;
+   - 纯 alpha 面罩/黑遮罩/阴影黑(`Colors.A50` 单独使用等)、颜色数学中间量;
+   - 内容颜色编码(clip 分类色、CDN 状态色板、camera copy 菜单的类型三色);
+   - `Colors.GRAY`(0xff888888)——**没有对应 token**(mutedTextColor 是 0xffaaaaaa,值不等),
+     禁用态/更暗文字暂保留常量,v2 再考虑 textDisabled token。
+4. 控件默认色字段(`UIButton.textColor`、`UIToggle.color`、`UIText`、`UILabel`、`Textbox`)以
+   `Colors.WHITE` 为"跟随主题"哨兵:render 期 `== Colors.WHITE ? BBSSettings.textColor() : 字段`。
+   给控件显式设色时不受主题影响;想要主题字色就不要设色。
+5. 文字绘制默认色的汇聚点在 `Batcher2D.text/textShadow/textCard`(无 color 重载)与
+   `text(label,x,y,color,shadow)`(textShadow token 拦截、light darkenWhite)。改动文字全局
+   行为只动这些单点,不要在调用点散改。
+
+## 主题运行时红线
+
+- 渲染热路径只读 `ThemeManager.current()` 的字段;禁止渲染期做字符串查表/解析/IO。
+- `BBSSettings.register` 及任何服务端可达路径禁止 touch `ThemeManager`(dedicated server
+  不得触发主题类初始化)。
+- 主题 id 参与文件路径拼接,必须过 `ThemeManager.isValidId`(`[a-z0-9_-]+`)。
+- 动画(motion 层)只做绘制期插值,严禁改命中判定/事件分发/元素生命周期。
