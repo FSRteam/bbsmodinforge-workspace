@@ -48,6 +48,9 @@ deferred render/cache optimization.
   `context.modelRenderer`.
 - `BOBJModelVAO.updateMesh(StencilMap, Matrix4f[])` owns the last GPU-uploaded
   armature snapshot and the immutable dominant-bone picking data.
+- `ModelFormRenderer` may reuse a solved preview pose only for the picking pass
+  which receives the exact `FormRenderingContext` instance used by the preceding
+  normal pass.
 
 #### 3. Contracts
 
@@ -66,6 +69,13 @@ deferred render/cache optimization.
   the last uploaded snapshot. Picking IDs derive from immutable vertex weights and
   bone indices, so their buffer is rebuilt only when `StencilMap.increment`
   changes. Animation time, IK, physics, and constraints are not downsampled.
+- A solved preview pose cache is renderer-local and one-shot. Its key includes the
+  context, simulation owner, entity identity, model identity, entity age, and exact
+  transition bits; consuming or mismatching it invalidates it immediately.
+- Vanilla Mob preview rendering saves and restores the incoming model-view matrix.
+  Its UI thumbnail light matches BBSFS `MAX_BLOCK_LIGHT_COORDINATE`
+  (`LightTexture.FULL_BLOCK`), while Form editor preview lighting remains governed
+  by the Form context and lighting property.
 
 #### 4. Validation & Error Matrix
 
@@ -78,12 +88,16 @@ deferred render/cache optimization.
   `context.modelRenderer == true` -> do not start/defer through the world queue.
 - BOBJ armature length or any matrix differs -> recompute and upload skin geometry;
   exact match -> reuse geometry and update only picking state if required.
+- Preview context/owner/entity/model/age/transition mismatch -> solve animation,
+  constraints, IK, and physics normally and replace the one-shot snapshot.
 
 #### 5. Good/Base/Bad Cases
 
 - Good: ESC closes Morphing, B reopens the same panel, and its immersive controller
   is registered again without switching to another panel first.
 - Good: Film form preview renders Allay/Vex/Player translucent layers immediately.
+- Good: an animated Form normal preview solves once and its immediately following
+  stencil pass restores the exact solved Cubic/BOBJ pose without advancing physics.
 - Base: world Actor/ModelBlock/Film replay forms still enter the deferred
   translucent queue and flush at the world translucent boundary.
 - Bad: `setPanel(currentPanel)` is expected to reactivate a panel even though its
@@ -92,6 +106,8 @@ deferred render/cache optimization.
   block was destroyed or another block was selected.
 - Bad: a UI preview starts the world translucent queue and leaves its entity layers
   queued until the next world frame.
+- Bad: reuse a preview pose by age alone; paused animation can then consume a stale
+  pose from a prior UI frame.
 
 #### 6. Tests Required
 
@@ -102,6 +118,9 @@ deferred render/cache optimization.
   transforms have a `hotkeyDrag` source for R view/sphere modes.
 - BOBJ regression asserts unchanged armatures bypass CPU skinning and static
   dominant-bone picking data is not uploaded every frame.
+- Preview regression asserts the pose snapshot is one-shot, context-identity bound,
+  and keyed by owner/entity/model/age/transition; Mob regression asserts per-layer
+  picker shader setup plus model-view restoration.
 - Run `testUiInputMailbox`, `testFilmEditorMigration`, `compileClientJava`, and an
   in-game Morph/Film/ModelBlock matrix with translucent mobs and an animated BOBJ.
 
