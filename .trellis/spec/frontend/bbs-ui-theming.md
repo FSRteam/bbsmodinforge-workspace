@@ -35,3 +35,27 @@
   不得触发主题类初始化)。
 - 主题 id 参与文件路径拼接,必须过 `ThemeManager.isValidId`(`[a-z0-9_-]+`)。
 - 动画(motion 层)只做绘制期插值,严禁改命中判定/事件分发/元素生命周期。
+  **唯一例外(v2 motion-exit)**:`UIOverlay` 与 `UIContextMenu` 的退场动画——关闭请求即
+  语义关闭(`setEnabled(false)` 断输入、事件立即发出),元素仅为反向动画多渲染若干帧,
+  tween settle 后经 `context.render.postRunnable` 延迟物理移除(避免渲染遍历中改树)。
+  其它任何元素不得效仿。
+
+## v2 动效/视觉规约
+
+- **弹簧内核**:`UITween` 内部支持 `spring` 分支(欠/临界/过阻尼闭式解,打断速度连续);
+  接口 `snap/to/update/isSettled` 不变,调用方零改动。参数 `response`(秒)+ `damping`
+  (阻尼比),经 `motion.speed` 缩放。settled 后必须短路回旧渲染路径(逐位等价红线)。
+- **alpha 栈**:整元素淡入淡出统一走 `Batcher2D.pushAlpha/popAlpha`(乘子恒 1 时逐位
+  等价);文字在极低 alpha 有 discard 跳变,由 Batcher2D 统一 clamp,调用点不处理。
+- **圆角**:半径来源仅 `BBSSettings.cornerChrome()/cornerPanel()/cornerWidget()` 三级 token,
+  控件禁止私设半径。绘制走 `Batcher2D.roundedBox/roundedFrame/filledCircle`;半径 0(或
+  <0.5)必须落回旧 `box()` 分支(v1 主题逐位等价基准:dark/light/example 的 corner_radius
+  全 0,不得改动)。
+- **track 编排**:overlay/context_menu 的进出场变换由条目 `preset/tracks` 参数化
+  (`UIThemeMotionTracks`,固定属性集 alpha/scale/x/y,应用顺序 translate→scale→alpha);
+  无 tracks 的条目保持接入点内置变换。退场反向复用同一编排,不新建参数。
+- **装饰/背景**:贴花与根背景统一走 `UIThemeBackdrop`(client helper),绘制顺序
+  背景→dim→贴花→主 UI;永不参与命中。背景消费点:UIDashboard 与
+  `UIBaseMenu.renderDefaultBackground`,不要在别的面板私接。
+- **解析期定死**:一切新 schema(tracks/decorations/corner_radius/background_mode)在
+  `ThemeParser` 解析为不可变结构,坏值逐 key 回退 + warn(延续 v1 契约);渲染期零查表零分配。

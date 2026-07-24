@@ -553,3 +553,45 @@ GPT 不可用,用户令本会话直接实现 07-23 主题任务树。五个子�
 验证:每阶段 `./gradlew check` 全量绿(testThemeCore/testUiMotions 已入 verification 列表)。
 **待用户**:游戏内冒烟 7 条(父任务 implement.md)、确认后分五个 commit 提交。
 规约落盘:`.trellis/spec/frontend/bbs-ui-theming.md`。
+
+## 2026-07-25 主题系统 v2 实现会话(Fable 主会话 + 3 子代理)
+
+GPT 已完成 motion-engine(~85%)与 rounded-corners(~70%),本会话补完其余全部:
+
+- **审查**(子代理):弹簧闭式解三分支位移/速度互为导数、打断速度连续、圆角对照
+  1.20.1 参考逐段核对,全部通过;3 个非阻塞问题已修 2(alpha 栈帧首 resetAlpha 兜底、
+  UIIcon 显式背景色在 radius==0 走方形 box,默认 hover/active 底色仅 radius>0 生效)。
+- **motion-exit**:UIOverlay/UIContextMenu 退场态——关闭即语义关闭(setEnabled(false)、
+  事件即发、backdrop 不拦截),反向播放出现动画,settle 后 postRunnable 延迟物理移除
+  (防渲染遍历 CME);close 幂等;UIOverlay.has() 忽略退场实例;motion 关闭走 v1 原路径。
+- **motion-tracks**:UIThemeMotionTracks(alpha/scale/x/y from 值 + 采样)、preset
+  (scale/slide_right/slide_up/fade)展开 + 显式覆盖;overlay/context_menu 进出场共用。
+- **decor-layer**:decorations 九宫贴花(上限16/坏值丢弃/缺纹理 validateTextures 剔除)、
+  background_mode(stretch/cover/tile)、background_dim;UIThemeBackdrop helper 接
+  UIDashboard + UIBaseMenu.renderDefaultBackground。
+- **motion-coverage**(子代理):scroll_smooth 主题门控叠加 v1 双值模型;hover_scale/press
+  落 UIClickable 基类(合成 scale==1 零 push);layout 过渡落 UIFilmPanel dock 布局
+  (dashboard 面板无 bounds 变化,落点说明见 agent 报告);四条目 + 条目级 scale 解析。
+- **文档/演示**:theme-spec README v2 全键、example 全键显式同步(docs↔jar 逐字节)、
+  新内置 strawberry 主题(圆角+弹簧+preset/tracks+cover 背景+程序化草莓贴花 PNG)、
+  frontend spec 增补 v2 红线(退场唯一例外、圆角 token、alpha 栈、UIThemeBackdrop)。
+- **测试**:UIMotionsTest +退场反向/coverage 默认值/布局插值;ThemeCoreTest +corner_radius
+  (haiku 子代理)/tracks/preset/decorations/background 用例;全部通过。
+
+**已知阻塞(非本任务)**:`./gradlew check` 中 testNetworkSecurity 失败
+(FilmActionAuthorityPolicyTest:未知 action 应被 typed decoding 丢弃,被 plugin
+hot-reload 任务的 MissingClip 占位符保留)——属 07-23-fsr-plugin-structural-hot-reload
+回归,需该任务裁决安全语义。主题相关验证(compileClientJava/testThemeCore/testUiMotions)
+全绿。**未 commit**;待用户游戏内冒烟。
+
+## 2026-07-25 testNetworkSecurity 修复(接上条)
+
+三处根因均为 plugin hot-reload 改动的连带,已修,全量 check exit 0:
+
+1. FilmActionAuthorityPolicyTest"未知 action 应被丢弃"断言过时:MissingClip 保留其实
+   **更严**(精确类白名单下必然 requiresAdministrator,且 typed/raw 计数一致)。测试更新为
+   新契约:保留为不执行占位符 + 有/无 raw 都要求管理员权限。
+2. Form 构造器直接解引用 BBSSettings.recordingPoseTransformOverlays(裸 JVM 为 null)
+   → MissingForm 兜底自身 NPE。改为 null 时回退注册默认 0。
+3. FormUtils.fromData 的 MissingForm 兜底再包一层 try(占位符构造失败回退旧 null 行为,
+   解码永不因兜底而崩)。
