@@ -1,1 +1,4 @@
-{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/tasks/07-24-theme-v2-motion-engine/design.md", "reason": "本任务完整技术规格:弹簧三分支闭式解数学、UITween 语义约定、alpha 栈汇聚点,编码前必读"}
+{"file": ".trellis/tasks/07-24-theme-v2/design.md", "reason": "父任务技术总纲与 BBS Refreshed 研究报告(§3.5 说明参考实现无弹簧,本任务是超越点)"}
+{"file": ".trellis/spec/frontend/bbs-ui-theming.md", "reason": "v1 取色与动画红线规约(settled 短路逐位等价、render-only),spring 内核必须延续"}
+{"file": "new/docs/theme-spec/README.md", "reason": "主题包数据格式契约,新增 type/response/damping 键须与之对齐并回写"}

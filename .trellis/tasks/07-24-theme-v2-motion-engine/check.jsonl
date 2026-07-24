@@ -1,1 +1,3 @@
-{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/tasks/07-24-theme-v2-motion-engine/design.md", "reason": "验收基准:三分支数学、打断速度连续、alpha 栈恒等约定按此核对"}
+{"file": ".trellis/spec/frontend/bbs-ui-theming.md", "reason": "动画红线(关闭态逐位等价、热路径零分配、裸 JVM 测试不触 BBSMod.<clinit>)"}
+{"file": ".trellis/tasks/07-24-theme-v2/prd.md", "reason": "全局约束 C1-C6(v1 兼容、真实 exit code 验证红线)"}
