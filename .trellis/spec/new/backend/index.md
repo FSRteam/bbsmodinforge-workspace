@@ -25,6 +25,7 @@ This directory contains guidelines for backend development. Fill in each file wi
 | [Audio Export And Premiere Contract](./audio-export-premiere-contract.md) | Typed export lifecycle, artifact identity, mux teardown, and XMEML delivery | Active |
 | [Audio Verification Contract](./audio-verification-contract.md) | Hermetic, performance, strict-media, add-on, and manual-smoke gates | Active |
 | [Hot Plugin Runtime Contract](./hot-plugin-runtime-contract.md) | Artifact, watcher, generation routing, ownership, refresh, and teardown contracts | Active |
+| [External Addon Integration Contract](./external-addon-integration-contract.md) | How a separate NeoForge mod extends BBSFSR: registration window, capability→entry-point table, build setup, CML-addon migration | Active |
 
 ---
 

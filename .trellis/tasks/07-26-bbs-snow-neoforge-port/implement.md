@@ -49,9 +49,9 @@ S1 交付的不是"工程能编译"，而是"**Mixin 在游戏里真的注入进
 
 ### Gate 2 — S2 完成后
 
-- [ ] 23 个 api 接口全部编译通过，`bbs_snow$` 前缀统一
-- [ ] 12 个 main-side mixin 全部 apply 成功
-- [ ] CML 设置面板 8 个分类在游戏内可见
+- [x] 23 个 api 接口全部编译通过，`bbs_snow$` 前缀统一
+- [x] 12 个 common Mixin 与 5 个 client accessor Mixin 全部 apply 成功
+- [x] `bbs_snow` 设置分类在游戏内可见，包含当前源插件的 20 个设置值与两个分区标题
 
 S2 是地基，它不稳则 S3–S9 全部返工。这一关卡要实际进游戏看到设置面板，而不只是编译通过。
 
