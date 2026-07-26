@@ -82,7 +82,7 @@
 - [ ] IRLite 的 `en_us`/`zh_cn` 资源包含表单、设置、预设、Shader Patcher、调试和模式
       文本，成品 JAR 中路径与 source-pack/provider 注册一致。
 - [ ] 中文环境下，回放编辑器内 IRLite 的关键帧轨道名称和子 Form 路径均完成汉化。
-- [ ] 分别生成新的 BBS 测试 JAR和可区分的 IRLite `connector-fix2` JAR，并完成内容检查。
+- [x] 分别生成新的 BBS 测试 JAR和可区分的 IRLite `connector-fix3` JAR，并完成内容检查。
 - [ ] 若仍失败，已给出新的首个失败边界和是否需要原生 NeoForge 迁移的证据化结论。
 
 ## Out of Scope

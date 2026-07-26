@@ -710,3 +710,37 @@ Ported and verified PBR rendering/editors, texture grading, deferred GL state, s
 ### Next Steps
 
 - None - task complete
+
+
+## Session 19: Complete bbs_snow S4 Cubic rendering and animation
+
+**Date**: 2026-07-27
+**Task**: Complete bbs_snow S4 Cubic rendering and animation
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+Ported Cubic pivot rendering, additive and procedural animation overlays, Molang scopes, Geo step parsing, and strict S4 runtime verification; client verifier passed with all eight S4 Mixins and the task was archived.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `6d37471` | (see git log) |
+| `32aed30` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

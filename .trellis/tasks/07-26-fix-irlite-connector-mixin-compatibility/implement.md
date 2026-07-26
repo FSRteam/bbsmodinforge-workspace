@@ -63,33 +63,33 @@
 
 ## 7. Restore the BBS model-block item renderer
 
-- [ ] Replace the reflective block-entity load chain with direct parsing of
+- [x] Replace the reflective block-entity load chain with direct parsing of
       `BLOCK_ENTITY_DATA.Properties` into the temporary entity properties.
-- [ ] Cache an item renderer entry only after the saved model data is restored successfully.
-- [ ] Synchronize the temporary entity's client world before rendering.
-- [ ] Add a focused regression for the no-world-first-load and later-world-render sequence.
-- [ ] Build the BBS 1.21.1 JAR and inspect the BEWLR/model/texture resources.
+- [x] Cache an item renderer entry only after the saved model data is restored successfully.
+- [x] Synchronize the temporary entity's client world before rendering.
+- [x] Add a focused regression for the no-world-first-load and later-world-render sequence.
+- [x] Build the BBS 1.21.1 JAR and inspect the BEWLR/model/texture resources.
 
 ## 8. Fix IRLite beam strength and localization
 
-- [ ] Record the first evidence-backed beam-strength failure boundary from Form value through
+- [x] Record the first evidence-backed beam-strength failure boundary from Form value through
       SSBO upload and generated Shader consumption.
-- [ ] Fix that boundary and add a regression that distinguishes default and non-default values.
-- [ ] Ensure stale marked Shader patches are re-patched when their contract/version is obsolete.
-- [ ] Add packaged `en_us` and `zh_cn` resources and register them with the four-argument
+- [x] Fix that boundary and add a regression that distinguishes default and non-default values.
+- [x] Ensure stale marked Shader patches are re-patched when their contract/version is obsolete.
+- [x] Add packaged `en_us` and `zh_cn` resources and register them with the four-argument
       addon source-pack lifecycle.
-- [ ] Replace user-visible constant labels in forms, settings, presets, Shader Patcher, debug,
+- [x] Replace user-visible constant labels in forms, settings, presets, Shader Patcher, debug,
       and option lists with IRLite translation keys.
-- [ ] Localize point-light and spotlight replay keyframe track titles, including nested Form paths.
+- [x] Localize point-light and spotlight replay keyframe track titles, including nested Form paths.
 
-## 9. Build and inspect fix2 artifacts
+## 9. Build and inspect fix3 artifacts
 
-- [ ] Run focused source tests and `compileClientJava` for BBS.
-- [ ] Build the BBS JAR with Java 21 and record its path/hash.
-- [ ] Build IRLite with `-Pmc=1.21.1`, version/file name `connector-fix2`, and record its hash.
-- [ ] Inspect IRLite for both language files, all declared Mixin configs, the patch templates,
+- [x] Run focused source tests and `compileClientJava` for BBS.
+- [x] Build the BBS JAR with Java 21 and record its path/hash.
+- [x] Build IRLite with `-Pmc=1.21.1`, version/file name `connector-fix3`, and record its hash.
+- [x] Inspect IRLite for both language files, all declared Mixin configs, the patch templates,
       and exactly one expected nested `irl-core`.
-- [ ] Clear the disposable fixture's Connector mapping cache and retain a fresh launch log.
+- [x] Clear the disposable fixture's Connector mapping cache and retain a fresh launch log.
 - [ ] Manually validate the model-block item, light Forms, beam-strength delta, Chinese panels,
       and replay keyframe tracks before closing the task.
 

@@ -84,15 +84,18 @@ Form ValueFloat -> Form renderer / LightCollector -> LightRegistry
 
 ## Localization ownership
 
-IRLite 使用 `assets/irlite/strings/en_us.json` 与 `zh_cn.json` 作为唯一文本源。外部
-addon 在 BBS 客户端 L10n 事件中只捕获注册表，在 client-started 阶段按顺序注册
-四参数 `InternalAssetsSourcePack`、语言 provider，再触发 reload。所有用户可见的
-`IKey.constant` 改为 `L10n.lang`；枚举选项、设置标题、预设、Shader Patcher 与调试
-界面使用同一命名空间。
+IRLite 使用 `assets/irlite/strings/en_us.json` 与 `zh_cn.json` 作为唯一文本源。实际
+兼容实现通过 `L10nMixin` 在每个 `L10n` 实例构造完成时注册 addon source pack 和
+语言 provider，使资源在该实例首次 reload 前可见。当前 BBS FSR 使用四参数
+`InternalAssetsSourcePack(modId, source, internalPrefix, ownerClass)`；反射只用于保持
+旧 Fabric BBS 三参数构造器的源码兼容，Connector 运行时已验证四参数路径。所有用户
+可见文本使用 `L10n.lang` 或同一 resolver；枚举选项、设置标题、预设、Shader Patcher
+与调试界面共享 `irlite` 命名空间。
 
-回放轨道本地化通过 IRLite 自己的 Mixin 扩展 `UIKeyframeSheet#getTrackTitle`，仅处理
-`PointLightForm` 与 `SpotlightForm` 的已知属性 id，并保留 BBS 对嵌套 Form 路径的显示
-规则。这样不需要把 IRLite 类型硬编码进 BBS 本体。
+回放轨道本地化通过 IRLite 自己的 Mixin 在 `UIKeyframeSheet` 四参数构造器返回后替换
+标题，仅处理 `PointLightForm` 与 `SpotlightForm` 的已知属性 id，并保留 BBS 对嵌套
+Form 路径的显示规则。这样不需要把 IRLite 类型硬编码进 BBS 本体。IRLite 客户端
+Mixin 配置声明 `JAVA_21`，与 Minecraft 1.21.1 和成品 class version 65 一致。
 
 ## Failure classification
 

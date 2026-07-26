@@ -100,13 +100,13 @@
 
 ## 2026-07-27 用户回归追加执行清单
 
-- [ ] 添加五组 `SoundKeyframeValue` factory、稳定 channel id、序列化/插值/复制测试。
-- [ ] 在 `FormProperties` 中应用并重置复合声音 channel，旧独立 channel 先应用、新复合 channel 后应用。
-- [ ] 回放编辑器为声音 Form 注入五条中文复合 sheet，并注册专用关键帧编辑面板。
-- [ ] 声音关键帧音频控件接 `UISoundOverlayPanel`；隐藏声音原始字段的自动独立轨道。
-- [ ] `SoundManager` 增加只替换 unique 预览源的重启入口，Form 试听按钮改用该入口。
-- [ ] 增加方块反射、实体反射、穿透方块、穿透实体字段和面板控件。
-- [ ] 扩展 `SoundSurfaceProbe`：精确方块近侧面、实体 AABB 最近面、直达声遮挡、排除 owner、范围与数量预算。
-- [ ] 扩展纯声学过滤和 `SoundFormPlayback`，覆盖方块/实体反射与穿透矩阵。
-- [ ] 补中英文案和 `UIKeys`，验证 en/zh key parity。
+- [x] 添加五组 `SoundKeyframeValue` factory、稳定 channel id、序列化/插值/复制测试。
+- [x] 在 `FormProperties` 中应用并重置复合声音 channel，旧独立 channel 先应用、新复合 channel 后应用；空复合轨道不覆盖旧轨道，删除最后一帧立即回退。
+- [x] 回放编辑器为声音 Form 注入五条中文复合 sheet，并注册专用关键帧编辑面板。
+- [x] 声音关键帧音频控件接 `UISoundOverlayPanel`；隐藏声音原始字段的自动独立轨道。
+- [x] `SoundManager` 增加只替换 unique 预览源的重启入口，Form 试听按钮改用该入口。
+- [x] 增加方块反射、实体反射、穿透方块、穿透实体字段和面板控件。
+- [x] 扩展 `SoundSurfaceProbe`：精确方块近侧面、实体 AABB 最近面、直达声遮挡、排除 owner、范围与数量预算。
+- [x] 扩展纯声学过滤和 `SoundFormPlayback`，覆盖方块/实体反射与穿透矩阵；循环反射到达前保持静音，到达后再回绕。
+- [x] 补中英文案和 `UIKeys`，验证 en/zh key parity。
 - [ ] 运行 `compileClientJava`、`testSoundAcoustics`、`testAudioLifecycle`、`testAudioVerification`、`testPlatformResourceConsistency` 和完整 `check`。
