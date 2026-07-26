@@ -336,6 +336,7 @@ the workspace's other standalone addons do not exercise this path.
 | BBS Java source is newer than the local core jar | Build fails with the exact jar path and rebuild command. |
 | Config omits `refmap` and targets only BBS classes | This is the expected working state, not a missing-artifact warning. |
 | Build passes but no client run was performed | Verification is incomplete because injection target lookup has not run. |
+| `runClient` stops before Mixin config selection with `Failed to locate a primary monitor` | Treat it as a NeoForge early-window environment failure. Temporarily set `runs/client/config/fml.toml` `earlyWindowControl = false`, retry the same verification command, and restore the local value afterward. Do not weaken Mixin checks or edit addon/BBS source. |
 
 ### 7.5 Good / Base / Bad Cases
 
@@ -343,7 +344,11 @@ the workspace's other standalone addons do not exercise this path.
   dashboard logs the probe or feature behavior.
 - Base: Iris is absent, so the Iris-only config is skipped while common and client configs
   still apply.
+- Base: the early splash cannot resolve a monitor, but disabling only `earlyWindowControl`
+  lets the real client window load, the verifier pass, and the local setting be restored.
 - Bad: accept `./gradlew build` as proof that 76 migrated injection signatures are valid.
+- Bad: record a pre-Mixin early-window failure as an addon regression or lower injection
+  requirements to make an unrelated environment failure disappear.
 - Bad: place a logger next to a Mixin because both are client-only; Mixin owns the whole
   package regardless of Java-side intent.
 
@@ -354,6 +359,9 @@ the workspace's other standalone addons do not exercise this path.
   does not bundle `mchorse/bbs_mod/**`.
 - Run `./gradlew runClient`, confirm BBS and the addon load, and exercise every newly ported
   injection path.
+- If the log fails before Mixin config selection with the primary-monitor message, retry once
+  with only local `earlyWindowControl = false`; require the normal runtime assertions and restore
+  the setting after the run.
 - Temporarily point one required probe at a nonexistent method; assert a runtime FATAL, then
   restore it and rebuild.
 - Search addon sources for `net.fabricmc` and confirm the result is empty.
