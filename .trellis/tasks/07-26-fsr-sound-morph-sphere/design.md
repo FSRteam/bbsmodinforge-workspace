@@ -82,3 +82,40 @@ public class SoundSphereForm extends AbstractSoundForm
 ## 5. 回滚点
 
 三处注册各一行,注释掉即完全回滚(Form 不再出现在选择器中);新增文件删除即可。基类与声学核心属子任务 1,本任务不动。
+
+## 6. 2026-07-27 复合轨道与交互反射设计
+
+### 6.1 复合轨道
+
+声音 Form 的原始 `Value*` 字段继续作为存档与运行时真相源，但从自动轨道收集中隐藏。Film 使用五个属性外复合 channel，channel id 由 Form 路径和稳定后缀组成，支持嵌套 Form：
+
+```text
+<form-path>/$sound
+<form-path>/$sound_shape
+<form-path>/$sound_visualization
+<form-path>/$sound_falloff
+<form-path>/$sound_reflections
+```
+
+`SoundKeyframeValue` 保存一组完整快照，`SoundKeyframeFactory` 按组序列化并对数值/颜色插值，对 Link、布尔、枚举执行阶跃。`FormProperties` 先应用旧普通 channel，再应用复合声音 channel，因此旧影片兼容、同时存在时新轨道确定性优先。无 segment 时清理该组所有字段的 runtime value。
+
+客户端为五个 factory 注册同一个专用 `UISoundKeyframeFactory`。编辑器从 sheet 的 `form` 和 factory group 构建相应控件；声音组音频按钮直接打开 `UISoundOverlayPanel`，不经过通用 `UILinkKeyframeFactory`。
+
+### 6.2 试听所有权
+
+`SoundManager.restartUnique(Link)` 只停止并删除相同 Link 的旧 unique 预览源，再创建一个从 0 秒开始的新预览源；不得调用 link-global `stop(Link)`，避免误停同资源的 Film/世界声音。
+
+### 6.3 方块、实体与穿透
+
+共享字段新增：
+
+```text
+block_reflections=true
+entity_reflections=false
+pass_through_blocks=false
+pass_through_entities=true
+```
+
+默认值保留“房间方块可产生反射、普通实体不干扰声音”的基础体验。方块面以六轴首次实体方块命中的精确近侧面生成；实体在有界查询范围内取 AABB 面向声源的最近面，数量硬上限。直达声对 source→listener 做方块碰撞和实体 AABB 线段命中。
+
+过滤矩阵是纯逻辑合同：`passThrough(category)` 优先；否则直达路径会被该类别遮挡，且只有 `reflections && reflect(category)` 时该类别产生反射。探测数组和 voice 数组池化，世界查询范围与候选数量都有上限。

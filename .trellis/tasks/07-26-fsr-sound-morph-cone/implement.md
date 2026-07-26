@@ -1,5 +1,20 @@
 # 圆锥声音 Form 与可视化 执行清单
 
+> 2026-07-27 回归扩展：跟随兄弟任务 `07-26-fsr-sound-morph-sphere/implement.md` 的追加清单完成共享复合轨道、音频选择、重复试听、方块/实体反射及穿透；圆锥侧额外验证四个形状字段在一条 `发射形状` 轨道内往返与插值。
+
+## 2026-07-27 阶段 2 用户冒烟回归与修复
+
+用户实测确认声音 Form 的 `playing` 关键帧触发、循环和轨道中文名存在问题。本轮完成了球形/圆锥共用运行时修复:
+
+- 在 Film 关键帧已应用后的渲染上下文中按映射 replay tick 调度,覆盖正播、暂停、scrub、倒放和循环回绕。
+- `VoiceRequest` 应用 pitch、native looping、形状最大距离和条件 seek;直达/反射循环偏移统一回绕。
+- 圆锥关键帧轨道接入中文文案,内部 `radius/inner_radius` 显示为「外锥角/内锥角」。
+- 真实 Actor/玩家回放获得同一时间轴上下文;Film/editor 重建与退出统一释放 renderer-owned 音源,阻止残留与复活。
+
+自动验证均以真实退出码 0 通过:`compileClientJava --rerun-tasks`、`testSoundAcoustics`、`testAudioLifecycle`、`testAudioVerification`、`testPlatformResourceConsistency`,以及完整 `check --max-workers=1`(74 个任务,`BUILD SUCCESSFUL`)。`ffmpeg/ffprobe` 当前不可用,严格媒体检查按既有契约跳过。首次 `check` 仅因外部 Minecraft 进程占用项目日志被严格日志门拦截;临时隔离客户端注册测试工作目录后通过,未修改项目构建配置。
+
+待用户游戏内复测:圆锥 false→true→false、正播/暂停/拖动/倒放/Film 循环、looping、非 1 pitch、方向性听感及「外锥角/内锥角」轨道名。
+
 前置阅读:本任务 `prd.md` → `design.md` → 父任务 `design.md` §3.2/§6 → `research/irlights-addon-reference.md` §2/§5(几何代码 + API 映射表)→ `research/irlights-drag-and-hookup.md`。
 
 **红线**:验证一律真实 exit code(`echo REAL_EXIT=$?`),禁止管道结尾判断成败。

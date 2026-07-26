@@ -13,7 +13,9 @@
 ### S2 新增蒙皮 `VertexConsumer` 包装类
 `new/src/client/java/mchorse/bbs_mod/cubic/render/vanilla/SkinningVertexConsumer.java`（新文件）
 - 实现 `VertexConsumer`，持有真实 consumer + 上下两个 `Matrix4f` + 过渡区间
-- 覆盖 `Cube.compile` 实际调用的 11 参 `addVertex`：算权重 → 双矩阵变换 → lerp 位置与法线 → 转发
+- 每四个顶点缓冲一个 quad；纵向侧面按约每像素一条细分（上限 16），避免四角面只能形成平直弓弦
+- 对刚体相对矩阵恢复关节轴/枢轴并用四元数 slerp 旋转中间截面；缩放/剪切关节回退 LBS
+- 权重 0/1 严格应用上下矩阵，法线走逆转置
 - 其余 `VertexConsumer` 方法委托给真实 consumer
 
 **验证**：编译通过；确认覆盖的 `addVertex` 重载签名与 1.21.1 一致。
@@ -55,9 +57,25 @@ cd new && ./gradlew build > build-armor.log 2>&1; echo "REAL_EXIT=$?"
 ### S8 运行时坐标空间回归修复
 - [x] 将下段矩阵从 `jointDelta * completedUpper` 改为 `renderBase * jointDelta * armorAttachment` 顺序
 - [x] 上下段复用同一个盔甲挂点、附加 transform 与 `ROTATE_X_180` 应用函数
-- [ ] 重新运行 `compileClientJava` 与全量 `build`
+- [x] 重新运行 `compileClientJava`
+- [x] 重新运行全量 `build`（真实 exit 0，`BUILD SUCCESSFUL in 9m 16s`，77 tasks）
 - [ ] 入游戏保持模型静止并移动/旋转摄像机，盔甲不得跟随摄像机旋转
 - [ ] 弯曲手肘、膝盖和躯干，盔甲表面应连续弯曲而非向固定方向伸直
+
+### S9 稀疏盔甲网格曲面修复
+- [x] 缓冲并识别 `ModelPart.Cube` 的四顶点侧面
+- [x] 纵向细分，生成实际中间顶点
+- [x] 刚体相对旋转改用关节枢轴 + 四元数插值，避免 LBS 横截面塌缩
+- [x] 相对矩阵含缩放/剪切时安全回退 LBS
+- [x] 编译通过
+- [ ] 入游戏确认 30°/60°/90° 曲面、关节内侧与横截面体积
+
+### S10 最终集成验证
+- [x] 完整 `compileClientJava --rerun-tasks`（初次 `6m 16s`；本轮修复 NeoForm 缓存缺口后复核 `BUILD SUCCESSFUL in 12m 34s`）
+- [x] 独立 `jar`（`BUILD SUCCESSFUL in 1m 54s`）
+- [x] `build -x testAudioLifecycle`（`BUILD SUCCESSFUL in 6m 41s`，75 tasks）
+- [x] 未排除测试的完整 `build` 仅被无关音频用例阻塞：`AudioLifecycleTest.java:1336`，`firstPreview == null`
+- [x] 最终 JAR 含 `SkinningVertexConsumer` / `ArmorRenderer`：8,051,101 bytes，2026-07-27 05:29:55 +08:00，SHA-256 `D5F53BEB54E3AEF3FE739EEF6549EDCA7F196FAEB70517727DCD31EF31ED0BAC`
 
 ## 验证红线
 

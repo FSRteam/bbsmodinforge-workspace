@@ -1,5 +1,7 @@
 # 技术设计:圆锥声音 Form 与可视化
 
+> 2026-07-27 回归扩展：共享的复合轨道、试听所有权、方块/实体反射和穿透矩阵由兄弟任务 `07-26-fsr-sound-morph-sphere/design.md` §6 定义。圆锥形状快照使用现有几何真相源并继续强制 `innerAngle <= outerAngle`；反射虚拟声源仍须经过圆锥方向增益过滤。
+
 前置阅读:父任务 `design.md` §3.2/§6、子任务 1 `design.md`(基类)、子任务 2 `design.md`(注册与面板模式)、`research/irlights-addon-reference.md` §2、`research/irlights-drag-and-hookup.md`。
 
 ## 1. 圆锥 Form

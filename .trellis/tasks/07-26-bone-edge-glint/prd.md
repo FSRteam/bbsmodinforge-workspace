@@ -6,11 +6,12 @@
 
 ## Requirements
 
-### R1 骨骼级附魔三态模式
+### R1 骨骼级附魔四态模式
 用户可对**每根骨骼**独立设置附魔模式：
 - **关闭** —— 无附魔效果（默认）
 - **全表面** —— 采样原版附魔纹理覆盖整个骨骼表面，UV 随时间滚动，观感与附魔武器/盔甲一致
 - **仅边缘** —— 基于法线与视线夹角的 Fresnel rim，只有轮廓发光，中间保持原贴图
+- **原版** —— 直接使用 `RenderType.armorEntityGlint()` 的 shader、纹理、混合和纹理矩阵，行为与 Minecraft 原版盔甲附魔一致
 
 ### R2 可调参数
 - **附魔颜色**
@@ -40,20 +41,21 @@
 
 - [x] `PoseTransform` 新增字段，且 `identity` / 两个 `lerp` 重载 / `equals` / `copy` / `add` / `toData` / `fromData` **全部同步更新**
 - [x] 旧存档读取不报错，附魔默认关闭（`glintSpeed` 特意用带默认值 1F 的读取，否则旧档会读成 0 导致动画静止）
-- [x] 三种模式在编辑器中可切换并实时生效
+- [x] 四种模式在编辑器中可切换并实时生效
 - [x] 颜色、不透明度、速度可调且可 K 帧
 - [x] ~~三条渲染路径均生效~~ → **VAO + CPU 即时两条已接入；BOBJ 不支持，见下**
 - [x] 拾取（`stencilMap != null`）路径**不渲染** glint pass，骨骼点选不受影响
 - [x] 与盔甲/物品附魔同屏无闪烁、无覆盖（两者都在 vanilla 管线内，与 BBS 自绘模型不共享状态）
-- [x] i18n key 中英对等（实测 1947/1947，双向零缺失）
+- [x] i18n key 中英对等（最终实测 1962/1962，双向零缺失）
 - [x] `cd new && ./gradlew build` **真实 exit code 为 0 且日志含 `BUILD SUCCESSFUL`**
+- [x] Form 级与逐骨骼附魔都可独立编辑附魔层的 XYZ 位移、缩放、旋转，并支持保存、撤销与关键帧插值
 
 ## 追加需求（用户 2026-07-26 反馈后扩展）
 
 ### R7 修复：附魔覆盖本体材质、透明面变黑
-**根因**：`ShaderInstance` 既不读也不应用 shader json 里的 `"blend"` 块 —— 那是 `RenderType` 层面的机制。glint pass 直接用 `ShaderInstance` 驱动 VAO，绕过 `RenderType`，因此声明的加性混合**从未生效**；叠加 fragment 输出 alpha=1，就变成不透明覆盖，条纹暗处 rgb≈0 呈现纯黑。
+**根因**：旧实现直接用 BBS 的 `model_glint` core shader 驱动 VAO，绕过了 `RenderType`。这既漏掉了 RenderType 的混合状态，也让 Iris/光影包无法把 draw call 路由到已知的 entity gbuffer，结果分别表现为透明区域发黑和光影下整个效果被跳过。
 
-**修复**：新增 `cubic/render/GlintRenderState`，手动 `enableBlend` + 加性 `blendFuncSeparate(ONE,ONE, ZERO,ONE)`（保留目标 alpha，附魔不该让透明面变实心）+ `depthMask(false)`，绘制后复原。同时 fragment 里 `intensity *= baseAlpha`，使半透明面上的附魔相应变淡。
+**修复**：删除独立 `model_glint` shader。原版模式使用 `RenderType.armorEntityGlint()`；全表面与仅边缘使用 `RenderType.energySwirl(...)`。三种活动效果均进入 Minecraft 已知的 entity RenderType，统一关闭深度写入；可变换覆层使用 `LEQUAL`，避免原版 glint 的 `EQUAL` 在 XYZ 变换后把效果全部丢弃。边缘 Fresnel 在 CPU 计算后写入顶点 alpha，不再依赖自定义 fragment shader。
 
 ### R8 扩展：杂项分类的 Form 也支持附魔
 附魔原本挂在 `PoseTransform`（逐骨骼），只有带骨架的模型可用。现新增 **Form 级整体附魔**：
@@ -72,17 +74,32 @@
 
 Block/Item 采用用户选定的「完整支持」路线：开启附魔时让 vanilla 再跑一遍几何生成（有性能开销，不开则零成本），换取颜色/不透明度/速度/边缘模式全可调。
 
+Item 的第二次几何生成只捕获基础 RenderType。若物品本身带原版附魔，`ItemRenderer` 会用 `VertexMultiConsumer` 同时请求基础层和 vanilla glint 层；`GlintCaptureBufferSource` 对五种 glint RenderType 返回丢弃 consumer，避免同一几何在自定义 pass 中写入两次。原版附魔仍由正常物品 pass 绘制，因此两种效果保持独立。
+
+### R9 附魔层 XYZ 变换面板
+
+附魔选项新增独立的 `glint_transform`，包含 XYZ 位移、缩放、旋转（含现有 Transform 的第二旋转层）：
+
+- Form 级整体附魔与逐骨骼附魔均支持，默认恒等变换，不改变旧存档外观。
+- 变换只作用于附魔二次绘制，不移动或缩放本体模型；边缘模式下可据此调整发光边框的位置、大小和方向。
+- 逐骨骼变换随 `PoseTransform` 参与 copy / equals / add / 两种 lerp / 序列化，并继承现有 Pose 关键帧、骨骼多选、应用到子骨骼、撤销/重做语义。
+- Form 级变换使用 `ValueTransform`，进入现有 Form 值树和时间轴。
+- VAO、CPU 即时、Billboard、Extruded、Block、Item 路径统一进入同一个 `GlintRenderState`；BOBJ 仍遵守既有不支持范围。
+- 所有路径都在模型/骨骼局部空间应用变换：VAO 在提交 RenderType draw 前组合模型矩阵，CPU 即时、Billboard、Block、Item 在顶点进入已含摄像机的空间前应用，避免旋转或缩放随摄像机位置变化。
+- 所有 Form 级附魔在拾取路径跳过，避免二次绘制污染伪装/骨骼选择缓冲。
+- 多材质 VAO 的附魔二次绘制仍按材质分批，保持几何范围与本体一致。
+
 ### 未覆盖范围（如实记录）
 
 **BOBJ 格式模型不支持骨骼附魔。** `BOBJModel.applyPose()` 带有原作者注释「lighting/color transform attributes are not supported in this branch」—— 该格式**从来就没有**任何 per-bone 颜色/光照数据通路，`BOBJModelVAO` 的颜色是整个 mesh 一次 draw call 的单值，不是逐骨骼。
 
 补齐它需要新建一整套「per-bone uniform 数组 + 顶点主导骨骼索引」的数据通路（可参考 `BOBJModelVAO.dominantBones` 现有的拾取用实现思路），是独立且量级明显更大的工作，不属于本任务范围。`.bbs.json` / `.geo.json` / `.vox` 格式（含全部内置玩家模型）走 VAO 或 CPU 路径，不受影响。
 
-**CPU 即时路径的动画速度按模式共享**，非逐骨骼 —— 该路径整个模型打包成一次 draw call，无法承载 per-bone uniform。它只服务无法烘焙 VAO 的模型（shape key / weld），VAO 主路径保持逐骨骼速度。
+**CPU 即时路径的动画速度按模式共享**，非逐骨骼 —— 该路径整个模型打包成一次 draw call，无法承载 per-bone uniform。附魔层变换已在 CPU 生成顶点时按骨骼分别烘焙，因此只有速度受此限制。它只服务无法烘焙 VAO 的模型（shape key / weld），VAO 主路径保持逐骨骼速度。
 
 ## Constraints
 
-- BBS 自定义模型**绕过 vanilla `RenderType`/`MultiBufferSource`**，走自研 VAO 直绘 + 自研 core shader（`BBSShaders.getModel`），因此**无法复用 `RenderType.entityGlint()`，必须新写 shader**
+- BBS 自定义模型的本体仍走自研 VAO，但附魔二次绘制必须显式调用已知的 vanilla `RenderType` 状态并使用其当前 shader；不得再引入独立 core shader，否则 Iris/光影包无法可靠接管
 - 数据层在 `new/src/main/java/`，渲染与 UI 在 `new/src/client/java/`
 - 排在 `07-26-blockbuster-armor-model` **之后**执行，两者交汇于 `ModelFormRenderer`
 - 验证深度：编译通过即可，渲染效果由用户入游戏验收
@@ -94,3 +111,4 @@ Block/Item 采用用户选定的「完整支持」路线：开启附魔时让 va
 - 项目内**无**可复用的 3D rim/outline 实现（`selection.fsh` 是 2D 屏幕空间 mask，UI 专用）
 - `model.vsh` 已输出 normal varying 但 `model.fsh` 未使用，做 Fresnel 可直接复用
 - 研究记录见 `research/bone-editor-and-pose-data.md`
+- 最终集成验证中，完整 `compileClientJava --rerun-tasks` 与排除无关音频测试的全量构建均通过；未排除时仅 `testAudioLifecycle` 在 `AudioLifecycleTest.java:1336` 因 `firstPreview == null` 失败，该音频回归不属于本任务。

@@ -2,8 +2,9 @@
 
 ## Scope and ownership
 
-本任务只修改 IRLite 1.21.1 源码和其测试构建产物。BBS FSR、Connector 和
-Forgified Fabric API 作为固定整合环境，不在本任务中修改。
+本任务修改 IRLite 1.21.1 源码和测试构建产物，并允许对 BBS FSR 的模型方块物品
+渲染器做一个独立的窄修复。Connector 和 Forgified Fabric API 仍作为固定整合环境，
+不在本任务中修改。
 
 问题发生在 Connector 将 Fabric intermediary 名称转换为 Mojmap 后：Fabric 中两个
 `World.setBlockState` 重载具有不同 intermediary 名称，但 Mojmap 中都叫
@@ -54,6 +55,45 @@ IRLite 对应的 mapped JAR，或清空该可再生缓存目录，再启动游�
 4. 客户端进入世界和 BBS 编辑器；
 5. IRLite Form、Iris shader 和方块阴影刷新通过。
 
+## Model block item restoration
+
+模型方块物品继续使用 `minecraft:builtin/entity` 和现有 BEWLR；PNG 与物品模型资源
+已证明存在，不能退化为普通 `item/generated`。缺陷位于渲染数据恢复和缓存时机：
+
+1. 从 `DataComponents.BLOCK_ENTITY_DATA` 读取 `CustomData`；
+2. 从其 NBT 的 `Properties` 节点通过 BBS 数据存储工具恢复 `MapType`；
+3. 将数据直接写入临时 `ModelBlockEntity#getProperties()`；
+4. 只有解析成功后才写入物品缓存；
+5. 每次绘制前同步客户端世界，避免主菜单阶段创建的临时实体永久持有空世界。
+
+这条路径不依赖不同映射环境下不稳定的 `loadWithComponents/load/readNbt` 反射重载，
+也不会把“当前没有客户端世界”误当成“物品没有模型数据”。
+
+## Beam-strength runtime contract
+
+`beam_strength` 的单一数据链为：
+
+```text
+Form ValueFloat -> Form renderer / LightCollector -> LightRegistry
+-> LightBuffer SSBO vlParams.z -> generated shader patch
+```
+
+修复必须落在研究确认的第一个失真边界。构建检查同时验证当前 patch 模板确实消费
+`vlParams.z`，并避免旧的、带 marker 但不符合当前合约的已补丁 Shaderpack 被直接
+复用。Java UI、CPU 上传和 Shader 中不得各自维护不同的默认值或字段含义。
+
+## Localization ownership
+
+IRLite 使用 `assets/irlite/strings/en_us.json` 与 `zh_cn.json` 作为唯一文本源。外部
+addon 在 BBS 客户端 L10n 事件中只捕获注册表，在 client-started 阶段按顺序注册
+四参数 `InternalAssetsSourcePack`、语言 provider，再触发 reload。所有用户可见的
+`IKey.constant` 改为 `L10n.lang`；枚举选项、设置标题、预设、Shader Patcher 与调试
+界面使用同一命名空间。
+
+回放轨道本地化通过 IRLite 自己的 Mixin 扩展 `UIKeyframeSheet#getTrackTitle`，仅处理
+`PointLightForm` 与 `SpotlightForm` 的已知属性 id，并保留 BBS 对嵌套 Form 路径的显示
+规则。这样不需要把 IRLite 类型硬编码进 BBS 本体。
+
 ## Failure classification
 
 - 同一个 `WorldBlockChangeMixin` 描述符错误：补丁没有进入实际 JAR或缓存未清理。
@@ -68,4 +108,3 @@ IRLite 对应的 mapped JAR，或清空该可再生缓存目录，再启动游�
 
 保留原始 1.1.2 JAR及其哈希。回滚时恢复原 JAR并删除 Connector 生成缓存即可；本任务
 不改变世界存档格式、配置格式或 BBS 数据协议。
-

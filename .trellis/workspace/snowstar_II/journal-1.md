@@ -676,3 +676,37 @@ Ported the bbs_snow core data/API contracts, verified 17 Mixins and addon locali
 ### Next Steps
 
 - None - task complete
+
+
+## Session 18: Complete bbs_snow S3 PBR texture-grade gate
+
+**Date**: 2026-07-27
+**Task**: Complete bbs_snow S3 PBR texture-grade gate
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+Ported and verified PBR rendering/editors, texture grading, deferred GL state, screen effects, and Iris isolation; archived S3 after a strict runtime pass.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `8975a7e` | (see git log) |
+| `8b1578e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

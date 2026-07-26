@@ -1,5 +1,7 @@
 # 圆锥声音伪装 Morph 与可视化
 
+> 2026-07-27 回归扩展：圆锥 Form 与球形 Form 共用五条复合声音关键帧、专用音频选择器、可重复试听，以及方块/实体反射与分别穿透合同；详细验收以兄弟任务 `07-26-fsr-sound-morph-sphere/prd.md` 的“用户回归补充”为准。圆锥的 `发射形状` 复合轨道包含 range、innerAngle、outerAngle、outerGain。
+
 父任务:`07-26-fsr-sound-morph-parent` · 依赖:`07-26-fsr-sound-acoustic-core`、`07-26-fsr-sound-morph-sphere`
 
 ## Goal

@@ -3,8 +3,9 @@
 ## Goal
 
 在 Minecraft 1.21.1、NeoForge、Sinytra Connector 与 BBS FSR 的组合中，
-修复 IRLite 1.1.2 的 `WorldBlockChangeMixin` 启动崩溃，先验证小范围
-IRLite 兼容补丁是否足以恢复完整运行，再决定是否需要原生 NeoForge 迁移。
+修复 IRLite 1.1.2 的 `WorldBlockChangeMixin` 启动崩溃及进入游戏后的 Connector
+运行时回归，恢复 BBS 模型方块物品显示，补齐 IRLite 光束强度和中文界面，再决定
+是否需要原生 NeoForge 迁移。
 
 ## Confirmed Facts
 
@@ -50,6 +51,16 @@ IRLite 兼容补丁是否足以恢复完整运行，再决定是否需要原生 
   方块变化后的阴影缓存刷新。
 - 如果仍然失败，必须保留完整 `debug.log` 和 `latest.log`，并按 BBS API、
   Minecraft Mixin、Iris Mixin、Fabric API 或 Connector 转换边界分类。
+- 恢复 BBS 模型方块物品在无客户端世界和进入世界后的稳定显示；物品内保存的
+  `BLOCK_ENTITY_DATA.Properties` 必须先完整恢复到渲染实体，再允许缓存。
+- 修复 IRLite 点光源和聚光灯的 `beam_strength` 从 Form 属性、CPU 灯光缓冲到
+  Shader patch 的运行时链路；不得仅改界面数值而不验证最终上传/补丁消费。
+- 为 IRLite 增加独立的 `en_us` 与 `zh_cn` 语言资源，覆盖表单编辑器、设置、预设、
+  Shader Patcher、调试界面及用户可见模式选项。
+- 回放编辑器中 IRLite 点光源/聚光灯的关键帧轨道名称必须使用同一套本地化键，
+  包括子 Form 路径前缀，不能只翻译表单面板。
+- IRLite 语言资源必须按外部 addon 的 source-pack 生命周期注册，保证打包后的
+  Connector JAR 能在首次可用 reload 后正常解析，而不是依赖开发目录资源。
 
 ## Acceptance Criteria
 
@@ -64,15 +75,23 @@ IRLite 兼容补丁是否足以恢复完整运行，再决定是否需要原生 
       IRLite addon 完成注册。
 - [ ] 客户端能够进入世界并打开 BBS 编辑器，IRLite 点光源和聚光灯 Form 可用。
 - [ ] 放置、破坏或由 BBS 修改方块后，相关动态灯阴影能够刷新且不产生新崩溃。
+- [ ] 模型方块物品可在主菜单/无世界资源加载阶段和进入世界后正常显示已保存的模型，
+      不会因缓存空 `ModelBlockEntity` 而永久不可见。
+- [ ] `beam_strength` 的非默认值能够到达实际 Shader 消费点，并在支持的光影包中产生
+      可观察的体积光强度差异；旧补丁不会被错误地当作当前补丁复用。
+- [ ] IRLite 的 `en_us`/`zh_cn` 资源包含表单、设置、预设、Shader Patcher、调试和模式
+      文本，成品 JAR 中路径与 source-pack/provider 注册一致。
+- [ ] 中文环境下，回放编辑器内 IRLite 的关键帧轨道名称和子 Form 路径均完成汉化。
+- [ ] 分别生成新的 BBS 测试 JAR和可区分的 IRLite `connector-fix2` JAR，并完成内容检查。
 - [ ] 若仍失败，已给出新的首个失败边界和是否需要原生 NeoForge 迁移的证据化结论。
 
 ## Out of Scope
 
 - 在本任务中完整迁移 IRLite 到原生 NeoForge。
 - 修改 Connector 的通用转换器或发布 Connector 派生版本。
-- 继续修改 BBS FSR 本体来绕过此 IRLite Mixin 错误。
+- 修改与模型方块物品渲染无关的 BBS FSR 生命周期或 Addon API。
 - 升级 Minecraft、NeoForge、Iris 或加入与复现无关的模组。
-- 修改 IRLite 光照算法、Shader patch 内容或无关 UI 功能。
+- 完整重写 IRLite 光照算法或迁移全部 UI；本任务只修复已确认的强度链路与本地化。
 
 ## Open Questions
 
@@ -85,4 +104,5 @@ IRLite 兼容补丁是否足以恢复完整运行，再决定是否需要原生 
 - 2026-07-26：先做 IRLite 单点兼容补丁，不立即启动原生 NeoForge 迁移。
 - 2026-07-26：只有在该修复后出现多处相互独立的 Minecraft/Iris 核心 Mixin
   转换失败，或 Connector 无法稳定承载关键运行路径时，才创建原生迁移任务。
-
+- 2026-07-27：将用户进入游戏后发现的模型方块物品、光束强度与完整中文回归并入
+  当前兼容任务；修复与构建通过后再依据游戏内结果评估原生 NeoForge 迁移。

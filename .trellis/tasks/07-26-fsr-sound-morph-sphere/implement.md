@@ -2,7 +2,30 @@
 
 ## 执行记录
 
-### 实现后自查发现的两个运行时 bug(编译与 check 都发现不了,只有推演运行时行为才暴露)
+### 2026-07-27 阶段 2 用户冒烟回归与修复
+
+用户实测发现:`playing` 关键帧未能可靠触发播放、`looping` 无效果、回放编辑器轨道仍显示内部英文 ID。
+
+根因与最终修复:
+
+- Film 的 Form 属性在 `startRenderFrame()` 才应用,而旧声音 tick 更早执行并读取上一帧值。现改为把 `FormProperties`、映射后的 replay tick 和 transport 状态传入渲染上下文,在关键帧应用完成后同步声音。
+- renderer 本地 `elapsed` 不能表达暂停、scrub、倒放和 Film 循环回绕。现按 `playing=true` 的当前连续区间计算激活 tick;新触发、暂停、跳转、倒放、回绕时 seek,连续正播交给 OpenAL 自然推进。
+- 空间 `VoiceRequest` 现实际携带并应用 pitch、native looping、最大传播距离与条件 seek;循环时直达声和反射声偏移均安全回绕。
+- `UIKeyframeSheet` 为声音 Form 复用现有中英文文案;圆锥内部 `radius/inner_radius` 正确显示为「外锥角/内锥角」。
+- 真实 Actor/玩家回放通过 owner-scoped 弱引用桥接获得同一时间轴上下文;控制器重建、关闭、隐藏、Film 结束时递归释放声音 renderer owner,并防止 Actor 最后一次 tick 复活音源。
+
+自动验证(真实退出码均为 0):
+
+- `compileClientJava --rerun-tasks`: `BUILD SUCCESSFUL`
+- `testSoundAcoustics`: all tests passed
+- `testAudioLifecycle`: all tests passed; captured 25 expected failure diagnostics
+- `testAudioVerification`: all hermetic contracts passed(`ffmpeg/ffprobe` 缺失,严格媒体检查按既有规则跳过)
+- `testPlatformResourceConsistency`: all tests passed
+- `check --max-workers=1`: 74 个任务通过,`BUILD SUCCESSFUL`。首次运行仅因外部 Minecraft 进程占用 `new/logs/latest.log`/`debug.log` 被严格日志门拦截;将客户端注册测试工作目录临时隔离后完整门通过,未修改项目构建配置。
+
+仍需用户游戏内复测:球形/圆锥的 false→true→false、正播、暂停、拖动、倒放、Film 循环、非 1 pitch、looping,以及中文轨道名。
+
+### 首轮实现后自查发现的两个运行时 bug(本地 elapsed 修法已被上述时间轴同步替代)
 
 | # | 症状 | 根因 | 修法 |
 |---|---|---|---|
@@ -74,3 +97,16 @@
 | 1 | 注释 `BBSMod.java` 那一行 → Form 不再注册 |
 | 2 | 注释另两处注册 → 不出现在编辑器 |
 | 3、4 | 新增文件删除即可;三处注册行是唯一侵入点 |
+
+## 2026-07-27 用户回归追加执行清单
+
+- [ ] 添加五组 `SoundKeyframeValue` factory、稳定 channel id、序列化/插值/复制测试。
+- [ ] 在 `FormProperties` 中应用并重置复合声音 channel，旧独立 channel 先应用、新复合 channel 后应用。
+- [ ] 回放编辑器为声音 Form 注入五条中文复合 sheet，并注册专用关键帧编辑面板。
+- [ ] 声音关键帧音频控件接 `UISoundOverlayPanel`；隐藏声音原始字段的自动独立轨道。
+- [ ] `SoundManager` 增加只替换 unique 预览源的重启入口，Form 试听按钮改用该入口。
+- [ ] 增加方块反射、实体反射、穿透方块、穿透实体字段和面板控件。
+- [ ] 扩展 `SoundSurfaceProbe`：精确方块近侧面、实体 AABB 最近面、直达声遮挡、排除 owner、范围与数量预算。
+- [ ] 扩展纯声学过滤和 `SoundFormPlayback`，覆盖方块/实体反射与穿透矩阵。
+- [ ] 补中英文案和 `UIKeys`，验证 en/zh key parity。
+- [ ] 运行 `compileClientJava`、`testSoundAcoustics`、`testAudioLifecycle`、`testAudioVerification`、`testPlatformResourceConsistency` 和完整 `check`。

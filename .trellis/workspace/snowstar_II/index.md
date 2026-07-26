@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 17
+- **Total Sessions**: 18
 - **Last Active**: 2026-07-27
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~678 | Active |
+| `journal-1.md` | ~712 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 18 | 2026-07-27 | Complete bbs_snow S3 PBR texture-grade gate | `8975a7e`, `8b1578e` | `codex/bootstrap-trellis-workspace` |
 | 17 | 2026-07-27 | Complete bbs_snow S2 core API gate | `1d73747`, `ff9093b` | `codex/bootstrap-trellis-workspace` |
 | 16 | 2026-07-27 | Complete bbs_snow S1 Mixin gate | `cad8464`, `f06f4b1` | `codex/bootstrap-trellis-workspace` |
 | 15 | 2026-07-23 | Fix dashboard morph and model editor regressions | `b6b37ad4` | `-` |
