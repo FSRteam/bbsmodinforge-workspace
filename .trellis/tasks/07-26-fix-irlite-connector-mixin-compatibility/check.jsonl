@@ -1,0 +1,6 @@
+{"file":".trellis/tasks/07-26-fix-irlite-connector-mixin-compatibility/research/diagnosis.md","reason":"Verify the artifact and logs against the evidenced overload failure and the exact upstream resolution."}
+{"file":".trellis/tasks/07-26-fix-bbs-connector-input-compatibility/research/compatibility-findings.md","reason":"Ensure the review distinguishes the new IRLite/Connector failure from already repaired BBS lifecycle and input boundaries."}
+{"file":".trellis/spec/new/backend/quality-guidelines.md","reason":"Review binary descriptors, dependency hygiene, deterministic tests, and retained runtime evidence."}
+{"file":".trellis/spec/new/backend/fs-migration-baseline.md","reason":"Apply the target compile/build and manual integration reporting gates."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Review the full transformed-JAR to Mixin apply to addon registration to shadow refresh data flow."}
+

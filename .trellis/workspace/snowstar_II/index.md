@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 15
-- **Last Active**: 2026-07-23
+- **Total Sessions**: 16
+- **Last Active**: 2026-07-27
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~517 | Active |
+| `journal-1.md` | ~644 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 16 | 2026-07-27 | Complete bbs_snow S1 Mixin gate | `cad8464`, `f06f4b1` | `codex/bootstrap-trellis-workspace` |
 | 15 | 2026-07-23 | Fix dashboard morph and model editor regressions | `b6b37ad4` | `-` |
 | 14 | 2026-07-19 | Sync latest FS fixes to NeoForge | `36a8e0dd8edea23f857cfe431cc6e29ef3113cc0`, `50b95cea2a68486faf601331aabf874dd033694d` | `-` |
 | 13 | 2026-07-16 | 修复模型物理空间并优化 IK/物理骨骼 | `6a5785bd`, `8386d180` | `-` |

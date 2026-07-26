@@ -608,3 +608,37 @@ hot-reload 任务的 MissingClip 占位符保留)——属 07-23-fsr-plugin-stru
   单次 `gradlew check` 于 5m31s 完成,真实退出码 0。
 - 未 commit/归档:`new/` 工作区同时含 plugin structural hot reload 等其他任务的大量未提交改动,
   需由用户按任务边界选择性提交。
+
+
+## Session 16: Complete bbs_snow S1 Mixin gate
+
+**Date**: 2026-07-27
+**Task**: Complete bbs_snow S1 Mixin gate
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+Verified the standalone NeoForge addon skeleton, Mixin runtime gate, addon registration bridge, strict BBS jar validation, and archived S1 before advancing to S2.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `cad8464` | (see git log) |
+| `f06f4b1` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
