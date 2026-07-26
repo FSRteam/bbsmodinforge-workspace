@@ -642,3 +642,37 @@ Verified the standalone NeoForge addon skeleton, Mixin runtime gate, addon regis
 ### Next Steps
 
 - None - task complete
+
+
+## Session 17: Complete bbs_snow S2 core API gate
+
+**Date**: 2026-07-27
+**Task**: Complete bbs_snow S2 core API gate
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+Ported the bbs_snow core data/API contracts, verified 17 Mixins and addon localization/settings at runtime, recorded the external addon integration contract, and archived S2.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `1d73747` | (see git log) |
+| `ff9093b` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
