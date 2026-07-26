@@ -1,0 +1,32 @@
+{
+  "id": "fsr-refreshed-skin",
+  "name": "fsr-refreshed-skin",
+  "title": "Refreshed 皮肤移植与仪表盘自动隐藏",
+  "description": "",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "snowstar_II",
+  "assignee": "snowstar_II",
+  "createdAt": "2026-07-25",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "codex/bootstrap-trellis-workspace",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "07-25-refreshed-theme-tokens",
+    "07-25-dashboard-autohide",
+    "07-25-refreshed-motion-additions",
+    "07-25-refreshed-visual-details",
+    "07-26-bbsfsr-particle-fs-ui"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}

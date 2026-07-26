@@ -595,3 +595,16 @@ hot-reload 任务的 MissingClip 占位符保留)——属 07-23-fsr-plugin-stru
    → MissingForm 兜底自身 NPE。改为 null 时回退注册默认 0。
 3. FormUtils.fromData 的 MissingForm 兜底再包一层 try(占位符构造失败回退旧 null 行为,
    解码永不因兜底而崩)。
+
+## 2026-07-26 Refreshed theme token 子任务(Codex)
+
+- 激活并完成 `07-25-refreshed-theme-tokens`:UITheme/ThemeParser/BBSSettings 新增 19 个
+  扩展颜色 token,保持 parse-time 固化;旧版无对应视觉的 dark 默认用 0 哨兵。
+- 新增内置 `refreshed` 主题包并加入 ThemeManager 枚举;example-theme docs→jar 逐字节同步。
+- 参考源码核对发现盘点文档十六进制换算错误:`UI_CANVAS=-15789804` 精确为
+  `#0F1114`,不是 `#0F0F14`;已同步修正 research/design,主题派生色以该整数为事实源。
+- ThemeCoreTest 新增全 token 显式解析、坏值×2、base 继承、dark 对拍与 refreshed 包断言。
+- 验证:`testThemeCore` 两次通过;首次全量检查超时后补跑剩余 5 项退出码 0,最终再次执行
+  单次 `gradlew check` 于 5m31s 完成,真实退出码 0。
+- 未 commit/归档:`new/` 工作区同时含 plugin structural hot reload 等其他任务的大量未提交改动,
+  需由用户按任务边界选择性提交。

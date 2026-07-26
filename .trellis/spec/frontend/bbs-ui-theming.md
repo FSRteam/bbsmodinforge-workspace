@@ -28,6 +28,18 @@
    `text(label,x,y,color,shadow)`(textShadow token 拦截、light darkenWhite)。改动文字全局
    行为只动这些单点,不要在调用点散改。
 
+### Refreshed 扩展 token 契约
+
+- `UITheme` / `ThemeParser` 支持 `colors` 根下的扩展语义 key:
+  `field_fill/field_border/tab_active_line/tab_active_gradient/area_tint/area_tint_light/`
+  `drop_fill/drop_border/splitter_active/splitter_idle/shadow_muted/trackpad_scrub/`
+  `notification_fill/notification_text/selection_fill/selection_outline/icon_pressed/`
+  `icon_disabled/scrollbar_shadow`。消费端只经 `BBSSettings.*Color()` 访问,不得直接查 JSON。
+- dark 主题中旧版没有对应视觉的 key 使用 ARGB `0` 哨兵。消费端遇到 `0` 必须走原绘制
+  分支或不绘制,不能把透明黑当作已配置效果；已有视觉的 key 默认值必须等于旧常量。
+- 新增/接入扩展 token 时,`ThemeCoreTest` 至少覆盖:dark 对拍、显式解析、坏值回退、base
+  继承。`docs/theme-spec/example-theme/theme.json` 与 jar 内 example 必须继续逐字节一致。
+
 ### 带前导图标的内嵌文本框
 
 - `UITextbox.icon(Icon)` 为原地编辑框启用左侧语义图标槽；`barColor(int)` 只覆盖槽右侧
@@ -83,5 +95,20 @@ field.textbox.area.w -= 20;
 - **装饰/背景**:贴花与根背景统一走 `UIThemeBackdrop`(client helper),绘制顺序
   背景→dim→贴花→主 UI;永不参与命中。背景消费点:UIDashboard 与
   `UIBaseMenu.renderDefaultBackground`,不要在别的面板私接。
+- **停靠交互表面**:`UIFilmPanel` 与通用 `UIDockLayout` 的面板拖动柄、分割条和投放
+  高亮统一调用 `UIDockStyleRenderer`,禁止在宿主内复制绘制分支。Refreshed 分支分别消费
+  `area_tint*`、`splitter_*`、`drop_*` 与 `cornerWidget()/cornerPanel()`;对应扩展 token
+  全为 0 时必须进入旧 primary 方形/单像素路径。
+- **仪表盘整体自动隐藏**:`UIDashboardPanels` 的活动面板与底栏共享同一
+  `hiddenAmount * rootHeight` 纵向位移。位移必须写入实际布局坐标并统一 resize,使绘制和
+  命中同步;根容器保持静止以承载底部 reveal strip。禁止仅移动底栏或只变换渲染矩阵。
 - **解析期定死**:一切新 schema(tracks/decorations/corner_radius/background_mode)在
   `ThemeParser` 解析为不可变结构,坏值逐 key 回退 + warn(延续 v1 契约);渲染期零查表零分配。
+
+```java
+// Correct: both dock hosts share one renderer and preserve the legacy sentinel path.
+UIDockStyleRenderer.renderDropZone(context, target.area, dropZone, DROP_EDGE_MARGIN);
+
+// Wrong: a host reads drop tokens and reimplements its own square highlight.
+context.batcher.box(target.area.x, target.area.y, target.area.ex(), target.area.ey(), BBSSettings.dropFillColor());
+```
