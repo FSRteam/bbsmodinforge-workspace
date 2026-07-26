@@ -1121,6 +1121,89 @@ Addon API 2.0 timing and compatibility contract:
    - Correct: close the v1 external registration window immediately after the
      bridge and reject late v1 external registrations.
 
+### Connector legacy BBS addon compatibility contract
+
+#### 1. Scope / Trigger
+
+Apply this contract when a Fabric BBS addon is expected to run through Sinytra
+Connector while FSR remains a plain NeoForge mod with no required Fabric Loader
+dependency.
+
+#### 2. Signatures
+
+- Legacy Mixin target: `public void BBSMod.onInitialize()` with descriptor `()V`.
+- Optional importer: `FabricAddonEntrypointImporter#importInto(BBSAddonCollector)`.
+- Imported v1 entrypoints use the existing collector registration and bridge
+  path; they do not create a second addon event bus.
+
+#### 3. Contracts
+
+- Fabric Loader types are referenced only by reflective class-name strings.
+  Common classes must not import, implement, extend, or expose Fabric Loader
+  types in fields, parameters, return values, or bytecode descriptors.
+- Query Fabric `getEntrypointContainers("bbs-addon", BBSAddonMod.class)` only
+  when Fabric Loader is present. Preserve each provider mod id for duplicate
+  ownership and diagnostics.
+- Import candidates before `BBSAddonBridge` closes external registration. The
+  existing first-registration-wins identity registry remains authoritative.
+- Invoke the legacy hook once from FSR common setup after forms and clip
+  registries exist, and before `RegisterSettingsEvent`. The hook body stays
+  empty so addon Mixins can inject at its tail without adding Fabric lifecycle
+  interfaces to FSR.
+- Isolate provider metadata, entrypoint construction, type, runtime, and linkage
+  failures. One broken Fabric addon must not prevent later candidates or plain
+  NeoForge startup.
+
+#### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Connector/Fabric Loader absent | Return an unavailable, zero-count no-op without warning-level noise. |
+| Loader present with no `bbs-addon` entries | Report an available empty result and leave collector diagnostics empty. |
+| Provider metadata or entrypoint fails | Record a `DISCOVER` diagnostic for that source and continue. |
+| Entrypoint has the wrong type | Reject it as a discovery failure; do not cast blindly. |
+| Provider id duplicates a native registration | Existing owner wins and the Fabric candidate is reported rejected. |
+| `onInitialize()V` is absent or moved | Binary compatibility test fails; required addon Mixins would have no injection target. |
+
+#### 5. Good / Base / Bad Cases
+
+- Good: Connector exposes IRLite's `bbs-addon`; FSR imports it into
+  `BBSAddonCollector`, bridges it once, invokes the legacy hook, then posts
+  `RegisterSettingsEvent`.
+- Base: Connector is not installed and the same JAR starts through the normal
+  NeoForge collector path.
+- Bad: return Fabric entrypoints only from `LoaderAccess#getEntrypoints`; the
+  common setup may log them while the internal BBS event bus never registers
+  them.
+- Bad: add `implements ModInitializer` or a direct `FabricLoader` import to
+  `BBSMod`; plain NeoForge then gains a hard optional-loader linkage.
+
+#### 6. Tests Required
+
+- `testAddonLifecycle` covers loader absence, empty discovery, successful
+  bridge, duplicate ownership, and isolated bad entrypoints.
+- `testBinaryCompatibility` asserts public virtual `BBSMod.onInitialize()V`.
+- Run `compileJava`, `compileClientJava`, and `build` from `new/`.
+- Inspect the release JAR for the importer classes and use `jdeps`/constant-pool
+  inspection to prove Fabric names are reflection strings, not type references.
+- Before claiming end-to-end compatibility, run FSR + Connector + the target
+  addon and capture its transformed Mixin and addon-registration log.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```java
+FabricLoader.getInstance().getEntrypoints("bbs-addon", BBSAddonMod.class);
+```
+
+Correct:
+
+```java
+new FabricAddonEntrypointImporter().importInto(this.addonCollector);
+this.addonBridge.bridgeToInternalBus(events);
+```
+
 ### UI mirror direct-render surface contract
 
 #### 1. Scope / Trigger
@@ -1849,6 +1932,8 @@ local/remote controller handoff.
 - `mouseReleased(UIContext)` is a real physical terminal event and may commit.
 - `mouseCanceled(UIContext)` is a lifecycle terminal event and must not commit.
 - `MouseGestureOwnership` binds the initiating button and generation.
+- `UIContext.PointerEventFrame` owns one pointer event's viewport stack and
+  pointer fields; `UIBaseMenu` opens it with try-with-resources.
 
 #### 3. Contracts
 
@@ -1861,6 +1946,13 @@ local/remote controller handoff.
   the outer event's coordinates and both wheel axes before the outer callback
   resumes. Wheel callbacks and their deferred mutations may not cross a screen
   lifecycle generation.
+- Every click, release, scroll, and cancel gets a fresh viewport stack. A nested
+  event restores the exact outer stack object, shifts, coordinates, button, and
+  wheel axes in `finally`; a top-level event retains its public event fields but
+  discards transient viewport state.
+- Menu viewport push/pop is balanced inside the event frame. A same-frame extra
+  pop remains an invariant failure, and cleanup preserves an earlier callback
+  failure with any pop failure suppressed.
 - Overlay barriers, hierarchy replacement, screen close, disconnect, and
   controller handoff cancel the captured token before changing ownership.
 - Timeline elements that need to rebuild a property panel during a press defer
@@ -1885,6 +1977,8 @@ local/remote controller handoff.
 | Different button is released | Keep the initiating owner active; commit nothing. |
 | Overlay appears after press | Route the matching release to the original press owner. |
 | Wheel callback reenters wheel dispatch | Give the nested event its own coordinates/axes, then restore the outer event exactly. |
+| Nested pointer callback throws | Restore the outer stack and pointer fields, then propagate the original failure. |
+| A callback pops the menu viewport early | Final menu pop still fails; do not hide the underflow with an empty-pop guard. |
 | ESC, outside click, disconnect, or screen change | Cancel once; execute no pending destructive action. |
 | Callback replaces the screen or reenters | Old generation cannot clear the new generation. |
 | Programmatic callback throws | Retire its token and rethrow; later clicks still work. |
@@ -1894,16 +1988,20 @@ local/remote controller handoff.
 #### 5. Good / Base / Bad Cases
 
 - Good: a context-menu Delete action runs only on its matching physical release.
+- Good: a click callback synchronously dispatches a scroll; the outer click
+  resumes with its original viewport object and pointer state.
 - Base: an ordinary button press/release invokes its callback once.
 - Bad: synthesize `mouseReleased` during disconnect; a pending Delete action
   can run while the UI is being torn down.
+- Bad: nested dispatch calls `UIContext.setMouse()` against the shared viewport
+  stack and clears the outer element's pending `unapply()` state.
 
 #### 6. Tests Required
 
 - `testUiInputMailbox` covers multi-button ownership, programmatic clicks,
   overlay barriers, destructive menu cancellation, screen generations,
   local/remote handoff, press-owner release routing, nested wheel context,
-  exception cleanup, and Gizmo cancellation.
+  exception cleanup, same-frame viewport underflow, and Gizmo cancellation.
 - `compileClientJava` verifies every concrete input adapter implements the
   distinct cancellation terminal.
 
@@ -1919,6 +2017,24 @@ Correct:
 
 ```java
 disconnectHeldButtons.forEach(menu::mouseCanceled);
+```
+
+Wrong:
+
+```java
+context.setMouse(x, y, button);
+context.pushViewport(viewport);
+root.mouseClicked(context);
+context.popViewport();
+```
+
+Correct:
+
+```java
+try (UIContext.PointerEventFrame ignored = context.beginPointerEvent(x, y, button))
+{
+    dispatchPointer(root::mouseClicked);
+}
 ```
 
 ### Replay editor identity and delayed-callback contract

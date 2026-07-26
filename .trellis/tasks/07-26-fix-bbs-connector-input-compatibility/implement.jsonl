@@ -1,0 +1,5 @@
+{"file":".trellis/spec/new/backend/quality-guidelines.md","reason":"Owns UI gesture restoration and Addon JVM binary compatibility contracts."}
+{"file":".trellis/spec/new/backend/fs-migration-baseline.md","reason":"Defines FSR migration boundaries and required compile/build verification."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Covers loader-to-event-bus flow and nested gesture terminal propagation."}
+{"file":".trellis/spec/guides/code-reuse-thinking-guide.md","reason":"Requires extending the existing collector and centralized pointer dispatch instead of parallel mechanisms."}
+{"file":".trellis/tasks/07-26-fix-bbs-connector-input-compatibility/research/compatibility-findings.md","reason":"Records the confirmed missing lifecycle symbol, Fabric entrypoint gap, and viewport root cause."}
