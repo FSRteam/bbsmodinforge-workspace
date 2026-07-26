@@ -63,6 +63,12 @@ public void filledCircle(float cx, float cy, float radius, int color, int segmen
 | `framework/elements/input/text/UITextbox.java`(及 `UIBaseTextbox` 共用绘制处) | 边框+填充 → `roundedFrame` | widget |
 | `framework/elements/buttons/UIToggle.java` | widget 半径>0 时切换为 macOS 样式:圆角轨道 `roundedBox` + `filledCircle` 滑块(样板:参考源 UIToggle.java:120-148);半径 0 保持 v1 方块样式 | widget |
 | `framework/elements/input/list/UIList.java` | 选中态高亮 → `roundedBox` | panel |
+| `framework/elements/buttons/UICirculate.java` | 按钮背景;半径 0 保留 bevel | widget |
+| `framework/elements/input/UIKeybind.java` | 普通/录入态背景 + 禁用遮罩 | widget |
+| `framework/elements/input/UITrackpad.java` | 背景、scrub 填充、左右增减区 | widget |
+| `framework/elements/input/UISliderTrackpad.java` | 背景、进度、marker、handle | widget |
+| `framework/elements/input/UIColor.java` | 边框、颜色填充、hover 层 | widget |
+| `framework/elements/UIElement.java` | 共用禁用遮罩 | widget |
 
 接入模式统一为:`int r = BBSSettings.cornerX(); if (r > 0) roundedBox(...) else 原 box 调用`,或直接调 roundedBox(其内部 r<0.5 走 box)——**优先后者**(零分支污染),前者仅用于 UIToggle 这种整体样式切换。
 

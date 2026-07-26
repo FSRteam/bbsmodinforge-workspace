@@ -12,6 +12,7 @@
 - R4 控件接入第一批:弹层面板背景、按钮、输入框、开关(UIToggle 重绘为圆角轨道+圆形滑块的 macOS 样式,仅当 widget 半径>0)、列表选中态、右键菜单。后续控件可增量接入。
 - R5 mask 资源(`rounded_rect_mask` / `filled_circle_mask`)进内置 assets,允许主题用同名资源覆盖(assets 覆盖语义天然支持)。
 - R6 与主题 alpha 颜色兼容(半透明圆角面板正确混合)。
+- R7 第二批通用控件覆盖 `UICirculate`、`UIKeybind`、`UITrackpad`、`UISliderTrackpad`、`UIColor` 和 `UIElement.renderLockedArea`;内部进度/增减区/禁用遮罩不得重新露出方角。
 
 ## Out of Scope
 

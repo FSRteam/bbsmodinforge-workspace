@@ -30,6 +30,12 @@
 - [ ] UIList 选中态(panel)
 - [ ] 每批后:`compileClientJava` 真实 exit code 验证。
 
+第二批用户反馈补齐:
+
+- [x] UICirculate / UIKeybind / UITrackpad / UISliderTrackpad / UIColor
+- [x] UIElement 共用禁用遮罩
+- [x] `compileClientJava` 真实 exit code == 0
+
 ## 阶段 4:演示与文档
 
 - [ ] 内置主题演示:在 `amber/theme.json` 或新增 strawberry(与父任务验收协调,首选给 amber 加 `corner_radius` 展示)——dark/light/example **不加**(保持 v1 逐位等价基准)。
