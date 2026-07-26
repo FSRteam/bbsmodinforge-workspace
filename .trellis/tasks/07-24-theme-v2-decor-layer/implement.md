@@ -20,4 +20,3 @@
 - [ ] strawberry 或等价演示主题接入 background + decorations。
 - [ ] docs/theme-spec 与 frontend spec 同步 schema。
 - [ ] 验证:`cd new && ./gradlew.bat --no-daemon testThemeCore compileClientJava`。
-

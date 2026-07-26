@@ -26,4 +26,3 @@
 
 - [ ] 如有新行为约束,同步到 `new/docs/theme-spec/README.md` 与 `.trellis/spec/frontend/bbs-ui-theming.md`。
 - [ ] 记录游戏内冒烟清单: ESC / backdrop / 快速开关 / 穿透点击。
-
