@@ -96,13 +96,11 @@ Mixin 把 config 声明的 package 下所有类都当作 mixin。**构建期不�
 
 日志 `eventWindowOpen=false externalWindowOpen=true` 精确印证了这个分析。
 
-## 对模板的一处偏离
+## 构建输入校验
 
-`verifyBbsCoreJar` 照搬自 `bbs-premiere-export`，但**把"源码比 jar 新"从失败降级为警告**。
-
-原判据在这个工作树里必然常真 —— `new/` 同时被多个会话编辑，首次构建就被 22:21–22:30 的 sound
-morph 改动拦下，而那与本 addon 毫无关系。失败意味着被别人未完成的编辑阻塞，重建又会把别人的
-半成品打进 jar。真正有意义的保护（jar 存在 + 仍提供本 addon 绑定的 API 入口）保留为强校验。
+`verifyBbsCoreJar` 保持与 `bbs-premiere-export` 和任务验收一致：jar 缺失、早于任一 `new/src`
+Java 源文件，或缺少本 addon 实际绑定的 API class 时都让构建失败并给出重建命令。并行任务正在
+修改 `new/` 时，应等待其得到可构建快照后再重建 BBS jar，不能用旧 jar 继续做运行时 Mixin 验证。
 
 ## AC6 负向验证的结果，直接改变后续验证策略
 

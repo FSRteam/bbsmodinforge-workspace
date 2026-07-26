@@ -28,7 +28,7 @@
 
 ### R3 加载入口
 
-- R3.1 `@Mod("bbs_snow")` 主类，通过 Mod Bus 监听 `BBSAddonRegisterEvent`，用 `event.register("bbs_snow", ...)` 注册 `BBSAddonMod` 实例。
+- R3.1 `@Mod("bbs_snow")` 主类必须在构造期调用 `BBSMod.registerAddon("bbs_snow", ...)` 注册 `BBSAddonMod` 实例；外部 mod 不得监听只发布到 BBS 自身 Mod Bus 的 `BBSAddonRegisterEvent`。
 - R3.2 客户端入口用 `Dist.CLIENT` 隔离。
 - R3.3 addon 类实现 `mchorse.bbs_mod.events.BBSAddonMod`，带一个 `@Subscribe` 方法（如 `RegisterSettingsEvent`）打日志，用于验证内部 EventBus 桥接生效。
 - R3.4 零 Fabric 依赖：不出现 `net.fabricmc.*` 任何引用。
@@ -72,5 +72,5 @@ AC4 不通过（addon 侧 Mixin 无法注入 BBS 类）时，**立即停止 S1 �
 
 ## Notes
 
-- 参考模板：`bbs-premiere-export/build.gradle`（构建 + `verifyBbsCoreJar`）、`new/src/*/resources/bbs*.mixins.json`（mixin config 写法）、`new/src/main/java/mchorse/bbs_mod/addon/demo/BBSAddonDemoMod.java`（addon 注册姿势）。
+- 参考模板：`bbs-premiere-export/build.gradle`（构建 + `verifyBbsCoreJar`）、`new/src/*/resources/bbs*.mixins.json`（mixin config 写法）。BBS 内置 demo 只适合作为事件回调参考，外部 addon 的注册入口以 R3.1 为准。
 - 前置：`cd new && ./gradlew jar` 产出 `BBS_FSR_beta_v0.0.10.jar`。

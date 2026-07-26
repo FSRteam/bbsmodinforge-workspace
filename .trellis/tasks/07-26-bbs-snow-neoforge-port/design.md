@@ -65,7 +65,7 @@ bbs-snow-addon 是仓库里第一个带 Mixin 的 addon，因此**选 NeoGradle 
 |---|---|---|
 | `main` | `BBSFSloveCML` (ModInitializer) | `@Mod("bbs_snow")` 主类构造函数 |
 | `client` | `BBSFSloveCMLClient` (ClientModInitializer) | `@Mod(value="bbs_snow", dist=Dist.CLIENT)` 客户端类 |
-| `bbs-addon` | `BBSFSloveCMLAddon` (`BBSAddonMod`) | **实现不变**，改由 `BBSAddonRegisterEvent` 注册 |
+| `bbs-addon` | `BBSFSloveCMLAddon` (`BBSAddonMod`) | **实现不变**，在外部 mod 构造期通过 `BBSMod.registerAddon(...)` 注册 |
 | `bbs-addon-client` | `BBSFSloveCMLClientAddon` (`BBSAddonMod`) | 同上 |
 
 标准接入姿势（**S1 实测修正过，不要照抄 BBS 自带的 demo**）：
