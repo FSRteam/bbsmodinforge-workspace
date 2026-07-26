@@ -28,6 +28,32 @@
    `text(label,x,y,color,shadow)`(textShadow token 拦截、light darkenWhite)。改动文字全局
    行为只动这些单点,不要在调用点散改。
 
+### 带前导图标的内嵌文本框
+
+- `UITextbox.icon(Icon)` 为原地编辑框启用左侧语义图标槽；`barColor(int)` 只覆盖槽右侧
+  色条，未指定时使用主题 primary。未调用 `icon(...)` 时 `Textbox.contentInset` 必须为 0，
+  旧文本绘制、光标、选择和鼠标索引路径保持不变。
+- 图标是纯绘制装饰。不要缩小 `Textbox.area`、拦截点击或把控件替换成弹窗预览；背景、
+  focus 边框和点击区域仍覆盖完整输入框。文本绘制与 `getIndexAt(...)` 必须消费相同的
+  content inset。
+- 图标槽填充读取 `fieldFillColor()`，ARGB `0` 时回退 `chromeSurface()`；圆角只读取
+  `cornerWidget()`。极窄控件只在 content inset 非 0 时把可用宽度钳制到非负，避免改变
+  普通文本框的兼容路径。
+- MoLang/表达式字段使用代码、轴向、时间等语义图标；资源 ID、事件名、日志、声音名和
+  普通数值字符串不得伪装成表达式字段。
+
+```java
+// Good: 保留内嵌编辑，只增加语义装饰。
+field.icon(Icons.X).barColor(Colors.RED);
+
+// Bad: 为了放图标缩小命中区域，或点击后改用独立表达式弹窗。
+field.textbox.area.x += 20;
+field.textbox.area.w -= 20;
+```
+
+验证要求：`testParticleRuntimeConsistency` 覆盖默认/带 inset 的鼠标索引与极窄宽度边界；
+通用控件或主题绘制变更后还必须运行 `compileClientJava`、`testThemeCore` 和完整 `check`。
+
 ## 主题运行时红线
 
 - 渲染热路径只读 `ThemeManager.current()` 的字段;禁止渲染期做字符串查表/解析/IO。
