@@ -99,9 +99,11 @@ field.textbox.area.w -= 20;
   高亮统一调用 `UIDockStyleRenderer`,禁止在宿主内复制绘制分支。Refreshed 分支分别消费
   `area_tint*`、`splitter_*`、`drop_*` 与 `cornerWidget()/cornerPanel()`;对应扩展 token
   全为 0 时必须进入旧 primary 方形/单像素路径。
-- **仪表盘整体自动隐藏**:`UIDashboardPanels` 的活动面板与底栏共享同一
-  `hiddenAmount * rootHeight` 纵向位移。位移必须写入实际布局坐标并统一 resize,使绘制和
-  命中同步;根容器保持静止以承载底部 reveal strip。禁止仅移动底栏或只变换渲染矩阵。
+- **仪表盘界面栏自动隐藏**:`UIDashboardPanels` 只把底部任务栏按自身高度向下滑出;
+  `UIDataDashboardPanel` 只把顶部 `tabBar`(含 Film 顶部操作按钮)按自身高度向上滑出,并同步
+  缩小编辑区的上下 inset。活动面板根容器必须始终锚定,禁止按 `rootHeight` 整体移动或把
+  编辑器主体推到屏幕外。位移必须写入实际布局坐标并统一 resize,使绘制和命中同步;根容器
+  保持静止以承载顶部和底部 reveal strip,禁止只变换渲染矩阵。
 - **解析期定死**:一切新 schema(tracks/decorations/corner_radius/background_mode)在
   `ThemeParser` 解析为不可变结构,坏值逐 key 回退 + warn(延续 v1 契约);渲染期零查表零分配。
 

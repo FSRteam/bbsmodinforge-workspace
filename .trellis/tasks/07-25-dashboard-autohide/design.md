@@ -13,10 +13,10 @@ BBSSettings 新增(`refreshed` 分类下,与其它 Refreshed 行为开关集中)
 ## 2. 隐藏机制(整体位移,无生命周期例外)
 
 状态机(全部放 UIDashboardPanels 私有字段):
-- `hiddenAmount ∈ [0,1]`:0=完全展示,1=活动面板和底栏全部滑出。由 UITween(弹簧)驱动,目标值 0/1。
-- 触发:设置开启时,每帧(render 内)检测鼠标是否在任务栏区域或底部 16px 启示条内;离开累计超过 delay → target=1;进入任务栏区域立即 target=0;启示条 hover 350ms → target=0。常量:`TASKBAR_HEIGHT=20`(用现有实际高度,勿硬编码新值,读现有布局常量)、`REVEAL_STRIP_PX=16`、`REVEAL_HOVER_MS=350`。
-- 应用方式:**布局坐标位移 + 命中一致**。活动面板和任务栏都按 `hiddenAmount * UIDashboardPanels.area.h` 向下平移;活动面板高度始终保留 `rootHeight - TASKBAR_HEIGHT`,不再通过减少 bottom inset 扩面。每次位移后统一 resize,使子控件绘制和命中使用同一实际坐标。**不 setEnabled,不移除元素**——完全滑出时二者仍在树上,但位于屏幕外且原位置无命中。
-- settled 短路:hiddenAmount==0 且未启用/未在动画时,布局与现状**逐位一致**;完全隐藏时仍按当前根高度重算位移,窗口 resize 后不能露出残边。
+- `hiddenAmount ∈ [0,1]`:0=完全展示,1=顶部数据页标签/操作栏与底部任务栏全部滑出。由 UITween(弹簧)驱动,目标值 0/1。
+- 触发:设置开启时,每帧(render 内)检测鼠标是否在底部任务栏、当前数据面板顶部栏或上下 16px 启示条内;离开累计超过 delay → target=1;进入任一可见界面栏立即 target=0;任一启示条 hover 350ms → target=0。常量:`TASKBAR_HEIGHT=20`(用现有实际高度,勿硬编码新值,读现有布局常量)、`REVEAL_STRIP_PX=16`、`REVEAL_HOVER_MS=350`。
+- 应用方式:**仅移动界面栏,活动面板根容器保持锚定**。底部 `taskBar` 按 `hiddenAmount * TASKBAR_HEIGHT` 向下平移,活动面板的 bottom inset 同步从 20 缩到 0;`UIDataDashboardPanel.tabBar` 按自身高度向上平移,编辑区与侧栏的 top inset 同步从标签栏高度缩到 0。`UIFilmPanel.topBarActions` 是 `tabBar` 子元素,随其共同退出。每次位移后统一 resize,使绘制和命中使用同一实际坐标。禁止改变活动面板自身 y,禁止把编辑器主体推到屏幕外。**不 setEnabled,不移除元素**。
+- settled 短路:hiddenAmount==0 且未启用/未在动画时,布局与现状**逐位一致**;完全隐藏时上下栏均位于屏幕外,窗口 resize 后不能露出残边。
 - 设置关闭(默认):整个状态机不进入,零开销,行为逐位等于现状。
 - motion 关闭(UIMotions.enabled()==false 或 entry 关):target 改变时 hiddenAmount 直接跳变 0/1,无动画。
 
@@ -38,4 +38,4 @@ Refreshed 用 EXP_INOUT 定时缓动;我们**不移植 Easings**,统一走 UITwe
 ## 5. 测试
 
 - themeCoreTest:`taskbar_hide` entry 解析/坏值回退/settled 短路(UIMotionsTest 模式)。
-- 命中一致性与 Ctrl+S 优先级为游戏内冒烟项(写入父任务冒烟清单):活动面板+底栏完整滑出、底部启示条唤回、滑出中点击面板/底栏原位置不应误触、窗口 resize 后不露边、Ctrl+S 两种界面行为。
+- 命中一致性与 Ctrl+S 优先级为游戏内冒烟项(写入父任务冒烟清单):顶部标签/操作栏+底部任务栏完整滑出、上下启示条均可唤回、编辑器主体不位移且扩展、滑出中点击界面栏原位置不应误触、窗口 resize 后不露边、Ctrl+S 两种界面行为。
