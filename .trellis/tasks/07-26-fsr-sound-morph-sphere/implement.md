@@ -110,3 +110,19 @@
 - [x] 扩展纯声学过滤和 `SoundFormPlayback`，覆盖方块/实体反射与穿透矩阵；循环反射到达前保持静音，到达后再回绕。
 - [x] 补中英文案和 `UIKeys`，验证 en/zh key parity。
 - [x] 运行 `compileClientJava`、`testSoundAcoustics`、`testAudioLifecycle`、`testAudioVerification`、`testPlatformResourceConsistency` 和完整 `check`（74 个任务，`BUILD SUCCESSFUL`；严格媒体检查因本机缺少 `ffmpeg/ffprobe` 按合同跳过）。
+
+## 2026-07-27 第二轮回归执行清单
+
+- [x] 解除 `AudioClip.volume` 与 `AbstractSoundForm.volume` 的有限上限，并补高音量/非负回归。
+- [x] 移除 Film 辅助图形的 300ms picking TTL；普通世界直接遵循 `show_guide`，Film 使用所选 Replay 的时间轴身份。
+- [x] 为立体声缓存生成单声道 spatial handle；普通播放保留原声道，空间模式切换重建 source。
+- [x] 补单次解码、下混结果、直达/反射位置、模式切换及双 handle 清理重试测试。
+- [x] 运行 `testReplayKeyframeConsistency`、`testAudioLifecycle`、`compileClientJava` 与完整 `check --max-workers=1`（74 个任务，`BUILD SUCCESSFUL`；外部 Minecraft 占用日志时以临时 console-only Log4j 配置隔离，验证后已删除）。
+
+### Break-loop 根因
+
+| 分类 | 根因 | 防回归机制 |
+|---|---|---|
+| C 变更传播失败 | 只解除新 Form 的音量上限会漏掉既有 `AudioClip` | 全局搜索所有用户可编辑 `volume` Value；测试同时实例化影片音频和声音 Form |
+| B 跨层合同 | `show_guide` 数据值、世界渲染门控和 Film 选择所有权不一致 | 普通世界直接消费值；Film 用稳定 Replay/`FormProperties` 身份；源码契约禁止 TTL 回归 |
+| E 隐式假设 | 误以为设置 OpenAL position 就能让立体声缓冲空间化 | 音频合同明确 spatial voice 必须绑定 mono；假后端断言实际 source-buffer 声道布局 |

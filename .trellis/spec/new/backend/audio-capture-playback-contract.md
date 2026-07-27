@@ -16,6 +16,8 @@ Read this contract before changing any of the following:
   `OpenALRecorder`, `StreamingWavSink`, or `UIAudioRecorder`;
 - film preview identity, reconciliation, pause/resume/seek, relink/removal, asset invalidation,
   OpenAL source/buffer teardown, resource reload, disconnect, or client shutdown;
+- sound Form timeline triggering, spatial voice parameters, Film actor playback, renderer teardown,
+  or localized sound keyframe-track presentation;
 - `ClipContext` playback ownership, `AudioClientClip`, `SoundManager`, `SoundPlayer`,
   `SoundBuffer`, or a controller that owns a `ClipContext`.
 
@@ -95,7 +97,13 @@ Playback identity and cleanup MUST retain these semantics:
 Object ClipContext.getPlaybackOwner();
 Object ClipContext.resetPlaybackOwner();
 
-record SoundManager.VoiceRequest(Link link, float seconds, float gain) {}
+record SoundManager.VoiceRequest(Link link, float seconds, float gain,
+    boolean spatial, float x, float y, float z,
+    float pitch, boolean looping, float maxDistance, boolean seek) {
+    VoiceRequest(Link link, float seconds, float gain); // listener-relative compatibility
+    VoiceRequest(Link link, float seconds, float gain,
+                 boolean spatial, float x, float y, float z); // spatial compatibility
+}
 
 void SoundManager.reconcile(Object owner, Map<?, VoiceRequest> desired, boolean playing);
 void SoundManager.releaseOwner(Object owner);
@@ -104,9 +112,28 @@ void SoundManager.deleteSounds();
 
 void SoundPlayer.delete();       // stop source -> detach buffer -> delete source
 void SoundBuffer.delete();       // legal only after no source references the buffer
+int SoundBuffer.getBuffer(boolean spatial);
+SoundPlayer(SoundBuffer buffer, boolean spatial);
 
 void AudioClientClip.manageSounds(ClipContext context);
 void AudioClientClip.releaseSounds(ClipContext context);
+
+FormRenderingContext timeline(FormProperties properties, float tick, boolean playing);
+float SoundPlaybackTimeline.findActivationTick(KeyframeChannel<Boolean> channel,
+                                               float tick, boolean active);
+float SoundPlaybackTimeline.findSoundActivationTick(
+    KeyframeChannel<SoundKeyframeValue> grouped,
+    KeyframeChannel<Boolean> legacy, float tick, boolean active);
+float SoundPlaybackTimeline.wrapLoopingSeconds(float seconds, float duration);
+boolean SoundPlaybackTimeline.shouldSeek(float previousTick, float tick,
+                                         boolean wasActive, boolean active,
+                                         boolean transportPlaying);
+
+String SoundKeyframeValue.channelId(AbstractSoundForm form, Group group);
+SoundPlayer SoundManager.restartUnique(Link link);
+
+void FormRenderer.release();
+void FormUtilsClient.release(Form form); // recursive, does not instantiate untouched renderers
 ```
 
 The erased legacy descriptor `Map getPlayback(ClipContext)` may remain, but its map MUST be
@@ -268,6 +295,65 @@ The exactly-once ownership ledger is:
     or dropped before `releaseOwner`. `BBSModClient.onClientDisconnect()` and `onClientStopping()`,
     `CameraWorkCameraController.shutdown()`, and `WorldFilmController.shutdown()` are the
     reference call sites. Lifecycle cleanup MUST continue after an individual step fails.
+21. A Film-controlled sound Form MUST reconcile only after `Replay.properties` has been applied
+    for the rendered replay tick. Ordinary `Form.update()` occurs too early and MUST NOT be the
+    Film timeline authority. The render context carries the exact `FormProperties`, mapped replay
+    tick, and transport-playing flag into the sound renderer.
+22. `playing=true` starts at the beginning of the current contiguous true-keyframe run. Pausing,
+    scrubbing, reverse playback, a Film loop wrap, a new false-to-true trigger, or a changed start
+    offset MUST seek to the timeline-derived clip position. Uninterrupted forward playback MUST
+    let OpenAL advance naturally instead of seeking every frame.
+23. A sound Form spatial request MUST apply world-relative position, gain, pitch, native looping,
+    and the Form shape's maximum propagation distance. A direct looping offset wraps into the
+    clip duration. A reflected offset below zero means the longer reflected path has not arrived
+    yet and MUST remain absent; only after it reaches zero may it wrap into the looping clip.
+24. Replays rendered through a real `ActorEntity` or player morph MUST receive the same evaluated
+    timeline context as stub-rendered replays. A client bridge MAY carry this transient state, but
+    it MUST be owner-scoped, weakly keyed by the rendered entity, and cleared by controller owner.
+25. Film controller rebuild, replay disable/removal, editor close/disappear, Film completion, and
+    shutdown MUST recursively call the renderer release hook before discarding Form ownership.
+    Releasing a sound renderer retires the old `SoundManager` owner and allocates a fresh identity
+    for later reuse. A torn-down Film actor renderer MUST keep local ticking suppressed so a final
+    entity tick cannot resurrect the released source.
+26. New sound Form Films use exactly five grouped channels: `$sound`, `$sound_shape`,
+    `$sound_visualization`, `$sound_falloff`, and `$sound_reflections`, prefixed by the nested Form
+    path when applicable. Opening the editor registers empty sheets, so channel presence alone is
+    never authority. Each group MUST clear its stale runtime snapshot, apply legacy independent
+    channels, then let only a non-empty grouped channel override. Activation-tick lookup follows
+    the same non-empty rule. Deleting the final grouped keyframe therefore falls back immediately
+    to the legacy channel instead of retaining the last grouped runtime value.
+27. Sound keyframe audio selection MUST use `UISoundOverlayPanel`; it MUST NOT inherit the generic
+    Link/texture picker. Editor preview calls `restartUnique(Link)`: each click replaces only the
+    matching unique preview source from offset zero and MUST leave owner-scoped Film/world voices
+    using the same decoded buffer alive.
+28. Direct-path blocking and reflection collection use independent block/entity categories.
+    `pass_through_blocks` or `pass_through_entities` has precedence: a passed-through category
+    neither blocks the direct voice nor creates reflections. Otherwise that category blocks the
+    direct path, and it creates reflected voices only when its corresponding reflection toggle is
+    enabled. Source owner and listener entity MUST be excluded from entity candidates.
+29. Block reflection surfaces come from bounded `Level.clip(COLLIDER)` hits; entity surfaces come
+    from bounded AABB queries and the source-facing nearest face. Surface arrays, voice arrays,
+    query reach, and candidate counts MUST remain bounded. Reflection direction still passes
+    through the Form's shape gain, so a cone cannot reflect through a direction it does not emit.
+30. Sound guide dragging is a transaction. During Form editing it writes runtime values only;
+    physical release restores the old runtime and commits one unmergeable original-value change,
+    while cancellation restores the exact prior runtime without notification. Film dragging keeps
+    a keyframe snapshot and emits one undo record only on release. Replay, channel, keyframe, and
+    currently edited Form are validated by object identity before commit; replacement/removal or
+    panel switch cancels and rolls back the stale target.
+31. User-editable BBS volume values are non-negative and have no finite upper bound. This applies
+    to both `AudioClip.volume` and `AbstractSoundForm.volume`; their Film, Form, and grouped-keyframe
+    trackpads MUST inherit the `ValueFloat` range instead of installing a second UI-only cap.
+32. `show_guide=true` MUST render a sound guide continuously in the ordinary world. While the
+    Replay editor is active, default visibility belongs to the selected Replay and MUST use stable
+    `FormProperties` identity (with root-Form fallback), not a hover/picking timestamp. Capture and
+    export remain excluded by `SoundGuideRenderer`.
+33. Every spatial `VoiceRequest`, including direct and reflected voices, MUST attach a mono OpenAL
+    buffer. A stereo asset keeps its authored buffer for listener-relative Film/UI playback and
+    derives one mono spatial buffer from the same decoded `Wave` using `0.5L + 0.5R`; mono assets
+    share one handle. A spatial-mode change for the same clip identity recreates the source before
+    attaching the other layout. Both handles belong to one `SoundBuffer` and follow the same
+    source-before-buffer, partial-failure retry, and exactly-once cleanup rules.
 
 ## 4. Validation & Error Matrix
 
@@ -310,6 +396,27 @@ The exactly-once ownership ledger is:
 | Link invalidation | Remove cache entry, release all matching sources, then delete buffer when unreferenced |
 | Controller replacement/shutdown | Release old owner before reset/clear; queued old work is fenced |
 | Global reset/disconnect/client stop | Release/retry every source before any buffer; repeated reset is idempotent |
+| Sound Form uninterrupted forward playback | Apply spatial parameters every frame; do not seek a healthy playing source |
+| Sound Form pause/scrub/reverse/loop wrap/new trigger | Seek to the active-run-derived offset; retain paused in-range source |
+| Empty grouped sound sheet plus legacy channel | Apply and time from the legacy channel; the editor-created empty sheet has no precedence |
+| Non-empty grouped sound sheet plus legacy channel | Apply and time from the grouped snapshot after the legacy channel |
+| Final grouped keyframe removed | Clear grouped runtime state and fall back to legacy in the same evaluation |
+| Sound Form native loop, direct/arrived reflection | Wrap offset into `[0, duration)` and keep `looping=true` on the source |
+| Sound Form native loop, reflected offset below zero | Omit that voice until its path delay reaches zero; do not wrap it to the clip tail |
+| Repeated preview click for the same link | Delete the prior unique preview once, start a fresh unique source at zero, retain owner-scoped voices |
+| Category pass-through enabled | Category neither occludes direct sound nor produces a reflection, regardless of its reflection toggle |
+| Category pass-through disabled | Category occludes direct sound; reflect only when the matching block/entity reflection toggle is enabled |
+| Guide release on current identity | Commit one unmergeable edit; preserve one-step undo |
+| Guide cancel, panel/replay switch, channel replacement, or keyframe removal | Restore snapshot/runtime without committing to the stale object |
+| Film actor/player replay | Apply the owner-scoped actor timeline context after Form properties and before sound reconciliation |
+| Replay rebuild/disable/removal or controller/editor teardown | Recursively release renderer owners; no source resurrection on a final actor tick |
+| Volume greater than the legacy `1`/`2` cap | Preserve the finite non-negative value through Value, UI, keyframe snapshot, playback, and export paths |
+| Ordinary world with `show_guide=true` | Render continuously without requiring Replay editor state or a global show-all setting |
+| Selected Film Replay, pointer leaves monitor | Continue rendering by Replay/`FormProperties` identity; no TTL expiry |
+| Listener-relative stereo playback | Attach the authored stereo handle |
+| Direct or reflected spatial playback of a stereo asset | Attach the derived mono handle while sharing one asset decode and independent source positions |
+| Spatial/listener-relative mode changes for one clip identity | Release the old source and create a source attached to the correct buffer layout |
+| One of two native buffer deletions fails | Keep only the failed handle pending; never delete the successful handle twice |
 
 ## 5. Good / Base / Bad Cases
 
@@ -330,12 +437,40 @@ The exactly-once ownership ledger is:
 - **Good shutdown:** release each controller's old owner identity, retry/finish source
   stop-detach-delete, then delete unreferenced buffers. A cleanup exception is observable but
   does not prevent later owners and buffers from being processed.
+- **Good sound Form timeline:** `playing` changes false to true at tick 40. The source starts at
+  `startOffset`; normal forward frames do not seek, pause/scrub/reverse/loop wrap do seek, and the
+  source receives pitch, looping, maximum distance, and the semantic-world Form position.
+- **Good legacy compatibility:** an old Film has `playing` and `radius` tracks. Opening the new
+  editor registers empty grouped sheets, but playback and radius still use the old tracks. Adding
+  a grouped keyframe overrides them; deleting the final grouped keyframe restores them.
+- **Good reflection loop:** a reflected path is 100 ms longer than the direct path. For the first
+  100 ms its negative clip position produces no voice; after arrival it wraps normally on every
+  later clip loop.
+- **Good preview and guide ownership:** three preview clicks replace only two prior unique sources
+  and leave a same-link Film voice alive. Switching Form or Replay during a guide drag restores the
+  old snapshot and creates no undo entry.
+- **Base sound Form lifecycle:** rebuilding the Film editor releases nested sound renderers. If a
+  real actor ticks once before its removal packet arrives, the released owner is not recreated.
+- **Good spatial stereo:** a stereo asset plays unchanged in Film/UI. Its direct and reflected
+  world voices attach the same derived mono buffer but keep separate source positions, gains, and
+  offsets, so OpenAL can pan and attenuate them independently.
+- **Good guide ownership:** a world sound Form with `show_guide=true` remains visible outside the
+  editor. In Film, moving the pointer away does not change visibility; selecting another Replay
+  transfers guide ownership immediately.
 - **Bad:** publish `SUCCESS` from the recorder worker, treat Escape as stop-and-save, commit from
   the worker callback, use `Files.move(..., REPLACE_EXISTING)`, calculate duration with floor
   division, or accept a callback solely because its path string looks plausible.
 - **Bad:** key desired playback by `Link`, call `playUnique` from `AudioClientClip`, skip
   reconciliation when no clip is active, stop a clip by link, reset the context owner before
   release, mutate OpenAL from a watchdog thread, or delete a buffer before all sources detach.
+- **Bad:** derive Film sound time from a renderer-local elapsed counter, reconcile before Form
+  keyframes are applied, seek every forward frame, or release a controller without recursively
+  releasing sound Form renderer owners.
+- **Bad:** treat an editor-registered empty grouped channel as an override, wrap a negative
+  reflected offset to the end of a loop, stop preview by Link globally, let pass-through surfaces
+  reflect, or commit a drag to a replaced Replay/Form/keyframe object.
+- **Bad:** cap BBS volume in either the Value or trackpad, use a hover TTL as Film selection, or
+  attach an authored stereo OpenAL buffer to a spatial direct/reflection source.
 
 ## 6. Tests Required
 
@@ -357,10 +492,25 @@ captureRepeatedStartAndCleanupOwnResourcesOnce
 captureFinalDrainAndConsumerFailuresOwnResourcesOnce
 captureFailuresAreDistinctAndBounded
 playbackIdentityAndGlobalCleanup
+playbackSpatialParametersAndExplicitSeek
+playbackSpatialStereoDownmixAndCleanup
 playbackCleanupRetriesAndRetiredOwners
 playbackContextDispatchDefersBackend
 cameraControllerRemovalShutsDown
+soundFormSpatialVoiceParameters
+soundFormPausedScrubSeeks
 ```
+
+`testSoundAcoustics` MUST additionally cover boolean activation runs, empty/non-empty grouped
+activation priority, seek decisions for new triggers/pause/forward scrub/reverse/loop wrap,
+negative delayed-reflection preservation, reflection category/pass-through matrices, and grouped
+snapshot serialization/interpolation. `testReplayKeyframeConsistency` MUST instantiate a sound
+Form and prove empty grouped fallback, non-empty grouped precedence, final-keyframe deletion
+fallback, and runtime reset. `testAudioLifecycle` MUST prove every preview click replaces exactly
+one unique source without releasing an owner-scoped same-link voice. `compileClientJava` remains
+the integration gate for the Film context, actor bridge, recursive renderer lifecycle, dedicated
+audio picker, guide transaction, and UI translation wiring; physical actor, guide, transport, and
+room/entity acoustics remain manual smoke gates.
 
 The fake capture backend MUST assert operation counts for enumerate/open/start/read/stop/close,
 distinguish live reads from final-drain reads, and reject duplicate device transitions. The temp
@@ -368,6 +518,12 @@ tracker MUST prove each created path is released once. The dispatcher MUST prove
 zero direct worker/UI or off-context/OpenAL calls, and one execution. The fake sound backend MUST
 identify every buffer/source handle, assert source stop-detach-delete ordering, assert one
 successful delete per handle, and prove buffers are deleted only after source references vanish.
+For stereo playback it MUST additionally assert one asset decode, authored stereo attachment for
+listener-relative playback, mono attachment for direct/reflected spatial voices, independent
+world positions, source recreation on spatial-mode change, and partial two-handle cleanup retry.
+`testReplayKeyframeConsistency` MUST also prove both user-editable BBS volume Values accept a
+finite value far above the former cap while still clamping negative values to zero, and its sound
+guide source contract MUST reject TTL-based Film visibility.
 
 The cross-layer typed-status and terminal exactly-once checks in
 `new/src/audioVerificationTest/java/mchorse/bbs_mod/audio/AudioVerificationContractTest.java`
@@ -443,4 +599,62 @@ context.shutdown();
 context.resetPlaybackOwner();
 context.clipData.clear();
 sounds.deleteSounds();               // remaining sources first, then unreferenced buffers
+```
+
+Wrong — Film playback runs from the pre-keyframe tick path and tears down by dropping references:
+
+```java
+form.update(entity);                  // playing still has the previous frame's value
+entities.clear();                     // renderer-owned source is now unreachable
+```
+
+Correct — the evaluated render context drives the timeline and renderer owners release first:
+
+```java
+replay.properties.applyProperties(form, mappedTick);
+formContext.timeline(replay.properties, mappedTick, transportPlaying);
+FormUtilsClient.render(form, formContext);
+
+FormUtilsClient.release(form);        // recursive releaseOwner(old identity)
+entities.clear();
+```
+
+Wrong - grouped presence and negative modulo are mistaken for valid playback authority:
+
+```java
+if (grouped != null) use(grouped);     // empty editor sheet erases legacy timing
+seconds = wrap(negativeDelay, duration); // reflection sounds before it arrives
+sounds.stop(link);                     // preview also stops Film/world voices
+```
+
+Correct - require non-empty grouped data, preserve arrival delay, and replace only preview scope:
+
+```java
+float activation = SoundPlaybackTimeline.findSoundActivationTick(
+    grouped, legacy, tick, form.playing.get());
+if (reflectionSeconds >= 0F)
+{
+    reflectionSeconds = SoundPlaybackTimeline.wrapLoopingSeconds(reflectionSeconds, duration);
+}
+sounds.restartUnique(link);
+```
+
+Wrong - positional parameters are applied to an authored stereo buffer and Film selection expires:
+
+```java
+SoundPlayer player = new SoundPlayer(stereoBuffer);
+player.setRelative(false);
+player.setPosition(x, y, z);              // stereo is not reliably spatialized by OpenAL
+selectedUntil.put(form, now + 300L);      // pointer leaves monitor -> guide disappears
+```
+
+Correct - listener-relative playback keeps stereo, spatial voices select mono, and Film uses ownership:
+
+```java
+SoundPlayer film = new SoundPlayer(buffer, false);       // authored mono/stereo
+SoundPlayer reflection = new SoundPlayer(buffer, true);  // mono spatial handle
+reflection.setRelative(false);
+reflection.setPosition(reflectionX, reflectionY, reflectionZ);
+
+boolean selected = context.timelineProperties == replay.properties;
 ```

@@ -119,3 +119,22 @@ pass_through_entities=true
 默认值保留“房间方块可产生反射、普通实体不干扰声音”的基础体验。方块面以六轴首次实体方块命中的精确近侧面生成；实体在有界查询范围内取 AABB 面向声源的最近面，数量硬上限。直达声对 source→listener 做方块碰撞和实体 AABB 线段命中。
 
 过滤矩阵是纯逻辑合同：`passThrough(category)` 优先；否则直达路径会被该类别遮挡，且只有 `reflections && reflect(category)` 时该类别产生反射。探测数组和 voice 数组池化，世界查询范围与候选数量都有上限。
+
+## 7. 2026-07-27 音量、辅助图形与真实空间化修订
+
+### 7.1 音量范围
+
+`AudioClip.volume` 与 `AbstractSoundForm.volume` 的范围统一为 `0..Float.POSITIVE_INFINITY`。现有 `UIAudioClip`、`UIAbstractSoundFormPanel` 和 `UISoundKeyframeFactory` 均通过 `UITrackpad.limit(ValueFloat)` 读取范围，因此不增加 UI 特例，字段继续作为唯一真相源。
+
+### 7.2 辅助图形所有权
+
+普通世界渲染只由 Form 的 `show_guide` 控制。Replay 编辑器打开时，默认只显示当前 Replay：优先比较 `FormRenderingContext.timelineProperties` 与所选 Replay 的 `FormProperties` 对象身份，以兼容运行时 Form 副本；没有时间轴上下文时回退到根 Form 身份。不得再以 picking pass 写入短 TTL 标记，因为鼠标离开监视器会停止续期。
+
+### 7.3 OpenAL 空间缓冲
+
+OpenAL 的位置、距离衰减和声像只可靠作用于单声道缓冲。一个 `SoundBuffer` 因此继续按 Link 缓存一次解码结果，但可拥有两个原生 handle：
+
+- 原始 mono/stereo handle：供 listener-relative Film/UI 播放；
+- mono spatial handle：立体声按既有 `0.5L + 0.5R` 合同下混，供直达声和反射声共享；原资源为 mono 时两个模式共享同一 handle。
+
+`SoundPlayer(SoundBuffer, boolean spatial)` 选择对应 handle，旧构造器保留兼容。相同 owner/clip identity 的 spatial 模式变化时，`SoundManager` 释放并重建 source，避免旧声道布局残留。双 handle 删除分别记账；一个删除失败时保留该 handle 供后续重试，已经成功删除的 handle 不得重复删除。
