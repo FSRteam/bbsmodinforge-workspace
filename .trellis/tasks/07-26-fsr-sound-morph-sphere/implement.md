@@ -109,4 +109,4 @@
 - [x] 扩展 `SoundSurfaceProbe`：精确方块近侧面、实体 AABB 最近面、直达声遮挡、排除 owner、范围与数量预算。
 - [x] 扩展纯声学过滤和 `SoundFormPlayback`，覆盖方块/实体反射与穿透矩阵；循环反射到达前保持静音，到达后再回绕。
 - [x] 补中英文案和 `UIKeys`，验证 en/zh key parity。
-- [ ] 运行 `compileClientJava`、`testSoundAcoustics`、`testAudioLifecycle`、`testAudioVerification`、`testPlatformResourceConsistency` 和完整 `check`。
+- [x] 运行 `compileClientJava`、`testSoundAcoustics`、`testAudioLifecycle`、`testAudioVerification`、`testPlatformResourceConsistency` 和完整 `check`（74 个任务，`BUILD SUCCESSFUL`；严格媒体检查因本机缺少 `ffmpeg/ffprobe` 按合同跳过）。

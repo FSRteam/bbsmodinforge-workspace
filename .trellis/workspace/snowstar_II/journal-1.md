@@ -744,3 +744,37 @@ Ported Cubic pivot rendering, additive and procedural animation overlays, Molang
 ### Next Steps
 
 - None - task complete
+
+
+## Session 20: bbs_snow S5 particle extensions
+
+**Date**: 2026-07-27
+**Task**: bbs_snow S5 particle extensions
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+Ported particle morph rendering, editor controls, browser search/favorites/recent, and six strict Mixins; added deterministic runtime coverage, fixed conditional Mixin fallback sorting regression, and passed build/Jar/client verification.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `19781b6` | (see git log) |
+| `8fda54b` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

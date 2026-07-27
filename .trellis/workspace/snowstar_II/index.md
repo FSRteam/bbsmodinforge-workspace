@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 19
+- **Total Sessions**: 20
 - **Last Active**: 2026-07-27
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~746 | Active |
+| `journal-1.md` | ~780 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 20 | 2026-07-27 | bbs_snow S5 particle extensions | `19781b6`, `8fda54b` | `codex/bootstrap-trellis-workspace` |
 | 19 | 2026-07-27 | Complete bbs_snow S4 Cubic rendering and animation | `6d37471`, `32aed30` | `codex/bootstrap-trellis-workspace` |
 | 18 | 2026-07-27 | Complete bbs_snow S3 PBR texture-grade gate | `8975a7e`, `8b1578e` | `codex/bootstrap-trellis-workspace` |
 | 17 | 2026-07-27 | Complete bbs_snow S2 core API gate | `1d73747`, `ff9093b` | `codex/bootstrap-trellis-workspace` |

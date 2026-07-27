@@ -83,7 +83,7 @@
 
 ## 阶段 7:收尾与父任务验收
 
-- [ ] 全量:`cd new && ./gradlew check > /tmp/cone-check.log 2>&1; echo REAL_EXIT=$?` + 日志 BUILD SUCCESSFUL、0 FAILED。
+- [x] 全量:`cd new && ./gradlew check > /tmp/cone-check.log 2>&1; echo REAL_EXIT=$?` + 日志 BUILD SUCCESSFUL、0 FAILED（本轮 74 个任务通过）。
 - [ ] **跑父任务跨子任务验收**(父任务 `prd.md` Acceptance Criteria 全部条目)。
 - [ ] 重点验:圆锥顶点在播放点、锥高 = 最远距离(可视化与听感双向验证)。
 - [ ] 重点验:关闭反射时两个 Form 均等价于普通 3D 音源。
