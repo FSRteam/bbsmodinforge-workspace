@@ -1,1 +1,4 @@
-{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file":".trellis/spec/new/backend/external-addon-integration-contract.md","reason":"Verify required Mixins, target loading, runtime execution, artifact isolation, and unchanged source boundaries."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Verify pointer routing, focus/z-order, resize behavior, layering, and ordinary UI isolation."}
+{"file":".trellis/spec/frontend/state-management.md","reason":"Verify session state, active panels, floating layout ids, rebuild/rollback, and inspector ownership."}
+{"file":".trellis/tasks/07-26-bbs-snow-s6-ui-miniwindow/research/source-target-drift.md","reason":"Check exact descriptors, S6/S7 ownership, zero-size generic layers, and reject stale audio publication logic."}
