@@ -316,6 +316,10 @@ the workspace's other standalone addons do not exercise this path.
 
 - A package claimed by a Mixin config contains Mixins only. Loggers, constants, state
   holders, and other helpers live outside every claimed package.
+- A conditional Mixin must not override a target method and use Java `super` as the
+  fallback. After merge, `super.method()` calls the target's superclass, not the original
+  target implementation. Inject at `HEAD`, set/cancel the return only for the addon-owned
+  case, and otherwise let the target method continue.
 - `defaultRequire: 1` remains enabled in every config. Individual optional injections may
   weaken `require` only when their target mod is deliberately optional and the Mixin is
   also isolated with `@Pseudo` or a gated config.
@@ -332,6 +336,7 @@ the workspace's other standalone addons do not exercise this path.
 |---|---|
 | Required injection method no longer exists | Client startup fails with a critical injection error; never silently skip. |
 | Ordinary helper class lives under a claimed Mixin package | Treat `IllegalClassLoadError` on first use as a package-layout defect; move the helper outside the package. |
+| Conditional behavior does not apply to this target instance | Return from the injection callback without cancelling; the original target method must run. |
 | Optional integration mod is absent | FML skips its gated Mixin config without affecting the addon. |
 | BBS Java source is newer than the local core jar | Build fails with the exact jar path and rebuild command. |
 | Config omits `refmap` and targets only BBS classes | This is the expected working state, not a missing-artifact warning. |
@@ -342,6 +347,8 @@ the workspace's other standalone addons do not exercise this path.
 
 - Good: `runClient` logs config selection and Mixin application, then exercising the BBS
   dashboard logs the probe or feature behavior.
+- Good: a particle-only list sorter injects at `UIDataPathList.sortElements` and sets the
+  callback return only when the list uses the particle icon; file/model lists retain BBS sorting.
 - Base: Iris is absent, so the Iris-only config is skipped while common and client configs
   still apply.
 - Base: the early splash cannot resolve a monitor, but disabling only `earlyWindowControl`
@@ -351,6 +358,8 @@ the workspace's other standalone addons do not exercise this path.
   requirements to make an unrelated environment failure disappear.
 - Bad: place a logger next to a Mixin because both are client-only; Mixin owns the whole
   package regardless of Java-side intent.
+- Bad: override `sortElements()`, branch on an addon marker, then call `super.sortElements()`
+  for ordinary instances; that reaches `UIList`, bypassing `UIDataPathList` sorting.
 
 ### 7.6 Tests Required
 
@@ -366,6 +375,8 @@ the workspace's other standalone addons do not exercise this path.
   restore it and rebuild.
 - Search addon sources for `net.fabricmc` and confirm the result is empty.
 - Confirm the addon task did not modify `new/`.
+- For every conditional target-method enhancement, exercise both the addon-owned instance and
+  one ordinary instance; assert the ordinary instance retains the target class's ordering/state.
 
 ### 7.7 Wrong vs Correct
 
@@ -390,5 +401,28 @@ public abstract class UIBaseMenuProbeMixin
     {
         BBSSnowMod.LOGGER.info("[bbs_snow] probe applied"); // helper owner is outside .mixin
     }
+}
+```
+
+Wrong conditional fallback:
+
+```java
+@Override
+protected boolean sortElements()
+{
+    return isParticleList() ? sortParticles() : super.sortElements();
+}
+```
+
+Correct conditional injection:
+
+```java
+@Inject(method = "sortElements", at = @At("HEAD"), cancellable = true)
+private void sortParticles(CallbackInfoReturnable<Boolean> cir)
+{
+    if (!isParticleList()) return;
+
+    sortParticlePaths();
+    cir.setReturnValue(true);
 }
 ```
