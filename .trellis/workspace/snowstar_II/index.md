@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 20
+- **Total Sessions**: 21
 - **Last Active**: 2026-07-27
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~780 | Active |
+| `journal-1.md` | ~814 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 21 | 2026-07-27 | BBS Snow S6 mini-window port | `3e720d3`, `786971c` | `codex/bootstrap-trellis-workspace` |
 | 20 | 2026-07-27 | bbs_snow S5 particle extensions | `19781b6`, `8fda54b` | `codex/bootstrap-trellis-workspace` |
 | 19 | 2026-07-27 | Complete bbs_snow S4 Cubic rendering and animation | `6d37471`, `32aed30` | `codex/bootstrap-trellis-workspace` |
 | 18 | 2026-07-27 | Complete bbs_snow S3 PBR texture-grade gate | `8975a7e`, `8b1578e` | `codex/bootstrap-trellis-workspace` |

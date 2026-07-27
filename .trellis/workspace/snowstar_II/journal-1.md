@@ -778,3 +778,37 @@ Ported particle morph rendering, editor controls, browser search/favorites/recen
 ### Next Steps
 
 - None - task complete
+
+
+## Session 21: BBS Snow S6 mini-window port
+
+**Date**: 2026-07-27
+**Task**: BBS Snow S6 mini-window port
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+Completed and archived S6 UI mini-window integration: five required Mixins, dock and Film floating-window lifecycle, overlay resizing, strict runtime verification including merge and resize interactions, jar isolation audit, and deferred full manual interaction smoke to S10.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `3e720d3` | (see git log) |
+| `786971c` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
