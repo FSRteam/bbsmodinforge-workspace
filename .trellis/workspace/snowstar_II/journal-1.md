@@ -846,3 +846,37 @@ Completed timeline-driven sound loop intervals across Form, grouped keyframes, d
 ### Next Steps
 
 - None - task complete
+
+
+## Session 23: Complete BBS Snow S8 clips
+
+**Date**: 2026-07-29
+**Task**: Complete BBS Snow S8 clips
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+Fixed the owner-aware pose UI verifier, passed strict S8 runtime verification and the full addon/JAR gates, committed the combined S7/S8 addon snapshot, recorded S8 manual checks in S10, and archived S8.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `75854ef` | (see git log) |
+| `e0fc678` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
