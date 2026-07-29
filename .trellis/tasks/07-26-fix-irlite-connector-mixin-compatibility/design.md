@@ -134,6 +134,21 @@ IRLite 使用 `assets/irlite/strings/en_us.json` 与 `zh_cn.json` 作为唯一�
 Form 路径的显示规则。这样不需要把 IRLite 类型硬编码进 BBS 本体。IRLite 客户端
 Mixin 配置声明 `JAVA_21`，与 Minecraft 1.21.1 和成品 class version 65 一致。
 
+## Spotlight guide drag continuity
+
+IRLite 的聚光灯 range、outer radius 和 inner radius 拖动必须使用相对手势：按下时保存
+目标值和鼠标射线对应的原始几何量，后续写入 `startValue + currentRaw - anchorRaw`。
+不得把绝对射线交点直接写入属性或影片关键帧，因为粗拾取区域、矩阵轻微差异和关键帧
+插值都会让按下第一帧改变数值。
+
+可见轴、锥线、拾取环和拖动数学共享 `spotRingZ(range)` 的同一正负号。当前灯光方向、
+拾取环和拖动数学均使用局部 `+Z`，因此可见锥体也统一到 `+Z`。回归测试至少覆盖：
+
+- 鼠标原地不动时，起始原始量即使与属性绝对值不同，属性也完全不变；
+- 第一次移动从原值连续增加或减少，而不是跳到 `0.1`/`1` 的 clamp；
+- range、outer angle、inner angle 分别遵守原有上下限；
+- 影片拖动以关键帧原值作为相对起点，不把当前插值预览绝对覆盖到关键帧。
+
 ## Failure classification
 
 - 同一个 `WorldBlockChangeMixin` 描述符错误：补丁没有进入实际 JAR或缓存未清理。

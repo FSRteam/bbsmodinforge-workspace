@@ -128,6 +128,18 @@
 - [ ] Run point and spot lights through `beam_strength = 0, 1, 10` and require matching
       form/registry/packed/texture-readback logs plus fixed-camera pixel differences.
 
+## 12. Fix spotlight guide first-drag discontinuity
+
+- [x] Compare the IRLite custom guide path with BBS FSR's generic film Gizmo and identify the
+      first value-changing boundary.
+- [ ] Replace absolute range/angle writes with press-anchored relative deltas for both form and
+      film keyframe edits.
+- [ ] Make the visible spotlight axis/cone use the same local-Z sign as its pick handles, drag
+      math, and registered light direction.
+- [ ] Add a numeric regression proving zero mouse movement is identity and the first movement is
+      continuous for range, outer angle, and inner angle.
+- [ ] Build a distinct fix8 IRLite artifact and inspect its Mixin/resources/single nested core.
+
 ## Validation references
 
 - Crash evidence:

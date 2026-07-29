@@ -880,3 +880,37 @@ Fixed the owner-aware pose UI verifier, passed strict S8 runtime verification an
 ### Next Steps
 
 - None - task complete
+
+
+## Session 24: 完成最新 FS 到 FSR 迁移
+
+**Date**: 2026-07-29
+**Task**: 完成最新 FS 到 FSR 迁移
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+更新本地 FS 到 116ed397/31bd255e/c3d1a477，迁移审计后的 UI、录制、渲染与构建修复到 FSR 4143499b，保留粒子和半透明策略，完成干净构建验证并创建 r8-a1 本地 nightly 标签。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `4143499b19d0f6138b7f8e8e1ff729a5a7ecbf77` | (see git log) |
+| `a2261da` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

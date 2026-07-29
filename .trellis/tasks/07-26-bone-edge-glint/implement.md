@@ -108,6 +108,17 @@ cd new && ./gradlew build > build-glint.log 2>&1; echo "REAL_EXIT=$?"
 - [x] JAR 字节码核验：包含四个修改类；`GlintRenderState` 含 `getViewOrigin(Matrix4f)` 且已无 `setupArmorGlintTexturing`
 - [ ] 游戏内验收：Photon / IterationRP，东南西北与上下观察，全表面/仅边缘/原版三模式
 
+### S14 附魔分组折叠与 Pose 空白布局修复
+
+- [x] `UISection.resizeParent()` 改为重排最近的 `UIScrollView`，折叠后同步后续控件位置、滚动范围与滚动位置钳制
+- [x] 移除影片 Pose 的骨骼列表视口拉伸，保留固定列表高度，避免折叠释放高度变成长空白
+- [x] `UIPoseKeyframeFactory` 的宽、窄两种布局都重新加入完整 `glintSection`，模式/颜色/速度/变换保持整体可折叠
+- [x] 回归测试覆盖折叠后滚动范围缩短、后续控件立即上移、滚动位置不越界
+- [x] `compileClientJava compileUiInputMailboxTestJava --offline`：真实退出码 0，`BUILD SUCCESSFUL in 2m 9s`
+- [x] `testUiInputMailbox --offline`：真实退出码 0，`BBSUiInputDispatcherTest: all tests passed`，`BUILD SUCCESSFUL in 1m 41s`
+- [x] 四项回归合并后的串行验证：`testUiInputMailbox testFilmEditorMigration testClientStructuralRegistration compileClientJava --offline`，真实退出码 0，`BUILD SUCCESSFUL in 3m 8s`
+- [ ] 游戏内验收：模型效果/骨骼窗口与影片 Pose，在展开/折叠附魔层后均可直接滚到最底部，且无需缩放窗口刷新
+
 ## 验证红线
 
 ⚠ **绝不能**用 `./gradlew ... | tail` 判断成败 —— 管道退出码取自 `tail`（恒 0），会吞掉 `BUILD FAILED`。

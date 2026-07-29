@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 23
+- **Total Sessions**: 24
 - **Last Active**: 2026-07-29
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~882 | Active |
+| `journal-1.md` | ~916 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 24 | 2026-07-29 | 完成最新 FS 到 FSR 迁移 | `4143499b19d0f6138b7f8e8e1ff729a5a7ecbf77`, `a2261da` | `codex/bootstrap-trellis-workspace` |
 | 23 | 2026-07-29 | Complete BBS Snow S8 clips | `75854ef`, `e0fc678` | `codex/bootstrap-trellis-workspace` |
 | 22 | 2026-07-29 | Sound morph stage 2 loop interval delivery | `e11ca91b`, `fb6d74b` | `codex/bootstrap-trellis-workspace` |
 | 21 | 2026-07-27 | BBS Snow S6 mini-window port | `3e720d3`, `786971c` | `codex/bootstrap-trellis-workspace` |

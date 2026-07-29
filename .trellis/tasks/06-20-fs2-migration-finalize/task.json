@@ -21,7 +21,8 @@
   "children": [
     "06-20-fs2-runtime-bugfix",
     "07-14-sync-latest-fs-to-fsr",
-    "07-19-sync-fs24-delta-to-fsr"
+    "07-19-sync-fs24-delta-to-fsr",
+    "07-29-complete-latest-fs-to-fsr"
   ],
   "parent": null,
   "relatedFiles": [],
