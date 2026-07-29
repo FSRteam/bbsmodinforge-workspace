@@ -47,14 +47,14 @@
 
 ## Acceptance Criteria
 
-- [ ] AC1 `verifyBbsCoreJar` 和 `build` 退出码为 0；addon JAR 含三种剪辑、UI、本地化和必要资源，且不内嵌 `mchorse/bbs_mod/**`。
-- [ ] AC2 运行时注册表仅新增 Hotbar/Cinematic/Color，三种剪辑保存/读取/clone 往返保持全部属性和轨道，旧 Hotbar 数据迁移正确。
-- [ ] AC3 自动验证覆盖 25/8/14 条轨道的标题与 UI factory，三种 inspector 可构造且关键控件可见。
-- [ ] AC4 Hotbar 发布完整 HUD state；Color/Cinematic 发布正确缩放和 envelope 后的 screen effects；重叠剪辑按 `context.count`/队列顺序稳定。
-- [ ] AC5 common/server 类加载不触及 client 类；不同 `ClipContext` 不串数据，每个 context 的效果每帧只消费一次。
-- [ ] AC6 严格客户端实际应用新增/修改 Mixin，触发真实工厂、UI、发布和至少一次渲染消费路径；日志无 injection/helper/classloading 错误。
-- [ ] AC7 英语/简中键对称、旧 namespace/Fabric/Video/重复 S3 renderer 引用为 0，本任务对 `new/` 和旧源码树的修改为 0。
-- [ ] AC8 无法自动证明的 HUD 像素、复杂重叠、预览/录制尺寸和 addon-disabled 基线登记到 S10 人工验收。
+- [x] AC1 `verifyBbsCoreJar` 和 `build` 退出码为 0；addon JAR 含三种剪辑、UI、本地化和必要资源，且不内嵌 `mchorse/bbs_mod/**`。
+- [x] AC2 运行时注册表仅新增 Hotbar/Cinematic/Color，三种剪辑保存/读取/clone 往返保持全部属性和轨道，旧 Hotbar 数据迁移正确。
+- [x] AC3 自动验证覆盖 25/8/14 条轨道的标题与 UI factory，三种 inspector 可构造且关键控件可见。
+- [x] AC4 Hotbar 发布完整 HUD state；Color/Cinematic 发布正确缩放和 envelope 后的 screen effects；重叠剪辑按 `context.count`/队列顺序稳定。
+- [x] AC5 common/server 类加载不触及 client 类；不同 `ClipContext` 不串数据，每个 context 的效果每帧只消费一次。
+- [x] AC6 严格客户端实际应用新增/修改 Mixin，触发真实工厂、UI、发布和至少一次渲染消费路径；日志无 injection/helper/classloading 错误。
+- [x] AC7 英语/简中键对称、旧 namespace/Fabric/Video/重复 S3 renderer 引用为 0，本任务对 `new/` 和旧源码树的修改为 0。
+- [x] AC8 无法自动证明的 HUD 像素、复杂重叠、预览/录制尺寸和 addon-disabled 基线登记到 S10 人工验收。
 
 ## Out of Scope
 

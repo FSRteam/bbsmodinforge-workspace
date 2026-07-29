@@ -327,6 +327,17 @@ the workspace's other standalone addons do not exercise this path.
   Mixins must run the client and exercise the target code path.
 - A stale BBS core jar is not a valid verification input. `verifyBbsCoreJar` must reject a
   jar older than the current BBS Java sources before compile or run tasks proceed.
+- Treat the BBS runtime jar as an immutable publication for the lifetime of every client that
+  opened it. Never rebuild or replace `runs/<name>/mods/BBS_*.jar` while a client from that run
+  directory is alive; `SecureJar`/`ModuleClassLoader` may keep the startup index and resolve
+  lazily loaded classes from the replaced file later.
+- Separate Gradle invocations are separate writers even when `org.gradle.parallel=false` and
+  `--max-workers=1`. Do not overlap `compileClientJava --rerun-tasks`, `jar`, or another task
+  that writes the same `new/build` tree. Build main, client, and the runtime jar in one serialized
+  invocation, then audit and copy the finished artifact.
+- A strict-client verifier that requests automatic exit must stop the client in a `finally`
+  boundary. A failed assertion must not leave an orphan client holding the runtime jar while the
+  next build starts.
 - A successful apply message is necessary but not sufficient for lazy paths. Trigger the UI,
   renderer, or event that executes the injected method and capture its observable evidence.
 
@@ -339,6 +350,9 @@ the workspace's other standalone addons do not exercise this path.
 | Conditional behavior does not apply to this target instance | Return from the injection callback without cancelling; the original target method must run. |
 | Optional integration mod is absent | FML skips its gated Mixin config without affecting the addon. |
 | BBS Java source is newer than the local core jar | Build fails with the exact jar path and rebuild command. |
+| Multiple Gradle invocations target the same BBS `build/` tree | Wait for every writer to finish, then rerun one serialized main/client/jar build; do not trust intermediate classes or jars. |
+| A client is still alive when the core jar would be copied or rebuilt | Stop the client first. Never hot-replace the jar and continue using that JVM. |
+| A long-lived client reports several unrelated BBS `ClassNotFoundException`s after its jar changed on disk | Treat it as artifact lifecycle corruption, restart from an audited stable jar, and do not patch the reported classes individually. |
 | Config omits `refmap` and targets only BBS classes | This is the expected working state, not a missing-artifact warning. |
 | Build passes but no client run was performed | Verification is incomplete because injection target lookup has not run. |
 | `runClient` stops before Mixin config selection with `Failed to locate a primary monitor` | Treat it as a NeoForge early-window environment failure. Temporarily set `runs/client/config/fml.toml` `earlyWindowControl = false`, retry the same verification command, and restore the local value afterward. Do not weaken Mixin checks or edit addon/BBS source. |
@@ -364,10 +378,16 @@ the workspace's other standalone addons do not exercise this path.
 ### 7.6 Tests Required
 
 - Run `./gradlew build` without piping output and verify its real exit code.
+- Before rebuilding or installing the core jar, assert that no client from the target run directory
+  and no other Gradle invocation writing `new/build` is active. Run main/client compilation plus
+  `jar` in one invocation, then verify representative main/client class entries and matching hashes
+  for the source jar and installed copy.
 - Inspect the addon jar for `neoforge.mods.toml` and every declared Mixin config; confirm it
   does not bundle `mchorse/bbs_mod/**`.
 - Run `./gradlew runClient`, confirm BBS and the addon load, and exercise every newly ported
   injection path.
+- Force one strict-verifier assertion to fail with automatic exit enabled; confirm the client still
+  stops and no game JVM survives before restoring the assertion.
 - If the log fails before Mixin config selection with the primary-monitor message, retry once
   with only local `earlyWindowControl = false`; require the normal runtime assertions and restore
   the setting after the run.
@@ -425,4 +445,63 @@ private void sortParticles(CallbackInfoReturnable<Boolean> cir)
     sortParticlePaths();
     cir.setReturnValue(true);
 }
+```
+
+## 8. Owner-aware UI verifier fixture contract
+
+### 8.1 Scope / Trigger
+
+Apply when an addon runtime verifier directly constructs a BBS keyframe factory whose
+production constructor resolves an owning Form from `UIKeyframeSheet.property`.
+
+### 8.2 Signatures
+
+- `new UIKeyframeSheet(int color, boolean separator, KeyframeChannel channel, BaseValueBasic property)`
+- `FormUtils.getForm(BaseValue property)` follows the property's real parent chain.
+- `UIKeyframeSheet.form(Form)` stores UI metadata but does not replace that value parent chain.
+
+### 8.3 Contracts
+
+- The fixture sheet must carry the same concrete Form-owned `BaseValueBasic` that owns the
+  channel in production, such as `modelForm.pose` for `UIPoseKeyframeFactory`.
+- Add the selected keyframe to that sheet and add the sheet to the `UIKeyframes` graph before
+  constructing the factory.
+- Keep the generic null-property helper only for factories that do not inspect an owner.
+
+### 8.4 Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Owner-aware factory receives a null sheet property | Treat the resulting `FormUtils.getForm` failure as an invalid verifier fixture, not a product crash. |
+| Sheet uses a property from a different Form | Fail the fixture; it does not exercise the intended production ownership path. |
+| Factory never reads `sheet.property` | A null-property generic fixture remains valid. |
+
+### 8.5 Good / Base / Bad Cases
+
+- Good: pose channel + pose keyframe + `modelForm.pose` are mounted in one sheet before the
+  pose factory is constructed.
+- Base: a primitive factory that never resolves a Form uses the existing generic helper.
+- Bad: pass `null` as the property and call `.form(modelForm)`; the visible Form metadata does
+  not make `FormUtils.getForm(sheet.property)` safe.
+
+### 8.6 Tests Required
+
+- Run the strict client with runtime verification and automatic exit enabled.
+- Require the verifier's final pass marker in `latest.log`, not only Gradle exit status.
+- Assert no `client-started handler failed` or owner-resolution exception precedes the marker.
+
+### 8.7 Wrong vs Correct
+
+Wrong:
+
+```java
+UIKeyframeSheet sheet = new UIKeyframeSheet(0, false, poseChannel, null).form(modelForm);
+```
+
+Correct:
+
+```java
+UIKeyframeSheet sheet = new UIKeyframeSheet(0, false, poseChannel, modelForm.pose);
+sheet.selection.add(poseKeyframe);
+poseKeyframes.addSheet(sheet);
 ```
