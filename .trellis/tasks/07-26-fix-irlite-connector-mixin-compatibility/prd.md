@@ -55,6 +55,9 @@
   `BLOCK_ENTITY_DATA.Properties` 必须先完整恢复到渲染实体，再允许缓存。
 - 修复 IRLite 点光源和聚光灯的 `beam_strength` 从 Form 属性、CPU 灯光缓冲到
   Shader patch 的运行时链路；不得仅改界面数值而不验证最终上传/补丁消费。
+- 在 Connector 实机仍无法观察到 `beam_strength` 差异时，增加一条不依赖灯光 SSBO
+  字段重映射的独立 GPU 传输路径；保留 `vlParams.z` 作为旧 core/旧补丁回退，且不得
+  改变现有 `Light` 的 96 字节 std430 布局。
 - 为 IRLite 增加独立的 `en_us` 与 `zh_cn` 语言资源，覆盖表单编辑器、设置、预设、
   Shader Patcher、调试界面及用户可见模式选项。
 - 回放编辑器中 IRLite 点光源/聚光灯的关键帧轨道名称必须使用同一套本地化键，
@@ -64,14 +67,14 @@
 
 ## Acceptance Criteria
 
-- [ ] `WorldBlockChangeMixin` 目标为唯一的客户端方块变化通知方法，不再绑定
+- [x] `WorldBlockChangeMixin` 目标为唯一的客户端方块变化通知方法，不再绑定
       `World/Level#setBlock` 重载。
-- [ ] IRLite 1.21.1 构建成功并生成可区分于原版 1.1.2 的测试 JAR。
-- [ ] 成品 JAR 不包含重复或意外升级的嵌套 `irl-core`。
-- [ ] 清理 Connector 缓存后，日志确认新 IRLite JAR 被重新转换和加载。
-- [ ] 不再出现 `WorldBlockChangeMixin` 的三参数/四参数
+- [x] IRLite 1.21.1 构建成功并生成可区分于原版 1.1.2 的测试 JAR。
+- [x] 成品 JAR 不包含重复或意外升级的嵌套 `irl-core`。
+- [x] 清理 Connector 缓存后，日志确认新 IRLite JAR 被重新转换和加载。
+- [x] 不再出现 `WorldBlockChangeMixin` 的三参数/四参数
       `InvalidInjectionException`。
-- [ ] 启动越过 BBS common setup，日志确认 Connector/Fabric `bbs-addon` 被导入且
+- [x] 启动越过 BBS common setup，日志确认 Connector/Fabric `bbs-addon` 被导入且
       IRLite addon 完成注册。
 - [ ] 客户端能够进入世界并打开 BBS 编辑器，IRLite 点光源和聚光灯 Form 可用。
 - [ ] 放置、破坏或由 BBS 修改方块后，相关动态灯阴影能够刷新且不产生新崩溃。
@@ -79,6 +82,9 @@
       不会因缓存空 `ModelBlockEntity` 而永久不可见。
 - [ ] `beam_strength` 的非默认值能够到达实际 Shader 消费点，并在支持的光影包中产生
       可观察的体积光强度差异；旧补丁不会被错误地当作当前补丁复用。
+- [ ] 新 core 通过同序 `R32F` 纹理向 Shader 提供每盏灯的光束强度，Shader 仅在固定
+      哨兵有效时采用该值，否则回退 `light.vlParams.z`；点光源、聚光灯和回放插值均
+      保持相同灯光索引。
 - [ ] IRLite 的 `en_us`/`zh_cn` 资源包含表单、设置、预设、Shader Patcher、调试和模式
       文本，成品 JAR 中路径与 source-pack/provider 注册一致。
 - [ ] 中文环境下，回放编辑器内 IRLite 的关键帧轨道名称和子 Form 路径均完成汉化。
@@ -106,3 +112,12 @@
   转换失败，或 Connector 无法稳定承载关键运行路径时，才创建原生迁移任务。
 - 2026-07-27：将用户进入游戏后发现的模型方块物品、光束强度与完整中文回归并入
   当前兼容任务；修复与构建通过后再依据游戏内结果评估原生 NeoForge 迁移。
+- 2026-07-27：用户确认 `connector-fix3` 的光束强度仍无视觉作用。采用
+  `connector-fix4` 双通道协议：新增 `irl_beamStrengths` 动态采样器作为主路径，保留
+  SSBO `vlParams.z` 回退；只有这条独立路径仍失败，才据新的 GPU/Shader 证据重新评估
+  Connector 或原生 NeoForge 迁移。
+- 2026-07-29：fix5 已证明 Photon `composite` pass 执行且 Iris 将目标 R32F 纹理绑定到
+  正确 program，但未证明纹理上传命中该对象。fix6 修复 IRLite core 将真实 GL 状态查询
+  与 `GlStateManager` 缓存绑定混用的问题，改为直接 `glBindTexture` 绑定和恢复，并增加
+  调试态 GPU 像素回读。Connector 实机已回读有效哨兵且正常退出；在含灯光的
+  `0/1/10` 矩阵完成前不宣称功能通过，也不启动原生 NeoForge 迁移。

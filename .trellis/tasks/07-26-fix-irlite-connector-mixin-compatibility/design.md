@@ -82,6 +82,43 @@ Form ValueFloat -> Form renderer / LightCollector -> LightRegistry
 `vlParams.z`，并避免旧的、带 marker 但不符合当前合约的已补丁 Shaderpack 被直接
 复用。Java UI、CPU 上传和 Shader 中不得各自维护不同的默认值或字段含义。
 
+### Connector fix4 independent texture path
+
+`connector-fix3` 已证明发布 JAR、Connector 映射后的方法描述符、`LightRegistry` 数组和
+`LightBuffer.vlParams.z` 写入均存在，但用户实机像素仍无变化。`fix4` 因此在不删除
+SSBO 路径的前提下增加第二条 GPU 契约：
+
+```text
+beam_strength -> LightBuffer packed order
+              -> R32F texture irl_beamStrengths[lightIndex + 1]
+              -> Iris dynamic sampler -> generated shader texelFetch
+```
+
+纹理宽度为 `LightBuffer.MAX_LIGHTS + 1`，高度为 1。texel 0 写入固定哨兵
+`1937.25`；第 `lightIndex + 1` 个 texel 写入 `max(beam, 0) + 1`。Shader 只在哨兵
+匹配时读取并减去 1，否则回退 `max(light.vlParams.z, 0)`。这使新 core + 旧 Shader
+仍使用 SSBO，新 Shader + 旧 core 也会因无有效哨兵回退 SSBO，同时避免新增固定 SSBO
+binding 或改变现有六个 `vec4` 的布局。
+
+采样器通过现有 `IrlSamplers`/Iris `addDynamicSampler` 注册，并追加在已有采样器之后。
+补丁契约提升到 v2，七套补丁使用 `irlite-beam-texture-l10n-v4` 标记。core 与外层
+addon 均使用新版本坐标，防止 Gradle/Maven/Connector 缓存复用 fix3 字节。
+
+### Connector fix6 texture-state ownership
+
+fix5 的 program/sampler 探针证明 Iris 最终会把正确纹理 id 绑定给 Photon
+`composite`，但原上传代码先用 `glGetInteger(GL_TEXTURE_BINDING_2D)` 读取真实 OpenGL
+状态，随后却用缓存式 `GlStateManager._bindTexture` 绑定和恢复。Iris 可在不更新该缓存
+的情况下直接改变 GL 纹理状态，因此缓存式调用可能被错误跳过，使
+`glTexSubImage2D` 写入当时实际绑定的其他纹理；稍后 sampler 再正确绑定目标 id 时，
+仅检查绑定仍会得到假阳性。
+
+fix6 保持 R32F 格式、哨兵、索引和 Shader 协议不变，只统一状态所有权：上传前后均以
+直接 `GL11.glBindTexture` 绑定目标并恢复真实查询到的原对象。启用
+`-Dirlite.debugBeam=true` 时，在目标仍绑定期间用 `glGetTexImage` 回读并逐 texel 比较
+CPU 期望值，日志输出 marker、encoded 值、匹配结果和首个失配索引。正常客户端不分配
+回读缓冲，也不执行同步回读。
+
 ## Localization ownership
 
 IRLite 使用 `assets/irlite/strings/en_us.json` 与 `zh_cn.json` 作为唯一文本源。实际

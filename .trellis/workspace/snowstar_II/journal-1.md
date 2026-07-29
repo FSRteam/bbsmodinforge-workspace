@@ -812,3 +812,37 @@ Completed and archived S6 UI mini-window integration: five required Mixins, dock
 ### Next Steps
 
 - None - task complete
+
+
+## Session 22: Sound morph stage 2 loop interval delivery
+
+**Date**: 2026-07-29
+**Task**: Sound morph stage 2 loop interval delivery
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+Completed timeline-driven sound loop intervals across Form, grouped keyframes, direct/reflected spatial playback, UI and regression coverage; updated the audio contract; built and verified BBS_FSR_beta_v0.0.10-sound-stage2-loop-20260729.jar without launching the client. Task remains active for user save smoke testing.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e11ca91b` | (see git log) |
+| `fb6d74b` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

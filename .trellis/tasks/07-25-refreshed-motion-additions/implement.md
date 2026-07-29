@@ -14,7 +14,9 @@
 - [ ] 7. UIDraggable drag_follow(design §4):先读懂位置写回机制并记 journal,再实现渲染层跟随;默认关
 - [ ] 8. UIMotionsTest 扩展(两 entry + UIToggle 端点)
 - [ ] 9. refreshed/strawberry 主题配置新动效参数(refreshed:toggle 开;drag_follow 关;通知 tracks 对齐 Refreshed 滑入)
-- [ ] 10. docs/theme-spec 同步(README+example-theme+jar);终验证 `cd new; ./gradlew check *> ../check.log; "REAL_EXIT=$LASTEXITCODE"` == 0
+- [ ] 10. 用户验收补充:skins motion_enabled/motion_speed 中英文翻译;选中主题导出 JSON + 同主题引用资源并安全改写链接;补导出回归测试
+- [ ] 11. 核对现有 UIToggle spring、UITrackpad scrub、Scroll shadow 在源码与构建 JAR 中均存在,补缺失的可执行断言
+- [ ] 12. docs/theme-spec 同步(README+example-theme+jar);终验证 `cd new; ./gradlew check *> ../check.log; "REAL_EXIT=$LASTEXITCODE"` == 0
 
 ## 回滚点
 

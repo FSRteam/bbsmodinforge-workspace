@@ -1,1 +1,5 @@
-{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file":".trellis/spec/new/backend/external-addon-integration-contract.md","reason":"Check core freshness, immutable installed JAR, strict Mixin application, and addon JAR boundary."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Check clip inspector visibility, channel editing, and fallback behavior."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Check common/client classloading, ClipContext isolation, queue order, and consumption lifecycle."}
+{"file":".trellis/tasks/archive/2026-07/07-26-bbs-snow-s3-pbr-texture-grade/design.md","reason":"Check S8 reuses rather than duplicates the S3 screen-effect engine."}
+{"file":".trellis/tasks/07-26-bbs-snow-s8-clips/research/source-addon-overlap.md","reason":"Check included/excluded source items and the main-tree ownership decision."}

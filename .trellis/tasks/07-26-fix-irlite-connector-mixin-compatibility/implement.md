@@ -93,6 +93,41 @@
 - [ ] Manually validate the model-block item, light Forms, beam-strength delta, Chinese panels,
       and replay keyframe tracks before closing the task.
 
+## 10. Add the connector-fix4 beam texture protocol
+
+- [x] Add a core-owned `R32F` texture with one marker texel and one encoded beam-strength texel
+      per packed light, preserving `LightBuffer` ordering and lifecycle.
+- [x] Register `irl_beamStrengths` through the existing Iris dynamic-sampler registry after all
+      current core samplers.
+- [x] Raise the patch contract to v2 and update all seven shader patches to use a sentinel-gated
+      texture read with `vlParams.z` fallback.
+- [x] Give the core and addon unique fix4 versions so Maven, nested-JAR, generated-pack, and
+      Connector caches cannot substitute fix3 artifacts.
+- [x] Extend resource verification to require the v4 marker, sampler uniform, sentinel,
+      `texelFetch`, indexed helper call, and retained SSBO fallback in every patch.
+- [x] Build and publish the core, build the addon for Minecraft 1.21.1 on Java 21, then inspect
+      the outer and nested JAR contents and hashes.
+- [x] Clear the disposable fixture's mapped IRLite cache, launch the fix4 artifact, and retain
+      logs proving the new outer/core versions load without Mixin or shader-sampler errors.
+- [ ] Keep the task open until a shader-enabled in-game matrix proves values `0`, `1`, and `10`,
+      replay interpolation, and both point and spot lights from a freshly generated v4 pack.
+
+## 11. Fix the connector-fix5 texture upload state boundary
+
+- [x] Separate the proven Iris sampler binding from the previously unverified R32F upload target.
+- [x] Replace cached `GlStateManager._bindTexture` upload/restore calls with direct
+      `GL11.glBindTexture` calls paired with the real queried binding.
+- [x] Add opt-in GPU texture readback that compares marker and encoded light texels with CPU input.
+- [x] Include both expected CPU bits and actual GPU bits in readback de-duplication so a stuck
+      GPU value is still reported when the user changes `beam_strength`.
+- [x] Build and publish core `1.1.3-connector-beamdiag2`, then build addon
+      `1.1.2-connector-fix6` for Minecraft 1.21.1 on Java 21.
+- [x] Inspect the remapped outer JAR, its single nested core, metadata, bytecode, and hashes.
+- [x] Clear only the disposable fixture's prior IRLite mapping cache, launch Connector, enter the
+      Photon world, verify zero-light readback and sampler binding, and shut down normally.
+- [ ] Run point and spot lights through `beam_strength = 0, 1, 10` and require matching
+      form/registry/packed/texture-readback logs plus fixed-camera pixel differences.
+
 ## Validation references
 
 - Crash evidence:
@@ -163,3 +198,58 @@
 - Remaining gate: enter a world and manually validate the editor Forms, shaderpack path,
   block-shadow invalidation, and click/release/scroll flows. Do not close the task before that
   matrix passes.
+
+## Fix4 runtime launch verification (2026-07-27)
+
+- Connector regenerated and loaded mapped `1.1.2-connector-fix4` and nested
+  `1.1.3-connector-beamtex1` artifacts from a cleared cache.
+- Mapped outer SHA-256:
+  `65C6ADF73113FFD03896A1201F1C58374D74CE54634B581F54FA23E893CEC348`.
+- Mapped core SHA-256:
+  `98D6D305ADA08B28C48565B7C6AABC90A6801BEB18EB87C4059B37C0BDA040C9`.
+- `WorldBlockChangeMixin` applied to `ClientLevel`; BBS imported and bridged
+  `qualet.irlite.IrlightsAddon`; no Connector, Mixin, IRLite, or sampler fatal error occurred.
+- The client entered a singleplayer world, completed the BBS handshake, created the Iris
+  overworld pipeline, and shut down normally. Gradle reported `BUILD SUCCESSFUL in 5m 47s`.
+- Retained evidence: `research/runtime-fix4-validation.md`,
+  `research/runtime-fix4-success-debug-2026-07-27.log`, and
+  `research/runtime-fix4-success-latest-2026-07-27.log`.
+- The fixture's Iris configuration has no selected shaderpack. This proves startup/publication,
+  not beam-strength pixels; the `0/1/10` visual matrix remains the final gate.
+
+## Fix6 build and runtime verification (2026-07-29)
+
+- Core build: `clean build publishToMavenLocal` passed on Java 21. Output
+  `irl-core-1.1.3-connector-beamdiag2.jar`, 177,807 bytes, SHA-256
+  `4BD4808E4361BAC4ECA03563AD0584E6272FE2E0C760D83C3B2AF3B26B3CD0A5`.
+- Addon build: `clean build -Pmc=1.21.1` passed, including `verifyIrliteResources` and remap.
+  Output `irlite-1.1.2-connector-fix6+mc1.21.1.jar`, 655,143 bytes, SHA-256
+  `3F3713272B455C94405076842209D06EC1F256A173BB5300BC8945EB76973948`.
+- The outer JAR contains exactly one nested core named
+  `META-INF/jars/irl-core-1.1.3-connector-beamdiag2.jar`; its embedded SHA-256 equals the
+  published core hash. `javap` confirms the remapped core uses direct `GL11.glBindTexture`,
+  `glGetTexImage`, and `textureReadBack` calls rather than `_bindTexture` for upload state.
+- Connector regenerated and loaded mapped fix6/core beamdiag2 artifacts, entered `New World`,
+  created Photon program 23 (`composite`), and logged
+  `texture-readback texture=96 lights=0 marker=1937.25 encoded=[] matches=true`, followed by
+  correct unit-12 binding and program execution. The client stopped normally and Gradle reported
+  `BUILD SUCCESSFUL in 6m 32s`.
+- This closes the texture-allocation/upload-target uncertainty only. The fixture Film still contains
+  `bbs:sound_sphere`, so no IRLite light reached the registry; the user-facing `0/1/10` matrix is
+  still required before declaring beam strength fixed.
+
+## Fix7 final diagnostic artifact (2026-07-29)
+
+- Quality review found that fix6 readback de-duplication hashed only actual GPU values. If an upload
+  remained stuck while the expected CPU value changed, later mismatches could be suppressed. The
+  hash now includes both expected and actual bits; the production GL upload path is unchanged.
+- Final core: `irl-core-1.1.3-connector-beamdiag3.jar`, 177,829 bytes, SHA-256
+  `376BE64834300404544175CCBAAA405DEDE0608471F4F75B7D6FE390C4D6FF74`.
+- Final addon: `irlite-1.1.2-connector-fix7+mc1.21.1.jar`, 655,166 bytes, SHA-256
+  `1EBD4F6117B69440651319ABD2A292950589A454A9BCD39E71EEAE54CB6543AB`.
+- Both clean builds passed. The final outer JAR contains exactly one beamdiag3 core and its embedded
+  SHA-256 matches the published core. The disposable fixture now has fix7 installed and all fix6
+  mapped artifacts moved to `.irlite-backups/fix6-before-fix7-20260729-1418`.
+- Fix7 was not relaunched because its only change from the successfully launched fix6 is opt-in log
+  de-duplication. The next meaningful runtime gate is a real point/spot light matrix, not another
+  zero-light startup.

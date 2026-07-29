@@ -55,7 +55,7 @@
 ### R7 修复：附魔覆盖本体材质、透明面变黑
 **根因**：旧实现直接用 BBS 的 `model_glint` core shader 驱动 VAO，绕过了 `RenderType`。这既漏掉了 RenderType 的混合状态，也让 Iris/光影包无法把 draw call 路由到已知的 entity gbuffer，结果分别表现为透明区域发黑和光影下整个效果被跳过。
 
-**修复**：删除独立 `model_glint` shader。原版模式使用 `RenderType.armorEntityGlint()`；全表面与仅边缘使用 `RenderType.energySwirl(...)`。三种活动效果均进入 Minecraft 已知的 entity RenderType，统一关闭深度写入；可变换覆层使用 `LEQUAL`，避免原版 glint 的 `EQUAL` 在 XYZ 变换后把效果全部丢弃。边缘 Fresnel 在 CPU 计算后写入顶点 alpha，不再依赖自定义 fragment shader。
+**修复**：删除独立 `model_glint` shader。原版模式始终使用 `RenderType.armorEntityGlint()`；无光影时，全表面与仅边缘使用 `RenderType.energySwirl(...)` 保留可调颜色与边缘渐变；Iris 世界光影启用时，三种模式统一进入光影包明确实现的 `armor_glint` 程序。所有活动效果统一关闭深度写入；恒等覆层使用 `EQUAL` 保留本体写入的透明遮罩，只有实际做过 XYZ 变换的覆层使用 `LEQUAL`。边缘 Fresnel 在 CPU 计算后写入顶点 alpha，不再依赖自定义 fragment shader。
 
 ### R8 扩展：杂项分类的 Form 也支持附魔
 附魔原本挂在 `PoseTransform`（逐骨骼），只有带骨架的模型可用。现新增 **Form 级整体附魔**：
@@ -88,6 +88,22 @@ Item 的第二次几何生成只捕获基础 RenderType。若物品本身带原�
 - 所有路径都在模型/骨骼局部空间应用变换：VAO 在提交 RenderType draw 前组合模型矩阵，CPU 即时、Billboard、Block、Item 在顶点进入已含摄像机的空间前应用，避免旋转或缩放随摄像机位置变化。
 - 所有 Form 级附魔在拾取路径跳过，避免二次绘制污染伪装/骨骼选择缓冲。
 - 多材质 VAO 的附魔二次绘制仍按材质分批，保持几何范围与本体一致。
+
+### R10 修复：单骨骼附魔污染整个模型与场景深度
+
+- 逐骨骼附魔不得插入后续骨骼的本体材质之间；VAO、CPU 与 hybrid 路径都必须先完成完整本体，再提交任何附魔 pass。
+- 场景内半透明本体延迟绘制时，附魔必须进入同一个 `FormTranslucentQueue`，并排在对应本体命令之后。
+- 嵌套调用 vanilla RenderType 前后必须恢复调用方的 shader、纹理/纹理矩阵、颜色、混合、深度、剔除、lightmap 与 overlay 相关状态。
+- 未变换的附魔使用 `GL_EQUAL`，不得填充本体纹理已丢弃的透明像素，也不得穿透位于前方的方块或实体；已变换的附魔保留 `GL_LEQUAL`。
+- CPU 合批按“恒等/已变换”拆开，避免一根已变换骨骼迫使整批未变换骨骼使用宽松深度测试。
+
+### R11 修复：光影包方向半圆、Photon 缺失与 IterationRP 黑底
+
+- CPU 边缘 Fresnel 的顶点位置、法线与视点必须位于同一空间。视点由“绘制时仍会应用的 ModelView”的逆矩阵把 view-space 原点变换回来，不能假定所有 PoseStack 烘焙路径的摄像机恒为 `(0,0,0)`。
+- VAO 本体与 `GL_EQUAL` 边缘网格必须使用相同的矩阵分割点：边缘顶点保持骨骼局部坐标，绘制时复用本体的 `global * bone` ModelView。不得在 CPU 先算 `bone * vertex` 再只提交 `global`，否则浮点舍入会使精确深度测试随方向呈半圆失效。
+- Iris 世界光影启用时，全表面、仅边缘和原版三种模式都使用 `RenderType.armorEntityGlint()`，因为 Photon 与 IterationRP 都只为 `gbuffers_armor_glint` 提供附魔专用合成契约。该路径必须保留 RenderType 建立的原版纹理矩阵；上一版额外覆盖自定义矩阵导致两种自定义模式在所有实测光影包中消失。光影下自定义速度允许降级，不能以可见性为代价强制保留。
+- IterationRP 的实体程序会把原先的 energy-swirl 覆层作为普通实体材质输出，透明区域可能参与不正确的黑色合成；切到其 `Armor_Glint` 程序后使用光影包的专用附魔混合。
+- Photon 的 `gbuffers_armor_glint.fsh` 不读取 `gl_Color`，因此只能保证附魔正确进入光影合成和保持可见；自定义颜色、透明度与顶点 Fresnel 强度在该包下可能降级为其原生附魔外观，属于光影包程序能力限制。
 
 ### 未覆盖范围（如实记录）
 
