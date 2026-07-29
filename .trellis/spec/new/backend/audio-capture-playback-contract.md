@@ -125,6 +125,10 @@ float SoundPlaybackTimeline.findSoundActivationTick(
     KeyframeChannel<SoundKeyframeValue> grouped,
     KeyframeChannel<Boolean> legacy, float tick, boolean active);
 float SoundPlaybackTimeline.wrapLoopingSeconds(float seconds, float duration);
+float SoundPlaybackTimeline.projectLoopingSeconds(float seconds, float startOffset,
+                                                   float duration, boolean looping,
+                                                   float loopInterval, float pitch);
+boolean SoundPlaybackTimeline.usesNativeLooping(boolean looping, float loopInterval);
 boolean SoundPlaybackTimeline.shouldSeek(float previousTick, float tick,
                                          boolean wasActive, boolean active,
                                          boolean transportPlaying);
@@ -354,6 +358,15 @@ The exactly-once ownership ledger is:
     share one handle. A spatial-mode change for the same clip identity recreates the source before
     attaching the other layout. Both handles belong to one `SoundBuffer` and follow the same
     source-before-buffer, partial-failure retry, and exactly-once cleanup rules.
+34. `AbstractSoundForm.loop_interval` belongs to the grouped `$sound` snapshot. It defaults to
+    zero, clamps negative values to zero, has no finite upper bound, and appears directly below
+    `looping` in both Form and grouped-keyframe editors. Zero keeps native OpenAL looping. A
+    positive value disables native looping and projects each direct/reflected path onto an audible
+    window followed by that many timeline seconds of silence; silence removes the voice, and the
+    next audible window recreates and seeks it. Clip media advances at `pitch`, so audible timeline
+    duration is remaining media duration divided by pitch while the configured gap is pitch-
+    independent. A reflection keeps its own propagation phase and MUST remain absent before arrival
+    instead of being modulo-wrapped into either an audible window or a gap.
 
 ## 4. Validation & Error Matrix
 
@@ -417,6 +430,10 @@ The exactly-once ownership ledger is:
 | Direct or reflected spatial playback of a stereo asset | Attach the derived mono handle while sharing one asset decode and independent source positions |
 | Spatial/listener-relative mode changes for one clip identity | Release the old source and create a source attached to the correct buffer layout |
 | One of two native buffer deletions fails | Keep only the failed handle pending; never delete the successful handle twice |
+| Looping with `loop_interval=0` | Keep native looping enabled and wrap the media offset inside the clip without deleting the active source |
+| Looping with positive `loop_interval`, audible window | Disable native looping; retain/create the voice and seek to the pitch-aware media position |
+| Looping with positive `loop_interval`, silence window | Omit the voice from `desired`; reconciliation releases it, and the next audible window creates a fresh source |
+| Reflected loop path before propagation arrival | Omit the voice before modulo projection, regardless of start offset, pitch, or loop interval |
 
 ## 5. Good / Base / Bad Cases
 
@@ -457,6 +474,11 @@ The exactly-once ownership ledger is:
 - **Good guide ownership:** a world sound Form with `show_guide=true` remains visible outside the
   editor. In Film, moving the pointer away does not change visibility; selecting another Replay
   transfers guide ownership immediately.
+- **Good interval loop:** a 5-second clip at pitch `2` with a 2-second interval is audible for 2.5
+  timeline seconds, silent for exactly 2 seconds, then recreates at media offset zero. Each reflected
+  path enters the same cycle only after its own propagation delay has elapsed.
+- **Base interval loop:** interval zero keeps one native-looping source and old saves that omit
+  `loop_interval` therefore preserve seamless looping.
 - **Bad:** publish `SUCCESS` from the recorder worker, treat Escape as stop-and-save, commit from
   the worker callback, use `Files.move(..., REPLACE_EXISTING)`, calculate duration with floor
   division, or accept a callback solely because its path string looks plausible.
@@ -471,6 +493,8 @@ The exactly-once ownership ledger is:
   reflect, or commit a drag to a replaced Replay/Form/keyframe object.
 - **Bad:** cap BBS volume in either the Value or trackpad, use a hover TTL as Film selection, or
   attach an authored stereo OpenAL buffer to a spatial direct/reflection source.
+- **Bad:** implement loop gaps with a local timer, leave native looping enabled for a positive gap,
+  scale the requested silence by pitch, or modulo a negative reflected time before checking arrival.
 
 ## 6. Tests Required
 
@@ -494,6 +518,7 @@ captureFailuresAreDistinctAndBounded
 playbackIdentityAndGlobalCleanup
 playbackSpatialParametersAndExplicitSeek
 playbackSpatialStereoDownmixAndCleanup
+soundFormLoopIntervalLifecycle
 playbackCleanupRetriesAndRetiredOwners
 playbackContextDispatchDefersBackend
 cameraControllerRemovalShutsDown
@@ -504,9 +529,12 @@ soundFormPausedScrubSeeks
 `testSoundAcoustics` MUST additionally cover boolean activation runs, empty/non-empty grouped
 activation priority, seek decisions for new triggers/pause/forward scrub/reverse/loop wrap,
 negative delayed-reflection preservation, reflection category/pass-through matrices, and grouped
-snapshot serialization/interpolation. `testReplayKeyframeConsistency` MUST instantiate a sound
+snapshot serialization/interpolation. It MUST also cover zero/positive loop intervals, pitch-aware
+audible duration, pitch-independent silence, start-offset normalization, and negative reflected
+arrival. `testReplayKeyframeConsistency` MUST instantiate a sound
 Form and prove empty grouped fallback, non-empty grouped precedence, final-keyframe deletion
-fallback, and runtime reset. `testAudioLifecycle` MUST prove every preview click replaces exactly
+fallback, runtime reset, `loop_interval` copy/serialization/interpolation, and UI order directly
+after `looping`. `testAudioLifecycle` MUST prove every preview click replaces exactly
 one unique source without releasing an owner-scoped same-link voice. `compileClientJava` remains
 the integration gate for the Film context, actor bridge, recursive renderer lifecycle, dedicated
 audio picker, guide transaction, and UI translation wiring; physical actor, guide, transport, and
@@ -657,4 +685,23 @@ reflection.setRelative(false);
 reflection.setPosition(reflectionX, reflectionY, reflectionZ);
 
 boolean selected = context.timelineProperties == replay.properties;
+```
+
+Wrong - a positive loop gap is delegated to native looping or a renderer-local timer:
+
+```java
+player.setLooping(form.looping.get());
+if (localGapTimer > 0F) localGapTimer -= delta;
+```
+
+Correct - every path is projected from authoritative timeline time, and only the zero-gap case
+uses native OpenAL looping:
+
+```java
+float mediaSeconds = SoundPlaybackTimeline.projectLoopingSeconds(
+    pathSeconds, form.startOffset.get(), duration, form.looping.get(),
+    form.loopInterval.get(), form.pitch.get());
+boolean nativeLooping = SoundPlaybackTimeline.usesNativeLooping(
+    form.looping.get(), form.loopInterval.get());
+if (Float.isFinite(mediaSeconds)) desired.put(pathKey, request(mediaSeconds, nativeLooping));
 ```

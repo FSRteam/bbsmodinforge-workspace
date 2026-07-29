@@ -126,3 +126,24 @@
 | C 变更传播失败 | 只解除新 Form 的音量上限会漏掉既有 `AudioClip` | 全局搜索所有用户可编辑 `volume` Value；测试同时实例化影片音频和声音 Form |
 | B 跨层合同 | `show_guide` 数据值、世界渲染门控和 Film 选择所有权不一致 | 普通世界直接消费值；Film 用稳定 Replay/`FormProperties` 身份；源码契约禁止 TTL 回归 |
 | E 隐式假设 | 误以为设置 OpenAL position 就能让立体声缓冲空间化 | 音频合同明确 spatial voice 必须绑定 mono；假后端断言实际 source-buffer 声道布局 |
+
+## 2026-07-27 第三轮回归执行清单：循环间隔
+
+- [x] 给 `AbstractSoundForm` 增加默认 `0`、非负无有限上限的 `loop_interval`，并接入序列化与运行时清理。
+- [x] 在普通声音 Form 面板和 `$sound` 复合关键帧面板中把“循环间隔”放到“循环”正下方，补 en/zh 文案。
+- [x] 扩展 `SoundKeyframeValue` / factory，使循环间隔参与快照、复制、序列化、插值、应用和旧轨道回退。
+- [x] 扩展纯时间轴投影：`0` 保留原生循环，正数使用“音频时长 + 静音间隔”周期并在静音窗口省略直达/反射 voice；起始偏移先在音频片段内归一化，反射到达前保持静音。
+- [x] 覆盖下一轮重启/seek、负反射到达时间、暂停/scrub/倒放/Film 回绕和 UI 排列回归。
+- [x] 运行定向测试与 `compileClientJava`；完整质量门的声音相关检查全部通过，非声音并行改动阻断已单独记录。
+
+### 2026-07-27 阶段 2.1 检查点
+
+- `git diff --check`（本轮涉及文件）通过。
+- `testSoundAcoustics --offline --no-daemon --max-workers=1` 通过，`BUILD SUCCESSFUL`，包含零间隔、正间隔静音边界、下一轮重启、起始偏移归一化、负反射时间和原生循环开关回归。
+- 代码编写 Agent 因服务端 `429 Too Many Requests` 未能继续；现有实现和纯逻辑测试由主会话收束。
+- `testReplayKeyframeConsistency`、`testAudioLifecycle`、`compileClientJava` 均通过；当前工作区语言键一致（en/zh 各 1976 项），`git diff --check` 通过。
+- 主工作区完整 `check` 的声音相关测试均通过，随后被并行的 `ModelBlockItemRenderer` 源码合同改动阻断；独立检查工作区继续通过声音、Film、客户端注册、二进制兼容、IK 和音频门，随后被未同步的 `ServerNetwork` 并行改动所需 `ServerFilmRuntimeAuthoritySourceTest` 阻断。两处均不属于本任务，用户已确认本轮质量收尾证据足够。
+- `jar --offline --no-daemon --max-workers=1` 通过，`BUILD SUCCESSFUL`；未启动客户端。
+- 新测试产物：`new/build/libs/BBS_FSR_beta_v0.0.10-sound-stage2-loop-20260729.jar`（8,082,373 bytes）。
+- SHA-256：`8740ED3AC495C0BBE658CA99E7C5C015AD1C8287F1C8FD5AA528F24F8BF110F2`。
+- 已检查 JAR 包含声音 Form/播放时间轴/复合关键帧/UI 类、中英文资源、`loopInterval` 字段、三组 `projectLoopingSeconds` 重载和 `usesNativeLooping`。

@@ -138,3 +138,20 @@ OpenAL 的位置、距离衰减和声像只可靠作用于单声道缓冲。一�
 - mono spatial handle：立体声按既有 `0.5L + 0.5R` 合同下混，供直达声和反射声共享；原资源为 mono 时两个模式共享同一 handle。
 
 `SoundPlayer(SoundBuffer, boolean spatial)` 选择对应 handle，旧构造器保留兼容。相同 owner/clip identity 的 spatial 模式变化时，`SoundManager` 释放并重建 source，避免旧声道布局残留。双 handle 删除分别记账；一个删除失败时保留该 handle 供后续重试，已经成功删除的 handle 不得重复删除。
+
+## 8. 2026-07-27 循环间隔设计
+
+共享 Form 增加 `loop_interval`，类型为 `ValueFloat`，范围 `0..Float.POSITIVE_INFINITY`，默认 `0`。字段放入现有 `$sound` 复合快照，不新增第六条轨道；UI 使用字段范围作为唯一真相源，并在普通 Form 面板和复合关键帧面板中紧跟 `looping`。
+
+播放周期定义为：
+
+```text
+period = audioDuration + loopInterval
+phase = positiveModulo(timelineAudioSeconds, period)
+voice exists iff phase < audioDuration
+clip offset = phase
+```
+
+但负的反射时间首先表示声音尚未到达，必须在取模前直接省略。`loop_interval=0` 保留既有原生 OpenAL looping；`loop_interval>0` 时原生 looping 关闭，进入间隔窗口就从期望 voice 集合移除，下一播放窗口重新创建并 seek 到该轮位置。这样暂停、scrub、倒放和 Film 回绕都由同一个时间轴投影决定，而不是由本地计时器积累。
+
+旧存档没有该字段时取 `0`。复合声音关键帧的数值插值包含该字段；旧独立轨道仍先应用，非空复合轨道后覆盖，删除最后一帧时清理 runtime 值并回退。
