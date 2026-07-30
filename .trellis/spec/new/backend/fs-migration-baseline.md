@@ -66,6 +66,16 @@ origin/1.20.1 = c3d1a47732ea85b804a249460c183bbf7a08190e
   reverses that policy.
 - FS commit `31884112` is a translucency rollback and is excluded; FSR keeps the
   stronger `FormTranslucentQueue` implementation.
+- Deferred viewport picks must bind the picked Form/bone before starting a Gizmo.
+  Gizmo startup snapshots the editable transform and origin, so reversing this
+  order produces a visible drag that still writes the previously selected bone.
+- A visible IK, physics, or constraints panel may own the Gizmo bone without
+  mutating the pose editor's hidden multi-selection. Transform binding, origin
+  sampling, and edit fan-out must all resolve through the same panel-owned bone.
+- Replay category collectors must gather the complete track union before one
+  centralized category filter runs. All-tracks mode bypasses only that category
+  filter; global and per-Form disabled-track filters still apply. FSR-specific
+  `FormControlKeys` classify IK controls as IK and physics/wind controls as Physics.
 - A successful migration advances the master, both Minecraft reference markers and
   `fsr_target_commit` together. Trellis task metadata must record the same terminal SHA.
 
@@ -81,6 +91,10 @@ origin/1.20.1 = c3d1a47732ea85b804a249460c183bbf7a08190e
 | Proposed diff changes FSR artifact identity | Reject unless the user separately authorizes a release change |
 | Proposed diff changes legacy particle paths | Exclude or isolate on the archived particle branch |
 | Proposed diff applies FS `31884112` translucency rollback | Reject; keep FSR queue ownership |
+| Deferred pick starts the Gizmo before binding its Form/bone | Reject; the drag snapshots and edits a stale target |
+| Procedural panel Gizmo changes the pose list selection | Reject; preserve the hidden multi-selection and override only the transform owner |
+| Any replay collector checks the active category | Reject; collect all sheets, then filter centrally so all-tracks is complete |
+| FSR control channel has no centralized category mapping | Add the `FormControlKeys` mapping and a regression assertion before porting |
 | Build passes but interactive Iris/audio/UI/physics smoke is not run | Record it as pending; never report it as passed |
 | Code commit exists but task/spec terminal SHA is missing | Task is incomplete; backfill exact SHA |
 
@@ -89,7 +103,12 @@ origin/1.20.1 = c3d1a47732ea85b804a249460c183bbf7a08190e
 - Good: fetch immutable tips, validate the recorded merge base, treat 1.21.1 as
   an independent API reference, port only the audited delta, pass checks/build, commit
   migration-owned files, then backfill the real terminal SHA.
+- Good: a deferred sphere drag binds its picked bone, then starts the Gizmo; an
+  all-tracks rebuild collects player, model, pose, IK, physics, wind, sound, and
+  material sheets before filtering.
 - Base: upstream tips equal the stored markers; the next delta is empty.
+- Bad: copy the all-tracks toggle but leave category guards inside individual
+  collectors, or add a panel-local selection list without routing Gizmo ownership to it.
 - Bad: infer cross-branch coverage only from branch names instead of the audited merge base.
 - Bad: stage shared files wholesale from a dirty FSR worktree.
 - Bad: stage `new/WORK_REPORT_2026-07-18.md` with migration code.
@@ -117,6 +136,21 @@ cd new
 git diff --check
 ```
 
+For viewport-pick and replay-track migration regressions also run:
+
+```powershell
+cd new
+.\gradlew.bat --no-daemon testUiInputMailbox
+.\gradlew.bat --no-daemon testReplayKeyframeConsistency
+.\gradlew.bat --no-daemon testFilmEditorMigration
+.\gradlew.bat --no-daemon testIkPhysicsConsistency
+```
+
+Assertions: a promoted deferred pick records `pick` before `start`; procedural
+panel binding leaves pose multi-selection untouched; every collector is category
+agnostic; all-tracks bypasses category filtering; ordinary tabs retain their own
+category; IK/physics/wind control sheets use their FSR categories.
+
 Assertions: every command succeeds; particle paths are unchanged; the built artifact
 retains `BBS_FSR_beta_v0.0.10.jar`; manual smoke status is explicitly recorded.
 
@@ -133,4 +167,20 @@ Correct:
 ```powershell
 git -C new diff <pre-migration-index-snapshot> -- <shared-file>
 git -C new apply --cached <reviewed-migration-only.patch>
+```
+
+Wrong:
+
+```java
+if (this.category != ReplayCategory.IK) return;
+this.startGizmo(context, Gizmo.STENCIL_TRACKBALL);
+this.viewport.pickGizmoForm(context, form, bone);
+```
+
+Correct:
+
+```java
+this.collectIKSheets(sheets, this.replay.form.get());
+this.viewport.pickGizmoForm(context, form, bone);
+this.startGizmo(context, Gizmo.STENCIL_TRACKBALL);
 ```
