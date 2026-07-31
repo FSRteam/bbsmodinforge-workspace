@@ -19,7 +19,7 @@
   "pr_url": null,
   "subtasks": [],
   "children": [],
-  "parent": "07-30-new-editor-defect-batch",
+  "parent": null,
   "relatedFiles": [],
   "notes": "经实测不再复现——根因是 MobForm 重复渲染（MorphRenderer 用世界相机多画一遍），由 84591d17 连带修复。无独立代码改动。",
   "meta": {}
