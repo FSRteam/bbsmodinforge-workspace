@@ -3,7 +3,7 @@
   "name": "external-recording-enchantment-data",
   "title": "外部录制保留附魔装备数据",
   "description": "外部录制与回放穿戴或手持附魔装备时，保留所有附魔相关内容。",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,

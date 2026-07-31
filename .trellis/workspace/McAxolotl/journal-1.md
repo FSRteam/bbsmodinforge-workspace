@@ -282,3 +282,28 @@ Fixed MobForm {Health:0} preview death animation by keeping vanilla entity.tick(
 ### Next Steps
 
 - None - task complete
+
+
+## Session 7: BBS-FS playback defect batch - cleanup and handoff to external recording
+
+**Date**: 2026-07-31
+**Task**: BBS-FS playback defect batch (2/3)
+**Branch**: work/mcaxolotl-journal-init
+
+### Summary
+
+Verified MobForm Health:0 death animation fix (vanilla entity.tick dispatch, no hardcoded entities, no new mixin/invoker) in-game; committed as 9c39eb8f. Removed 4 stale Claude worktrees from .claude/worktrees (all empty clones at Initial commit). Started external recording enchantment data task.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| 9c39eb8f | fix(mobform): restore vanilla death animation playback |
+
+### Status
+
+[OK] **In progress** (external recording)
+
+### Next Steps
+
+- Trace external recording serialization vs bbs-fs-master; find enchantment data loss point.
