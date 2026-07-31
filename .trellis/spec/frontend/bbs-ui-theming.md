@@ -23,10 +23,17 @@
      禁用态/更暗文字暂保留常量,v2 再考虑 textDisabled token。
 4. 控件默认色字段(`UIButton.textColor`、`UIToggle.color`、`UIText`、`UILabel`、`Textbox`)以
    `Colors.WHITE` 为"跟随主题"哨兵:render 期 `== Colors.WHITE ? BBSSettings.textColor() : 字段`。
-   给控件显式设色时不受主题影响;想要主题字色就不要设色。
+   给控件显式设色时不受主题影响;想要主题字色就不要设色。`UIButton` 的默认文字必须逐帧
+   只由这个映射决定,禁止再根据按钮 normal/hover 填充色自动切换黑白,否则 hover 会制造
+   非设计的文字翻色反馈。
 5. 文字绘制默认色的汇聚点在 `Batcher2D.text/textShadow/textCard`(无 color 重载)与
    `text(label,x,y,color,shadow)`(textShadow token 拦截、light darkenWhite)。改动文字全局
    行为只动这些单点,不要在调用点散改。
+6. 当文字位于一个会被浅色主题旧兼容逻辑反色的贴图表面上(当前实例:教程按键提示的
+   key-cap),前景色必须与**实际渲染后的**表面配对:浅色主题黑键帽配白字,其余白键帽配黑字。
+   这类显式配对使用 `Batcher2D.textExactColor`,避免白字再次被 `darkenWhite` 压成黑字;
+   普通正文不得使用该逃生口。`ThemeWidgetForegroundTest` 必须同时锁定按钮哨兵映射、普通
+   白字旧转换和 exact-color/key-cap 配对。
 
 ### Refreshed 扩展 token 契约
 

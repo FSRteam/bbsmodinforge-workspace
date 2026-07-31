@@ -31,6 +31,13 @@ startup-only Addon API 2.0.
   the install updates an existing `pluginId`, retire sibling source JARs for
   that plugin before publishing the new file so watcher reconciliation sees one
   owner artifact instead of a transient `DUPLICATE_ID` pair.
+- Manual smoke and local update scripts must keep versioned build artifacts
+  outside `config/bbs/plugins/`. Publish every generation through one stable
+  source name (for example, `fixture.jar`); temporary and backup names must not
+  end in `.jar` (for example, `fixture.jar.tmp` and `fixture.jar.bak`). Never
+  place `fixture-1.0.jar` and `fixture-2.0.jar` beside each other: distinct paths
+  do not represent generations, they represent competing owners for one plugin
+  id and correctly produce `DUPLICATE_ID`.
 - The watcher emits immutable intents only. It never mutates active routes or
   invokes plugin code.
 - Validate and shadow-copy before class loading. Immediately before publication,
@@ -69,6 +76,9 @@ startup-only Addon API 2.0.
 - Good: copy a build to a same-directory temporary file and atomically replace
   the final JAR; the watcher observes a stable hash and publishes one new
   generation.
+- Good: keep `fixture-1.0.jar` and `fixture-2.0.jar` in the build output, then
+  copy the desired version to `config/bbs/plugins/fixture.jar.tmp` and atomically
+  replace the sole `config/bbs/plugins/fixture.jar` source.
 - Good: the Dashboard install/update flow removes older source JARs for the
   same plugin id, writes the replacement to a same-directory temp file, then
   atomically moves it into place.
@@ -78,6 +88,9 @@ startup-only Addon API 2.0.
   enter two generations for the same plugin.
 - Bad: load classes directly from the source JAR; Windows builds cannot replace
   the file reliably and validation no longer identifies executed bytes.
+- Bad: copy a new version under a versioned `.jar` name while the old stable
+  `.jar` remains in the plugin directory; the watcher must reject the second
+  artifact as `DUPLICATE_ID` rather than guess which path owns the plugin.
 - Bad: register plugin objects directly in permanent global collections; the
   classloader remains strongly reachable after unload.
 

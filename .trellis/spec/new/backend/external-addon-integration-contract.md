@@ -340,6 +340,14 @@ the workspace's other standalone addons do not exercise this path.
   next build starts.
 - A successful apply message is necessary but not sufficient for lazy paths. Trigger the UI,
   renderer, or event that executes the injected method and capture its observable evidence.
+- Treat a host method's invocation shape as part of every external Mixin contract. Adding one
+  child to a layout can change Java overload selection (for example, `add(IUIElement)` to
+  `add(IUIElement[])`) even though the visible behavior still looks equivalent. When wide and
+  narrow branches share one semantic boundary, inject after that shared descriptor and exercise
+  both branches; do not maintain one redirect per current child count.
+- Any BBS change to a method targeted by a workspace addon must propagate to that addon in the
+  same verification session: rebuild one fresh core jar, compile the addon against it, inspect
+  that the strict target descriptor still exists, then run the client and execute the target UI.
 
 ### 7.4 Validation & Error Matrix
 
@@ -352,6 +360,7 @@ the workspace's other standalone addons do not exercise this path.
 | BBS Java source is newer than the local core jar | Build fails with the exact jar path and rebuild command. |
 | Multiple Gradle invocations target the same BBS `build/` tree | Wait for every writer to finish, then rerun one serialized main/client/jar build; do not trust intermediate classes or jars. |
 | A client is still alive when the core jar would be copied or rebuilt | Stop the client first. Never hot-replace the jar and continue using that JVM. |
+| A host UI edit changes an invocation overload, descriptor, or branch cardinality | Search every workspace addon Mixin targeting that method, update the semantic injection boundary, and verify every reachable layout branch with strict `require` still enabled. |
 | A long-lived client reports several unrelated BBS `ClassNotFoundException`s after its jar changed on disk | Treat it as artifact lifecycle corruption, restart from an audited stable jar, and do not patch the reported classes individually. |
 | Config omits `refmap` and targets only BBS classes | This is the expected working state, not a missing-artifact warning. |
 | Build passes but no client run was performed | Verification is incomplete because injection target lookup has not run. |

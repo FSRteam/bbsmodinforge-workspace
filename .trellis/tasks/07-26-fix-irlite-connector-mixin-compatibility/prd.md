@@ -80,16 +80,17 @@
 - [ ] 放置、破坏或由 BBS 修改方块后，相关动态灯阴影能够刷新且不产生新崩溃。
 - [ ] 模型方块物品可在主菜单/无世界资源加载阶段和进入世界后正常显示已保存的模型，
       不会因缓存空 `ModelBlockEntity` 而永久不可见。
-- [ ] `beam_strength` 的非默认值能够到达实际 Shader 消费点，并在支持的光影包中产生
+- [x] `beam_strength` 的非默认值能够到达实际 Shader 消费点，并在支持的光影包中产生
       可观察的体积光强度差异；旧补丁不会被错误地当作当前补丁复用。
-- [ ] 新 core 通过同序 `R32F` 纹理向 Shader 提供每盏灯的光束强度，Shader 仅在固定
+- [x] 新 core 通过同序 `R32F` 纹理向 Shader 提供每盏灯的光束强度，Shader 仅在固定
       哨兵有效时采用该值，否则回退 `light.vlParams.z`；点光源、聚光灯和回放插值均
       保持相同灯光索引。
 - [ ] IRLite 的 `en_us`/`zh_cn` 资源包含表单、设置、预设、Shader Patcher、调试和模式
       文本，成品 JAR 中路径与 source-pack/provider 注册一致。
 - [ ] 中文环境下，回放编辑器内 IRLite 的关键帧轨道名称和子 Form 路径均完成汉化。
 - [x] 分别生成新的 BBS 测试 JAR和可区分的 IRLite `connector-fix3` JAR，并完成内容检查。
-- [ ] 若仍失败，已给出新的首个失败边界和是否需要原生 NeoForge 迁移的证据化结论。
+- [x] 已给出是否需要原生 NeoForge 迁移的证据化结论：fix8 下点光与聚光的
+      `0/1/10` GPU 回读和固定镜头像素矩阵均通过，当前不启动原生迁移。
 
 ## Out of Scope
 
@@ -128,3 +129,8 @@
 - 2026-07-29：影片监视器中的 IRLite 聚光灯拖动器直接把射线绝对交点覆盖到 range/angle，
   且可见锥线使用 `-range`、拾取环和拖动数学使用 `+range`。它违反“按下不移动不得改值”
   的手势不变量；BBS 通用 Gizmo 的同坐标比例计算为 1，未发现同类首帧覆盖。
+- 2026-07-29：fix8 隔离运行的点光与聚光 `beam_strength=0/1/10` 均完成
+  `Form -> registry -> packed index -> R32F 回读 -> Photon composite -> 固定镜头像素`
+  闭环。聚光首轮无明显差异是测试灯锥位于镜头后且朝向画面外，不是 Connector/Iris
+  丢值。修正灯位后平均亮度按 `95.890 -> 149.923 -> 220.699` 递增，因此不为此问题
+  启动 IRLite 原生 NeoForge 迁移。

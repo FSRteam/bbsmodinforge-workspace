@@ -109,8 +109,12 @@
       the outer and nested JAR contents and hashes.
 - [x] Clear the disposable fixture's mapped IRLite cache, launch the fix4 artifact, and retain
       logs proving the new outer/core versions load without Mixin or shader-sampler errors.
-- [ ] Keep the task open until a shader-enabled in-game matrix proves values `0`, `1`, and `10`,
-      replay interpolation, and both point and spot lights from a freshly generated v4 pack.
+- [x] Run a shader-enabled in-game matrix proving values `0`, `1`, and `10` for both point and
+      spot lights from the selected freshly generated pack.
+- [x] Exercise replay interpolation with dedicated changing-keyframe point/spot Films and require
+      one stable packed index plus matching GPU readback and changing fixed-camera pixels.
+- [ ] Keep the task open until the remaining manual editor/localization/model-block/shadow matrix
+      is complete.
 
 ## 11. Fix the connector-fix5 texture upload state boundary
 
@@ -125,20 +129,20 @@
 - [x] Inspect the remapped outer JAR, its single nested core, metadata, bytecode, and hashes.
 - [x] Clear only the disposable fixture's prior IRLite mapping cache, launch Connector, enter the
       Photon world, verify zero-light readback and sampler binding, and shut down normally.
-- [ ] Run point and spot lights through `beam_strength = 0, 1, 10` and require matching
+- [x] Run point and spot lights through `beam_strength = 0, 1, 10` and require matching
       form/registry/packed/texture-readback logs plus fixed-camera pixel differences.
 
 ## 12. Fix spotlight guide first-drag discontinuity
 
 - [x] Compare the IRLite custom guide path with BBS FSR's generic film Gizmo and identify the
       first value-changing boundary.
-- [ ] Replace absolute range/angle writes with press-anchored relative deltas for both form and
+- [x] Replace absolute range/angle writes with press-anchored relative deltas for both form and
       film keyframe edits.
-- [ ] Make the visible spotlight axis/cone use the same local-Z sign as its pick handles, drag
+- [x] Make the visible spotlight axis/cone use the same local-Z sign as its pick handles, drag
       math, and registered light direction.
-- [ ] Add a numeric regression proving zero mouse movement is identity and the first movement is
+- [x] Add a numeric regression proving zero mouse movement is identity and the first movement is
       continuous for range, outer angle, and inner angle.
-- [ ] Build a distinct fix8 IRLite artifact and inspect its Mixin/resources/single nested core.
+- [x] Build a distinct fix8 IRLite artifact and inspect its Mixin/resources/single nested core.
 
 ## Validation references
 
@@ -265,3 +269,35 @@
 - Fix7 was not relaunched because its only change from the successfully launched fix6 is opt-in log
   de-duplication. The next meaningful runtime gate is a real point/spot light matrix, not another
   zero-light startup.
+
+## Fix8 build and beam-matrix verification (2026-07-29)
+
+- The spotlight guide now uses press-anchored relative deltas and one `+Z` geometry convention.
+  `SpotGuideDragContinuityTest` covers identity on zero movement, continuous first movement, and
+  range/outer/inner clamps. The complete addon build passed on Java 21.
+- Final addon: `irlite-1.1.2-connector-fix8+mc1.21.1.jar`, SHA-256
+  `4E1AF04E286C1F8712B3505AB1C1A17C9958FFFBC18388BBD7FB59BA4384239E`.
+- Connector loaded mapped outer/core artifacts with SHA-256
+  `154E11B1C1085B345593FB621597CC94FC4C3DAD5C743CD3425B91C31108C232` and
+  `4E0A6642E37865BB9C3AA47E23382DA9A7AC0E2A0E8119469F0349D7EA9C1D75`.
+- The isolated fixture generated and round-tripped point/spot films for strengths `0`, `1`, and
+  `10`. Every form/registry/packed/texture-write/readback stage matched the expected encoded
+  values `1`, `2`, and `11`; Photon program `composite` registered, bound, and executed the sampler.
+- The first spotlight screenshots were invalid because the cone pointed away behind the fixed
+  camera. After placing the light one block behind the camera and matching its `180` degree yaw,
+  the fixed ROI mean luminance progressed `95.890 -> 149.923 -> 220.699`. Point lights progressed
+  `80.215 -> 180.930 -> 238.275`.
+- The corrected spotlight run stopped once, saved the world, and Gradle reported
+  `BUILD SUCCESSFUL in 2m 57s`. Full evidence and screenshot hashes are in
+  `research/runtime-fix8-beam-matrix-validation.md`.
+- Dedicated point/spot replay Films interpolated `beam_strength` from `0` through approximately
+  `1` to `10`. Across 456 point samples and 534 spot samples the packed index remained `0`, every
+  readback matched, and ROI luminance increased monotonically. Gradle reported
+  `BUILD SUCCESSFUL in 2m 33s`.
+- A final Java 21 `clean build -Pmc=1.21.1` passed in 51 seconds, including
+  `testSpotGuideDragContinuity` and `verifyIrliteResources`. The rebuilt outer JAR retained the
+  exact fix8 hash above and contains one nested beamdiag3 core with SHA-256
+  `376BE64834300404544175CCBAAA405DEDE0608471F4F75B7D6FE390C4D6FF74`, both language files,
+  the drag math class, the client Mixin config, and all seven `.irlights` patches.
+- Result: Connector and NeoForge Iris do not lose `beam_strength` for point or spot Forms. Keep
+  the compatibility route; do not start a native NeoForge IRLite migration for this defect.

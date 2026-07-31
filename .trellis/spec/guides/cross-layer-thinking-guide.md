@@ -383,3 +383,64 @@ Updating the encoder texture does not update the window, and rebinding the
 window framebuffer does not draw the private framebuffer into it. Define which
 consumer receives overlays, when the copy happens, and whether presentation is
 full-screen or owned by a UI region.
+
+---
+
+## GPU Publication Is Not Consumer Verification
+
+A setting that crosses generated shader code has more boundaries than its CPU
+data structure suggests:
+
+```text
+UI/property -> CPU registry -> GPU buffer/texture -> sampler/binding
+            -> generated shaderpack -> selected program/pass -> framebuffer pixels
+```
+
+Source inspection, method descriptors, packed JAR contents, and a successful
+GPU upload prove publication only. They do not prove that the selected generated
+pack declares the same contract, that Iris binds the resource to the consuming
+program, that the intended pass runs, or that different values change pixels.
+
+For every changed GPU value:
+
+- give the producer/consumer contract an explicit version or detectable marker;
+- keep old/new combinations on a deliberate fallback path when practical;
+- verify the exact generated artifact selected at runtime, not only its template;
+- separate sampler/buffer binding evidence from shader-compilation evidence;
+- finish with a fixed-camera pixel matrix using at least zero, baseline, and a
+  materially different value;
+- exercise every registration path that can assign a different packed index.
+
+When the fixture has no active shaderpack or never opens the consuming UI/pass,
+record the run as startup verification only. Do not promote it to visual or GPU
+consumer acceptance even when every Java symbol and bundled GLSL string is present.
+
+---
+
+## Missing Plugin Object → UI Projection Boundary
+
+Plugin-owned data can outlive the plugin that registered its Java class and UI metadata:
+
+```text
+serialized film -> factory decode -> MissingClip placeholder -> timeline metadata -> renderer/actions
+```
+
+Treat an unavailable registration as a normal degraded state, not an exceptional value that
+every renderer may assume away.
+
+- Preserve the original serialized map and type id in a non-executing placeholder so reinstalling
+  the plugin can recover the object without data loss.
+- Centralize one immutable fallback color/icon record for UI projection. Do not allocate fallback
+  metadata inside a per-frame render method.
+- Render an understandable label containing the original type id, and keep plugin-owned actions
+  such as conversion unavailable while registration metadata is absent.
+- After adding a placeholder type, search every direct `factory.getData(object)` consumer. Data-layer
+  degradation is incomplete until renderers, rulers, context menus, and property panels all tolerate it.
+- Test delete/degrade, render projection, and reinstall/recover as separate boundaries. A lifecycle
+  test that only proves the placeholder exists does not prove the client UI can open the film.
+
+**Real-world example**: removing `bbs_snow` correctly decoded its Color/Cinematic/Hotbar clips as
+`MissingClip`, but `UIClipRenderer` still dereferenced `ClipFactoryData.color`. Opening the film
+therefore crashed even though serialization and plugin teardown were working. The fix centralized
+fallback metadata in `UIClips`, routed every timeline color consumer through it, disabled unavailable
+converters, and added a client-side regression alongside the plugin lifecycle tests.
