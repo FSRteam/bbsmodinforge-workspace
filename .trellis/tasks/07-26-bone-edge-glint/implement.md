@@ -144,6 +144,14 @@ cd new && ./gradlew build > build-glint.log 2>&1; echo "REAL_EXIT=$?"
 - [x] `testUiInputMailbox testReplayKeyframeConsistency testFilmEditorMigration testClientStructuralRegistration compileClientJava --offline`：真实退出码 0，`BUILD SUCCESSFUL in 4m 26s`。
 - [x] `en_us.json` / `zh_cn.json` key 双向对等（1987/1987，零缺失）。
 
+### S17 独立附魔层提交后的影片与常规设置回归
+
+- [x] 从 `new/log/错误报告-2026-7-31_3.21.06` 确认影片打开崩溃发生在 `FormUtils.copy(MissingForm)`：占位类型被错误交回已卸载插件的普通 Form 工厂。
+- [x] `FormUtils.copy` 对 `MissingForm` 直接复制其保留的源数据，不改变普通 Form 的复制路径。
+- [x] 不支持整体附魔的 Form 在常规设置中直接移除附魔 `UISection`，支持时再插回轨道分组之前，不再只隐藏绘制却保留布局高度。
+- [x] 插件结构生命周期测试覆盖缺失 Form 复制与源数据保留；UI 源码回归覆盖附魔分组退出/恢复布局树。
+- [x] `testPluginHotReload testUiInputMailbox compileClientJava --offline --console=plain`：真实退出码 0，`BUILD SUCCESSFUL in 6m 50s`。
+
 ## 验证红线
 
 ⚠ **绝不能**用 `./gradlew ... | tail` 判断成败 —— 管道退出码取自 `tail`（恒 0），会吞掉 `BUILD FAILED`。

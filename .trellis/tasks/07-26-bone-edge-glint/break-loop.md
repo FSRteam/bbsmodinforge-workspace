@@ -32,3 +32,36 @@
 - [x] 在当前任务 `implement.md` 记录修复、验证和独立阻塞
 - [x] 仓库没有 `src/templates/markdown/spec/` 或其他规范模板镜像，无可同步目标
 - [ ] 未提交：工作区包含用户和其他任务的多组未提交改动，且用户未授权提交
+
+## Bug Analysis: 缺失插件伪装复制崩溃与隐藏附魔分组占位
+
+### 1. Root Cause Category
+
+- **Category**: B - Cross-Layer Contract；D - Test Coverage Gap；E - Implicit Assumption
+- **Specific Cause**: `MissingForm` 已能保存缺失插件的原始数据，但共享复制入口仍假定所有 `Form` 的 Java 类型都注册在当前工厂中；常规设置布局又假定 `setVisible(false)` 会让元素退出列布局，实际列布局会计算所有仍挂在子树中的元素。
+
+### 2. Why Fixes Failed
+
+1. 之前只验证缺失 Form 的降级与恢复，没有执行影片打开时必经的 `FormUtils.copy`。
+2. 之前只隐藏附魔分组的绘制和输入，没有按 `ColumnResizer` 的真实子元素计数方式检查滚动高度。
+
+### 3. Prevention Mechanisms
+
+| Priority | Mechanism | Specific Action | Status |
+|----------|-----------|-----------------|--------|
+| P0 | Architecture | `FormUtils.copy` 集中识别 `MissingForm` 并直接复制保留数据 | DONE |
+| P0 | Test Coverage | 插件删除降级后立即复制占位 Form，核对类型与源数据 | DONE |
+| P0 | UI Contract | 条件性整段面板使用 remove/addBefore 退出和恢复布局树 | DONE |
+| P0 | Documentation | 缺失插件边界规范加入复制、快照和播放实体创建检查 | DONE |
+
+### 4. Systematic Expansion
+
+- **Similar Issues**: 复制、撤销快照、预览实体和播放实体等所有会重新序列化持久对象的入口；其他仅 `setVisible(false)` 但仍位于自动列布局中的整段面板。
+- **Design Improvement**: 占位对象的复制语义由共享数据边界统一拥有；显示状态与布局成员资格分开处理。
+- **Process Improvement**: 插件降级测试必须从占位创建继续覆盖至少一个真实消费者；布局回归必须按所用 Resizer 的成员规则验证。
+
+### 5. Knowledge Capture
+
+- [x] 更新 `.trellis/spec/guides/cross-layer-thinking-guide.md`
+- [x] 更新当前任务 `implement.md` 与本复盘
+- [x] 仓库没有 `src/templates/markdown/spec/` 或其他规范模板镜像，无可同步目标

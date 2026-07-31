@@ -436,11 +436,21 @@ every renderer may assume away.
   such as conversion unavailable while registration metadata is absent.
 - After adding a placeholder type, search every direct `factory.getData(object)` consumer. Data-layer
   degradation is incomplete until renderers, rulers, context menus, and property panels all tolerate it.
+- Treat copy, clone, snapshot, undo, preview-entity, and playback-entity creation as placeholder
+  consumers too. A missing object must copy its preserved source map directly; never send its
+  placeholder Java class back through the unavailable plugin registry.
 - Test delete/degrade, render projection, and reinstall/recover as separate boundaries. A lifecycle
-  test that only proves the placeholder exists does not prove the client UI can open the film.
+  test that only proves the placeholder exists does not prove the client UI can open or create
+  playback entities for the film.
 
 **Real-world example**: removing `bbs_snow` correctly decoded its Color/Cinematic/Hotbar clips as
 `MissingClip`, but `UIClipRenderer` still dereferenced `ClipFactoryData.color`. Opening the film
 therefore crashed even though serialization and plugin teardown were working. The fix centralized
 fallback metadata in `UIClips`, routed every timeline color consumer through it, disabled unavailable
 converters, and added a client-side regression alongside the plugin lifecycle tests.
+
+**Real-world example**: `MissingForm` preserved an unavailable form's source map and could be decoded
+and displayed, but `FormUtils.copy` still passed the placeholder class to the normal form factory.
+Opening a Film copied replay forms while creating preview entities and crashed before the editor
+appeared. The fix gave the shared copy boundary an explicit `MissingForm` branch and extended the
+plugin delete/degrade lifecycle test to copy the placeholder and compare its preserved source data.
