@@ -60,9 +60,11 @@ level; `Recorder.update` and the film editor can use the client level.
 
 ## Status
 
-- Uncommitted changes remain in the workspace for the next session:
-  - src/main/java/mchorse/bbs_mod/utils/keyframes/factories/ItemStackKeyframeFactory.java
-  - src/client/java/mchorse/bbs_mod/BBSModClient.java
-  - src/replayKeyframeTest/java/mchorse/bbs_mod/ui/film/replays/ReplayIndexRemappingTest.java
-- Do not commit until the per-context registry provider fix is implemented and the user
-  verifies both recording and server-side replay of enchanted equipment.
+- Per-context registry fix implemented (uncommitted, pending user runtime confirmation):
+  - `src/main/java/mchorse/bbs_mod/utils/keyframes/factories/ItemStackKeyframeFactory.java` — replaced the global static provider with per-call context resolution: `currentRegistry()` uses the server registry when running on a server thread (`SidedThreadGroups.SERVER` thread-group check; `ServerLifecycleHooks.getCurrentServer()` is a plain static field, NOT thread-isolated, so the thread group is the reliable signal) and otherwise the client level registry installed via `setClientRegistryAccess`. Added explicit `toData/fromData/tryFromData(value, HolderLookup.Provider)` overloads for callers that hold a provider.
+  - `src/main/java/mchorse/bbs_mod/film/replays/Inventory.java` — `stageForPlayer` passes `player.registryAccess()` explicitly to `tryFromData`.
+  - `src/client/java/mchorse/bbs_mod/BBSModClient.java` — `setClientRegistryAccess` installs `Minecraft.getInstance().level.registryAccess()` as the client fallback.
+  - `src/replayKeyframeTest/.../ReplayIndexRemappingTest.java` — round-trip test uses `setClientRegistryAccess(() -> provider)`.
+- Design note: `RegistryFixedCodec.encode` only writes the holder's ResourceLocation (its `canSerializeIn` is an identity check against the holder's owner registry), so encode works with either registry as long as it matches the holder's bound registry; `RegistryFixedCodec.decode` binds holders to the ops registry, so server-side film decode MUST use the server registry for `RegistryFriendlyByteBuf` stream encoding to succeed during `setItemSlot`.
+- Compile (`compileJava`/`compileClientJava`/`compileReplayKeyframeTestJava`) and `testReplayKeyframeConsistency` pass.
+- Do not commit until the user verifies both recording and server-side replay of enchanted equipment at runtime.

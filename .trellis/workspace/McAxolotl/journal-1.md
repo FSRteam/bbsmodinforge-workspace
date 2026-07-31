@@ -340,3 +340,44 @@ Root cause: ItemStack.CODEC enchantment holders need RegistryOps; plain NbtOps s
 ### Next Steps
 
 - None - task complete
+
+## Session 8: External recording enchantment data - per-context registry fix implemented and committed
+
+**Date**: 2026-07-31
+**Task**: External recording enchantment data (3/3 fix)
+**Branch**: work/mcaxolotl-editor-defect-batch (new/); work/mcaxolotl-journal-init (trellis)
+
+### Summary
+
+Implemented the per-context registry provider fix. Key decompiled-source findings that shaped the design:
+- `ServerLifecycleHooks.getCurrentServer()` is a plain static field (set at server start, cleared at stop), NOT thread-isolated — so on an integrated server the client thread also sees the server, and thread-group detection (`SidedThreadGroups.SERVER`) is the reliable side signal.
+- `RegistryFixedCodec.encode` only writes the holder's ResourceLocation and its `canSerializeIn` is an identity check against the holder's owner registry, so encode must use a registry matching the holder's binding; `RegistryFixedCodec.decode` binds holders to the ops registry, so server-side film decode MUST use the server registry or `setItemSlot`'s `RegistryFriendlyByteBuf` encode throws "Can't find id".
+
+Final approach in `ItemStackKeyframeFactory`: `currentRegistry()` uses the server registry when on a server thread (thread-group check) and otherwise the client level registry installed via `setClientRegistryAccess`; explicit `toData/fromData/tryFromData(value, HolderLookup.Provider)` overloads added. `Inventory.stageForPlayer` passes `player.registryAccess()` explicitly. Removed the broken global `setRegistryAccessProvider` machinery.
+
+### Main Changes
+
+- `new/src/main/java/.../factories/ItemStackKeyframeFactory.java` — thread-group-aware per-call registry resolution + explicit provider overloads
+- `new/src/main/java/.../film/replays/Inventory.java` — stageForPlayer uses player.registryAccess()
+- `new/src/client/java/mchorse/bbs_mod/BBSModClient.java` — setClientRegistryAccess installs client level registry
+- `new/src/replayKeyframeTest/.../ReplayIndexRemappingTest.java` — round-trip test uses setClientRegistryAccess
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| cb605698 | fix(replay): preserve enchantment data for externally recorded equipment |
+
+### Testing
+
+- [OK] compileJava / compileClientJava / compileReplayKeyframeTestJava pass
+- [OK] testReplayKeyframeConsistency passes (incl. enchanted equipment round-trip)
+- [OK] User runtime verification: external recording + playback of enchanted armor/hand items intact; unenchanted unaffected
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
