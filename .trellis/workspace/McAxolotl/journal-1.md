@@ -269,7 +269,7 @@ Fixed MobForm {Health:0} preview death animation by keeping vanilla entity.tick(
 
 | Hash | Message |
 |------|---------|
-| `9c39eb8f` | (see git log) |
+| `4b2b1df0` | (see git log) |
 
 ### Testing
 
@@ -292,13 +292,13 @@ Fixed MobForm {Health:0} preview death animation by keeping vanilla entity.tick(
 
 ### Summary
 
-Verified MobForm Health:0 death animation fix (vanilla entity.tick dispatch, no hardcoded entities, no new mixin/invoker) in-game; committed as 9c39eb8f. Removed 4 stale Claude worktrees from .claude/worktrees (all empty clones at Initial commit). Started external recording enchantment data task.
+Verified MobForm Health:0 death animation fix (vanilla entity.tick dispatch, no hardcoded entities, no new mixin/invoker) in-game; committed as 4b2b1df0. Removed 4 stale Claude worktrees from .claude/worktrees (all empty clones at Initial commit). Started external recording enchantment data task.
 
 ### Git Commits
 
 | Hash | Message |
 |------|---------|
-| 9c39eb8f | fix(mobform): restore vanilla death animation playback |
+| 4b2b1df0 | fix(mobform): restore vanilla death animation playback |
 
 ### Status
 
@@ -327,7 +327,7 @@ Root cause: ItemStack.CODEC enchantment holders need RegistryOps; plain NbtOps s
 
 | Hash | Message |
 |------|---------|
-| `9c39eb8f` | (see git log) |
+| `4b2b1df0` | (see git log) |
 
 ### Testing
 
@@ -366,7 +366,7 @@ Final approach in `ItemStackKeyframeFactory`: `currentRegistry()` uses the serve
 
 | Hash | Message |
 |------|---------|
-| 9c4f4697 | fix(replay): preserve enchantment data for externally recorded equipment |
+| 94be896c | fix(replay): preserve enchantment data for externally recorded equipment |
 
 ### Testing
 
@@ -405,9 +405,9 @@ Incidental: analyzed and fixed MobForm additive blend leaking into nearby non-ad
 
 | Hash | Message |
 |------|---------|
-| 9c4f4697 | fix(replay): preserve enchantment data for externally recorded equipment (amended, body added) |
-| 6ba97618 | fix(film): keep gizmo placement following the replay anchor in actor mode |
-| a701adaf | fix(forms): stop additive blend leaking into later non-additive MobForms |
+| 94be896c | fix(replay): preserve enchantment data for externally recorded equipment (amended, body added) |
+| 514b2fe2 | fix(film): keep gizmo placement following the replay anchor in actor mode |
+| 268a6353 | fix(forms): stop additive blend leaking into later non-additive MobForms |
 
 ### Testing
 
