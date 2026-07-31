@@ -422,3 +422,30 @@ Incidental: analyzed and fixed MobForm additive blend leaking into nearby non-ad
 ### Next Steps
 
 - None - task complete. Batch 07-31-bbs-fs-playback-defect-batch now [3/3 done].
+
+## Session 10: Rebase commit messages and submit PR to FSRteam/bbs-FSR
+
+**Date**: 2026-07-31
+**Task**: Final wrap-up - commit messages, PR, trellis closeout
+**Branch**: work/mcaxolotl-editor-defect-batch (new/); work/mcaxolotl-journal-init (trellis)
+
+### Summary
+
+Supplemented the MobForm death fix commit message (9c39eb8f -> 4b2b1df0) and rebased the 07-31 commits onto it (trees unchanged; 9c4f4697/6ba97618/a701adaf -> 94be896c/514b2fe2/268a6353). Verified 9c39eb8f contains no death-related hardcoded content - the only entity-specific references (minecraft:ender_dragon) are pre-existing rotation compensation. Marked the 07-30 editor defect batch complete (6/6); all of McAxolotl's trellis plans are now complete. Comprehensive branch review: full build + all 20 test suites pass, no debug leftovers, no hardcoded death handling. Submitted PR #13 to FSRteam/bbs-FSR (9 commits, 15 files).
+
+### Git Commits (new/, rebased)
+
+| Hash | Message |
+|------|---------|
+| 4b2b1df0 | fix(mobform): restore vanilla death animation playback (amended, body added) |
+| 94be896c | fix(replay): preserve enchantment data for externally recorded equipment |
+| 514b2fe2 | fix(film): keep gizmo placement following the replay anchor in actor mode |
+| 268a6353 | fix(forms): stop additive blend leaking into later non-additive MobForms |
+
+### PR
+
+- https://github.com/FSRteam/bbs-FSR/pull/13 (fix(film): editor and playback defect fixes 07-30 + 07-31 batches)
+
+### Status
+
+[OK] **Completed** - all McAxolotl plans done, PR submitted
