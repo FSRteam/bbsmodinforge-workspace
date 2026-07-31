@@ -30,6 +30,15 @@ Pose 编辑器 -> PoseTransform.glint* -> Model.applyPose -> ModelGroup -> Cubic
 - 模式是离散值，两个 `lerp` 都按 0.5 阈值阶跃；颜色、速度、变换照常插值。
 - `glintSpeed` 的静息值为 1，`add()` 叠加的是 `speed - 1`，避免无关 pose 轨道凭空加速附魔。
 
+## 独立附魔层关键帧
+
+影片与动画状态使用一条合成的 `glint_layer` 轨道，不再在 `pose` 关键帧面板中编辑附魔，也不再把 Form 的 `glint`、`glint_color`、`glint_speed`、`glint_transform` 暴露成四条轨道。
+
+- `GlintControls` 以稳定骨骼 ID 保存 `GlintControl`；每个控制包含模式、颜色、速度和变换。即使四项都是默认值也保留该骨骼条目，因为“显式关闭”需要覆盖伪装静态 Pose 中已经开启的附魔。
+- `GlintKeyframeFactory` 对颜色、速度和变换做正常插值，模式在区间中点阶跃。
+- 普通 `pose` 属性轨道和逐骨骼 Pose 轨道先写运行时 Pose，`glint_layer` 最后只复制四个附魔字段，因此不会覆盖位移、缩放、旋转、颜色或光照。
+- 四个旧 Form 字段仅设为不可见，仍保留序列化和旧影片通道解析；兼容数据继续播放，但新 UI 只创建合成轨道。
+
 ## 变换空间
 
 VAO 顶点保持骨骼局部坐标直到 draw，因此使用：

@@ -112,6 +112,13 @@ Item 的第二次几何生成只捕获基础 RenderType。若物品本身带原�
 - 影片 Pose 编辑器不得再把骨骼列表强行拉伸到视口底部，避免新增或折叠附魔分组时把释放高度吸收到空列表区域。
 - 影片 Pose 的宽、窄两种自适应布局都必须把模式、颜色、速度与附魔层变换保留在同一个 `UISection` 中，与模型编辑面板一样可整体折叠。
 
+### R13 独立附魔层关键帧
+
+- 伪装编辑器中的附魔层分组默认折叠。
+- 影片与动画状态编辑器不再把逐骨骼附魔控件放在 `pose` 关键帧内部；新增一条独立的“附魔层”关键帧，统一编辑骨骼模式、颜色、速度和附魔层变换。
+- `glint`、`glint_color`、`glint_speed`、`glint_transform` 四条底层 Form 属性不再出现在关键帧轨道列表中；字段继续读取旧存档和旧影片，避免历史内容失效。
+- 独立附魔层轨道在普通 Pose/逐骨骼轨道之后应用，只覆盖逐骨骼附魔字段，不改动姿势、颜色和光照。
+
 ### 未覆盖范围（如实记录）
 
 **BOBJ 格式模型不支持骨骼附魔。** `BOBJModel.applyPose()` 带有原作者注释「lighting/color transform attributes are not supported in this branch」—— 该格式**从来就没有**任何 per-bone 颜色/光照数据通路，`BOBJModelVAO` 的颜色是整个 mesh 一次 draw call 的单值，不是逐骨骼。

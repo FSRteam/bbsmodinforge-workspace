@@ -119,6 +119,31 @@ cd new && ./gradlew build > build-glint.log 2>&1; echo "REAL_EXIT=$?"
 - [x] 四项回归合并后的串行验证：`testUiInputMailbox testFilmEditorMigration testClientStructuralRegistration compileClientJava --offline`，真实退出码 0，`BUILD SUCCESSFUL in 3m 8s`
 - [ ] 游戏内验收：模型效果/骨骼窗口与影片 Pose，在展开/折叠附魔层后均可直接滚到最底部，且无需缩放窗口刷新
 
+### S15 bbs_snow Pose 兼容与缺失插件影片防崩溃
+
+- [x] 从 `new/log/错误报告-2026-7-29_21.21.52` 确认两层故障：旧 Pose Mixin 找不到单元素 `add` 注入点；卸载插件后时间线直接读取空的 `ClipFactoryData`
+- [x] `UIPoseKeyframeFactoryMixin` 合并为数组 `add` 后置注入；宽、窄布局共用同一严格目标，保留 `require = 1`
+- [x] `UIClips` 提供静态复用的缺失剪辑颜色/图标，显示原插件类型，时间线与回放标尺统一使用安全入口
+- [x] 缺失插件剪辑不再提供转换菜单；原始序列化数据仍由 `MissingClip` 保留，可在插件恢复后重建
+- [x] `testClientStructuralRegistration`：`BUILD SUCCESSFUL in 3m 6s`
+- [x] `testPluginHotReload`：全部热重载门禁通过，含删除降级、重新安装恢复和 100 代切换
+- [x] BBS 核心 `jar`：`BUILD SUCCESSFUL in 36s`
+- [x] bbs_snow 一次性排除无关缺失入口后的源码编译：`BUILD SUCCESSFUL in 1m 10s`；字节码确认当前宿主宽/窄分支各有一个目标数组调用，Mixin 注解仍为 `require=1` + `AFTER`
+- [x] 以插件已完成入口 + 本次兼容修复构建可运行 JAR：`bbs-snow-addon-1.0.0.jar`，429,755 bytes，SHA-256 `F05128AD64DB29A83ED5A6EDA5FA4DF6EC503097F67A95273BF5023F1414BFE5`；审计确认未打包 BBS 核心类或流体半成品
+- [x] 严格客户端实际加载插件并执行宽/窄 Pose 运行验证：`S8 runtime verification passed`，客户端自动退出，`BUILD SUCCESSFUL in 2m 2s`
+- [ ] bbs_snow 完整构建：被工作区既有流体形态半成品阻塞，`BBSSnowModClient` 引用了尚不存在的 `mchorse.bbs_snow.forms.renderers.FluidFormRenderer`
+
+### S16 独立附魔层关键帧
+
+- [x] 伪装编辑器整体/逐骨骼附魔层 `UISection` 默认折叠。
+- [x] 从 `UIPoseKeyframeFactory` 宽、窄布局移除附魔层控件。
+- [x] 新增逐骨骼附魔层关键帧值、工厂和专用编辑器，支持模式阶跃、颜色/速度/变换插值及多骨骼编辑。
+- [x] 影片与动画状态轨道列表注册单独“附魔层”轨道，播放时最后覆盖 Pose 的附魔字段。
+- [x] 隐藏 `glint` / `glint_color` / `glint_speed` / `glint_transform` 四条底层属性轨道，同时保留旧数据读取与旧轨道播放。
+- [x] `compileJava compileClientJava --offline`：真实退出码 0，`BUILD SUCCESSFUL in 2m 48s`。
+- [x] `testUiInputMailbox testReplayKeyframeConsistency testFilmEditorMigration testClientStructuralRegistration compileClientJava --offline`：真实退出码 0，`BUILD SUCCESSFUL in 4m 26s`。
+- [x] `en_us.json` / `zh_cn.json` key 双向对等（1987/1987，零缺失）。
+
 ## 验证红线
 
 ⚠ **绝不能**用 `./gradlew ... | tail` 判断成败 —— 管道退出码取自 `tail`（恒 0），会吞掉 `BUILD FAILED`。
