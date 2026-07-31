@@ -25,6 +25,7 @@ This directory contains guidelines for backend development. Fill in each file wi
 | [Audio Export And Premiere Contract](./audio-export-premiere-contract.md) | Typed export lifecycle, artifact identity, mux teardown, and XMEML delivery | Active |
 | [Audio Verification Contract](./audio-verification-contract.md) | Hermetic, performance, strict-media, add-on, and manual-smoke gates | Active |
 | [Hot Plugin Runtime Contract](./hot-plugin-runtime-contract.md) | Artifact, watcher, generation routing, ownership, refresh, and teardown contracts | Active |
+| [Forms Rendering Contract](./forms-rendering-contract.md) | Additive blending per form type and RenderSystem blend-state lifecycle | Active |
 
 ---
 
