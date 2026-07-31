@@ -1,34 +1,68 @@
-﻿# Analysis: External recording loses enchantment data on equipped/held items
+# Analysis: External recording loses enchantment data on equipped/held items
 
-Date: 2026-07-31 (main-session analysis; sub-agent dispatch failed with a platform `reasoning_text` API error)
+Date: 2026-07-31
 
-## Recording/replay data path traced (workspace new/)
+## Confirmed root cause (NBT clearing hypothesis verified)
 
-1. "External" recording (`UIFilmController.startRecording` group "outside") closes the editor and starts `Recorder` (`Films.startRecording` -> `new Recorder(film, morph.getForm(), replayId, tick)`).
-2. `Recorder.update()`:
-   - `inventory.fromPlayer(player)` snapshots the full player inventory (Inventory.java), including armor/offhand slots when the vanilla container size covers them;
-   - `keyframes.record(tick, morph.entity, null)` captures `entity.getEquipmentStack(...).copy()` for main/off hand + all armor slots (ReplayKeyframes.record).
-3. Item values serialize through ItemStackKeyframeFactory using `ItemStack.CODEC` + `NbtOps`; `DataStorageUtils.toNbt/fromNbt` is type-faithful (byte/int/long arrays preserved, short arrays wrapped). No component-stripping was found in this chain.
-4. Replay applies equipment via `ReplayKeyframes.apply` -> `setEquipmentStack` and `ActionPlayer.applySafely` -> `actor.setItemSlot(...)`.
-5. `MobFormRenderer.synchronizeEntity` copies the source entity's stacks into the rendered form entity each frame; `ArmorRenderer.renderSlot` uses `itemStack.hasFoil()` for the enchantment glint. Item rendering is component-aware.
+- Replay keyframes and the film inventory serialize `ItemStack` through
+  `ItemStackKeyframeFactory`, which used `ItemStack.CODEC` with plain `NbtOps.INSTANCE`.
+- In Minecraft 1.21.1, `ItemStack.CODEC` encodes item components, and the enchantment
+  component uses `Enchantment.CODEC = RegistryFixedCodec.create(Registries.ENCHANTMENT)`.
+- `RegistryFixedCodec.encode/decode` both fail unless the `DynamicOps` is a
+  `RegistryOps` (checked against the remapped vanilla/NeoForge sources).
+- Therefore an enchanted item failed `encodeStart` and was stored as an empty map
+  (the user-visible "NBT cleared"); unenchanted items have no registry-backed
+  component, so they round-tripped normally.
+- The reference `bbs-fs-1.21.1` uses the same `ItemStack.CODEC` + `NbtOps` pattern,
+  so it shares the same latent defect.
 
-## Remaining suspect (needs one user confirmation)
+## First fix attempt (uncommitted, causes a runtime exception)
 
-`ActionPlayer.applySafely` gates equipment:
+- `ItemStackKeyframeFactory` gained a registry-aware `ops()` plus a static
+  `registryAccessProvider`; `BBSModClient` installs the current client level
+  registry access as the provider.
+- Automated round-trip test passes, but real recording/replay now throws:
 
-```
-boolean applyServerEquipment = shouldApplyServerActorEquipment(actorProjection, isolatedProjection, this.isRequesterAuthorized());
-// false -> all six slots are set to ItemStack.EMPTY
-```
+  java.lang.IllegalArgumentException: Can't find id for 'Reference{ResourceKey[minecraft:enchantment / minecraft:efficiency]=Enchantment ...}' in map net.minecraft.core.Registry$1
 
-So an unprivileged/isolated actor projection receives empty equipment (a deliberate security design documented in 07-17-new-runtime-consistency-fixes/manual-test.md). Whether this is the user-visible loss depends on which replay surface shows the bug:
+## Why the first fix attempt fails at runtime
 
-- Film editor preview / in-game playback as the recording owner -> equipment comes from the recorded keyframes and should keep components (chain above).
-- Playback seen by another player / targeted (isolated) playback -> equipment is intentionally emptied server-side.
+- `Registry$1` is `Registry.asHolderIdMap()`; the message is thrown by
+  `IdMap.getIdOrThrow` through `ByteBufCodecs.holderRegistry(...)`, i.e. the
+  network/stream encode path (`ByteBufCodecs.java:458-511`).
+- The static provider is client-global. Server-side playback therefore decodes
+  the recorded keyframes with the CLIENT level registry access, producing
+  enchantment holders bound to the client registry instance.
+- When `actor.setItemSlot(...)` later streams the stack with the SERVER registry
+  access (`RegistryFriendlyByteBuf`), the client-bound holder is not in the server
+  registry's id map, so encoding throws "Can't find id".
+- In an integrated server the client and server keep separate registry instances,
+  so one global provider cannot serve both sides.
 
-The user-reported "NBT 被清空" hypothesis was not confirmed by code inspection of the serialization path; the loss is most plausibly at the actor-equipment application gate or in a specific replay surface. Before implementing, confirm:
+## Required direction for the next fix
 
-1. Where is the loss observed: Film editor preview, in-game playback by the recorder, or playback viewed by a second player?
-2. Is the armor/weapon still visible (only the enchantment visuals/tooltip gone), or is the whole item gone?
+The registry context must follow the item's origin/destination, not one global:
 
-Evidence files (all in new/): film/Recorder.java, film/replays/ReplayKeyframes.java, film/replays/Inventory.java, utils/keyframes/factories/ItemStackKeyframeFactory.java, data/DataStorageUtils.java, actions/ActionPlayer.java, cubic/render/vanilla/ArmorRenderer.java.
+1. Recording (client): encode with the recorded entity/player level registry access
+   (client registries, because the stacks and their holders come from client entities).
+2. Server playback / server film load: decode with the server registry access
+   (`ServerLevel.registryAccess()`), so holders are server-bound and stream encoding works.
+3. Film editor preview (client): decode with the client level registry access.
+4. Keep the NBT format registry-independent (it already stores enchantment names as
+   ResourceLocations via RegistryFixedCodec), so cross-instance decode by name works.
+
+Suggested shape: thread `HolderLookup.Provider` (or registry access) explicitly into
+`ReplayKeyframes.record/apply/fromData`, `Inventory.fromPlayer/toData/fromData/stageForPlayer`,
+and the factory's `toData/fromData/tryFromData` overloads; do not rely on a static
+process-wide provider. `Inventory.stageForPlayer(player, list)` can use
+`player.registryAccess()`; `ActionPlayer.applySafely` decode can use the actor/server
+level; `Recorder.update` and the film editor can use the client level.
+
+## Status
+
+- Uncommitted changes remain in the workspace for the next session:
+  - src/main/java/mchorse/bbs_mod/utils/keyframes/factories/ItemStackKeyframeFactory.java
+  - src/client/java/mchorse/bbs_mod/BBSModClient.java
+  - src/replayKeyframeTest/java/mchorse/bbs_mod/ui/film/replays/ReplayIndexRemappingTest.java
+- Do not commit until the per-context registry provider fix is implemented and the user
+  verifies both recording and server-side replay of enchanted equipment.

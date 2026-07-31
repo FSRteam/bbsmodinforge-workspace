@@ -307,3 +307,36 @@ Verified MobForm Health:0 death animation fix (vanilla entity.tick dispatch, no 
 ### Next Steps
 
 - Trace external recording serialization vs bbs-fs-master; find enchantment data loss point.
+
+
+## Session 7: External recording enchantment data - root cause found, runtime regression recorded
+
+**Date**: 2026-07-31
+**Task**: External recording enchantment data - root cause found, runtime regression recorded
+**Branch**: `work/mcaxolotl-journal-init`
+
+### Summary
+
+Root cause: ItemStack.CODEC enchantment holders need RegistryOps; plain NbtOps silently emptied enchanted items at record time. First registry-aware fix passes round-trip test but fails at runtime because a global client registry provider makes server playback decode client-bound holders; ByteBufCodecs stream encode then throws 'Can't find id ... Registry'. Next step: per-context registry provider (client record/preview vs server playback/load). Changes left uncommitted for handoff.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9c39eb8f` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
