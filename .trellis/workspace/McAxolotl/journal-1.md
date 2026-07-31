@@ -249,3 +249,36 @@ Windows 上的行尾差异会波及 git 与测试两侧。工作区仓库通过 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 6: BBS-FS playback defect batch: MobForm death animation
+
+**Date**: 2026-07-31
+**Task**: BBS-FS playback defect batch: MobForm death animation
+**Branch**: `work/mcaxolotl-journal-init`
+
+### Summary
+
+Fixed MobForm {Health:0} preview death animation by keeping vanilla entity.tick() dispatch (reference parity) and preserving Pose.DYING after per-frame synchronization. Added source-level regression contract. User verified dragon dissolve and generic mob death in-game before commit.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9c39eb8f` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

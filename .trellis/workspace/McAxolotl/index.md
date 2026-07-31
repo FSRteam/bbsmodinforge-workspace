@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 5
-- **Last Active**: 2026-07-29
+- **Total Sessions**: 6
+- **Last Active**: 2026-07-31
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~251 | Active |
+| `journal-1.md` | ~284 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 6 | 2026-07-31 | BBS-FS playback defect batch: MobForm death animation | `9c39eb8f` | `work/mcaxolotl-journal-init` |
 | 5 | 2026-07-29 | 部署共享 Trellis 工作区并迁移历史记录 | - | `codex/bootstrap-trellis-workspace` |
 | 4 | 2026-07-26 | action state 层（未合入主仓，待续） | `a39c745d`, `46ecf0bc` | `feature/action-state-forms` |
 | 3 | 2026-07-26 | pose form 与 MobForm 编辑修复链 | `b544b789`, `3747bdf8`, `793b2a3d`, `76316eb6`, `78b99216` | `feature/pose-form-refactor` |
