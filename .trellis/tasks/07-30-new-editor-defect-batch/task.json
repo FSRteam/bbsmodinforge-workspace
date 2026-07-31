@@ -1,0 +1,33 @@
+{
+  "id": "new-editor-defect-batch",
+  "name": "new-editor-defect-batch",
+  "title": "new(bbs-FSR) 编辑器缺陷修复批次",
+  "description": "",
+  "status": "in_progress",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "McAxolotl",
+  "assignee": "McAxolotl",
+  "createdAt": "2026-07-30",
+  "completedAt": null,
+  "branch": "work/mcaxolotl-editor-defect-batch",
+  "base_branch": "master",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "07-30-anim-state-playhead-render",
+    "07-30-mobform-duplicate-render-gizmo",
+    "07-30-transform-axis-inversion",
+    "07-30-camera-tracker-bone-display-name",
+    "07-30-camera-flight-velocity-reset",
+    "07-30-mobform-additive-blending"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "6/6 子任务完成（分支 work/mcaxolotl-editor-defect-batch）。\n- 播放头渲染: c363c848\n- 追踪器骨骼名: 9fe77292\n- MobForm 重复渲染/Gizmo: 84591d17\n- 飞行速度残留: dbd65905\n- G/S/R 轴反转: 连带解决（重复渲染根因），无独立提交\n- MobForm 加色法: 7e201b70\n分支待后续在 GPT 区继续扩展/合入 PR。",
+  "meta": {}
+}
