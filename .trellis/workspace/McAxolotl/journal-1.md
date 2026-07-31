@@ -449,3 +449,33 @@ Supplemented the MobForm death fix commit message (9c39eb8f -> 4b2b1df0) and reb
 ### Status
 
 [OK] **Completed** - all McAxolotl plans done, PR submitted
+
+## Session 11: actor+fp issues deferred, frame-rate fix kept, PR flow corrected
+
+**Date**: 2026-08-01
+**Task**: 08-01-07-31-actor-fp-replay-invisible-render (deferred) / PR #14
+**Branch**: work/mcaxolotl-editor-defect-batch (new/); work/mcaxolotl-journal-init (trellis)
+
+### Summary
+
+Analyzed four actor+fp recording/playback problems against the bbs-fs-1.21.1 reference (invisible render, fp playback stuck, actor-off playback failure, actor-on rotation loss + flicker). Per user decision, all actor+fp changes were REVERTED and the analysis recorded in trellis task 08-01-07-31-actor-fp-replay-invisible-render for a future session. Only the morph-menu 3D preview frame-rate fix was kept (committed as f40d5a9b in new/).
+
+Also corrected the PR flow: the branch was mistakenly pushed to the personal fork; it was re-pushed directly to FSRteam/bbs-FSR, the fork-based PR #13 closed, and a new intra-repo PR #14 created (draft). The origin fetch refspec was widened (was master-only) so work/* branches are trackable.
+
+### Git Commits (new/)
+
+| Hash | Message |
+|------|---------|
+| f40d5a9b | fix(ui): keep UI preview animations interpolating while the game is paused |
+
+### PR
+
+- https://github.com/FSRteam/bbs-FSR/pull/14 (draft; fix(film): editor and playback defect fixes 07-30 + 07-31 batches + UI preview animation)
+
+### Status
+
+[OK] **In progress** (PR #14 draft; actor+fp issues deferred)
+
+### Next Steps
+
+- Future session: fix the deferred actor+fp recording/playback issues per the analysis in task 08-01-07-31-actor-fp-replay-invisible-render.
