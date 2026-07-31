@@ -366,7 +366,7 @@ Final approach in `ItemStackKeyframeFactory`: `currentRegistry()` uses the serve
 
 | Hash | Message |
 |------|---------|
-| cb605698 | fix(replay): preserve enchantment data for externally recorded equipment |
+| 9c4f4697 | fix(replay): preserve enchantment data for externally recorded equipment |
 
 ### Testing
 
@@ -381,3 +381,44 @@ Final approach in `ItemStackKeyframeFactory`: `currentRegistry()` uses the serve
 ### Next Steps
 
 - None - task complete
+
+## Session 9: Actor-mode Form gizmo anchor follow - fixed, plus additive blend leak fix
+
+**Date**: 2026-07-31
+**Task**: Actor-mode Form gizmo anchor follow (3/3)
+**Branch**: work/mcaxolotl-editor-defect-batch (new/); work/mcaxolotl-journal-init (trellis)
+
+### Summary
+
+Fixed gizmo placement for actor-mode film replays. Root cause: `BaseFilmController.renderEntity` skipped actor replays entirely, so `Gizmo.INSTANCE.captureVisual` never ran and the gizmo stayed fixed on screen (user repro "gizmo固定在监视器"). Fix: a `gizmoOnly` pass on `FilmControllerContext` that keeps capturing transform/pose/anchor matrices without drawing the editor form over the world actor. Also fixed: disabling a replay no longer leaves the gizmo on a stale matrix (`canShowGizmo` now requires `replay.enabled`).
+
+Incidental: analyzed and fixed MobForm additive blend leaking into nearby non-additive MobForms (opaque layers' clearRenderState is a no-op for blend, so (SRC_ALPHA, ONE) leaked into RenderSystem; `applyAdditiveBlend` now resets to default for non-additive forms and the render finally restores it). ModelForm intentionally NOT aligned (documented: it only does BRIGHTEN vertex colors, clamped at 255).
+
+### Main Changes
+
+- `BaseFilmController` / `FilmControllerContext` - gizmo-only render pass for actor replays
+- `UIFilmController` - canShowGizmo requires replay enabled
+- `MobFormRenderer` - additive blend no longer leaks
+- `PoseFormRegressionSourceTest` - source-level checks for all three fixes
+
+### Git Commits (new/)
+
+| Hash | Message |
+|------|---------|
+| 9c4f4697 | fix(replay): preserve enchantment data for externally recorded equipment (amended, body added) |
+| 6ba97618 | fix(film): keep gizmo placement following the replay anchor in actor mode |
+| a701adaf | fix(forms): stop additive blend leaking into later non-additive MobForms |
+
+### Testing
+
+- [OK] compileJava / compileClientJava pass
+- [OK] testReplayKeyframeConsistency, testUiInputMailbox (incl. new source checks), testFilmEditorMigration, testIkPhysicsConsistency, testFilmCollaborationApi, testBinaryCompatibility, testMatrixUtils, testUiMotions, testParticleRuntimeConsistency pass
+- [OK] User runtime verification: actor-mode gizmo follows anchor; disabled replay hides gizmo; nearby MobForm blocks no longer additive-polluted
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete. Batch 07-31-bbs-fs-playback-defect-batch now [3/3 done].
