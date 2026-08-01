@@ -914,3 +914,37 @@ Fixed the owner-aware pose UI verifier, passed strict S8 runtime verification an
 ### Next Steps
 
 - None - task complete
+
+## Session 25: 完成 FS 5848363c 到 FSR 的完整迁移
+
+**Date**: 2026-08-01
+**Task**: 完成 FS 5848363c 到 FSR 的完整迁移
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+将 FS 116ed397..5848363c 的适用行为完整迁移到 NeoForge 1.21.1 FSR，审计 154 个上游提交与 77 个拒绝补丁，保留 FSR 粒子、透明队列、远程输入、主题、音频和渲染边界；聚焦测试、完整 check/build 与差异检查通过，游戏内及 Iris/Photon 视觉矩阵仍明确待手工验证。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `94d2349f43b8d71dcf162e30f5f4294e3d9cc2e3` | (see git log) |
+| `88cbfaba0b222d59c0e5e270f029e699c308ceef` | (see git log) |
+| `a6c7e0bc35ea5b53484f9190aacbf50f8d9bd61f` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
