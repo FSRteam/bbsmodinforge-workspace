@@ -59,3 +59,29 @@ transition) was kept from this task's work.
 
 - Reverted: `film/BaseFilmController.java` (actor+fp changes).
 - Kept: `ui/framework/UIScreen.java` + `PoseFormRegressionSourceTest` paused check.
+
+## Addendum (2026-08-01, NBT 兼容性审查中发现的 actor+fp 相关渲染问题)
+
+来源：NBT 全面审查（代理 B 实体 NBT 路径审计 + 主会话验证），与 actor+fp 渲染直接相关，未修复（与任务决策一致：延期）。
+
+### A. `MobFormRenderer.synchronizeEntity` 无条件覆盖 NBT 装备
+
+- `src/client/java/mchorse/bbs_mod/forms/renderers/MobFormRenderer.java:909-917`
+- 每 tick 无条件用 `source.getEquipmentStack(slot)` 覆盖渲染实体全部 6 个装备槽。
+- 后果：手填的 MobForm NBT 装备（含附魔）在编辑器 UI 预览可见，但作为 morph/回放 actor 挂到 source 上时被清空（回放 actor 客户端实例装备 map 恒空，见 B）。
+- 候选修复：仅当 source 槽非空时覆盖（`stack.isEmpty()` 时保留 NBT 加载的槽位值），或加开关（如 `MobForm.ignoreEquipment`）。
+
+### B. `ActorEntity` 装备客户端不同步
+
+- `src/main/java/mchorse/bbs_mod/entity/ActorEntity.java:380-390`
+- `setItemSlot`/`getItemBySlot` 走内存 map，绕过 vanilla `SynchedEntityData` 装备同步；`defineSynchedData` 只声明 `PLAYBACK_WORLD_ISOLATED`。
+- 全仓无 `ClientboundSetEquipmentPacket`；装备通过 `CLIENT_ENTITY_FORM` 包以 form 形式发给客户端（`ServerNetwork.java:2832/2840`），渲染依赖 form 路径（`ActorEntityRenderer` → `MorphRenderer.renderForm(form)`）。
+- 数据层附魔保留完好（`ItemStackKeyframeFactory` registry-aware 已修），断链在渲染同步层。
+- 对照：影片编辑器预览用 `StubEntity`（`BaseFilmController.createEntities` 走 `replay.keyframes.apply`），装备能显示——说明意图是装备应渲染，世界 actor 路径缺同步。
+- 服务端装备应用受授权门控：`ActionPlayer.shouldApplyServerActorEquipment` = `!isolated && (!actor || authorized)`（`ActionPlayer.java:716-723`）。
+- 候选修复：对 ActorEntity 走 vanilla `setItemSlot`（不重写 map）以启用 entity-data 同步，或发自定义装备包给目标观众。
+
+### C. `FilmActorTimeline` 只携带 FormProperties
+
+- `src/client/java/mchorse/bbs_mod/film/FilmActorTimeline.java`
+- `apply` 只应用 `context.timeline(properties, tick, playing)`，不应用装备；actor 装备渲染完全依赖 form 路径（B）。

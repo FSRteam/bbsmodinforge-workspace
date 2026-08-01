@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 7
-- **Last Active**: 2026-07-31
+- **Total Sessions**: 14
+- **Last Active**: 2026-08-01
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~342 | Active |
+| `journal-1.md` | ~585 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,14 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 14b | 2026-08-01 | NBT 修复 PR #16 提交，会话收尾 | `4d89f78d` | `work/mcaxolotl-item-picker-nbt-registry` |
+| 14 | 2026-08-01 | NBT 全面审查 + 动画抽搐修复失败延期 | `4d89f78d` | `work/mcaxolotl-item-picker-nbt-registry` |
+| 13 | 2026-08-01 | 94be896c 不完整修复——物品选择面板 NBT 附魔变空气 | - | `work/mcaxolotl-item-picker-nbt-registry` |
+| 12 | 2026-08-01 | PR #14 final review and formalization | - | `work/mcaxolotl-editor-defect-batch` |
+| 11 | 2026-08-01 | actor+fp issues deferred, frame-rate fix kept, PR flow corrected | `f40d5a9b` | `work/mcaxolotl-editor-defect-batch` |
+| 10 | 2026-07-31 | Rebase commit messages and submit PR to FSRteam/bbs-FSR | `4b2b1df0`, `94be896c`, `514b2fe2`, `268a6353` | `work/mcaxolotl-editor-defect-batch` |
+| 9 | 2026-07-31 | Actor-mode Form gizmo anchor follow - fixed, plus additive blend leak fix | `514b2fe2`, `268a6353` | `work/mcaxolotl-editor-defect-batch` |
+| 8 | 2026-07-31 | External recording enchantment data - per-context registry fix implemented and committed | `94be896c` | `work/mcaxolotl-editor-defect-batch` |
 | 7 | 2026-07-31 | External recording enchantment data - root cause found, runtime regression recorded | `4b2b1df0` | `work/mcaxolotl-journal-init` |
 | 6 | 2026-07-31 | BBS-FS playback defect batch: MobForm death animation | `4b2b1df0` | `work/mcaxolotl-journal-init` |
 | 5 | 2026-07-29 | 部署共享 Trellis 工作区并迁移历史记录 | - | `codex/bootstrap-trellis-workspace` |

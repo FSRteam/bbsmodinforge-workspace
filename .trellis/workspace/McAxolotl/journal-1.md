@@ -501,3 +501,85 @@ Final review of PR #14 (10 commits, 16 files, 526 insertions): all commits have 
 ### Next Steps
 
 - New session: create a new feature branch from master.
+
+## Session 13: 94be896c 不完整修复——物品选择面板 NBT 附魔变空气
+
+**Date**: 2026-08-01
+**Task**: 08-01-08-01-item-picker-nbt-registry-ops
+**Branch**: work/mcaxolotl-item-picker-nbt-registry (new/)
+
+### Summary
+
+分析提交 94be896c（fix(replay): preserve enchantment data for externally recorded equipment），确认其修复不完整：只把 `ItemStackKeyframeFactory` 的序列化改为 registry-aware `RegistryOps`，但物品选择面板（`UIUnifiedPickOverlayPanel` 及死代码 `UIItemStackOverlayPanel`）仍用纯 `NbtOps.INSTANCE` 编解码 `ItemStack.CODEC`。导致附魔（registry-held 组件）物品在关键帧编辑器 NBT 框显示 `{}`，且任何一次合法 parse→decode 失败 → `ItemStack.EMPTY` → 物品变空气。
+
+修复：`ItemStackKeyframeFactory` 暴露 `public static currentOps()`（复用 per-call registry 解析），两个面板共 4 处 `NbtOps.INSTANCE` → `currentOps()`。新增回归测试 `testEnchantedItemPickerNbtRoundTrip` 覆盖面板的 encode/parse 往返（94be896c 的测试盲区）。
+
+### Git Commits (new/)
+
+| Hash | Message |
+|------|---------|
+| 4d89f78d | fix(ui): registry-aware NBT for item picker editing of enchanted items |
+
+### Status
+
+[OK] 实现完成；`compileJava`+`compileClientJava` 通过，`testReplayKeyframeConsistency` 全绿。待用户游戏内验证。
+
+### Next Steps
+
+- 用户在游戏内验证附魔物品 NBT 显示/编辑后可开 PR。
+- 经验：ItemStack.CODEC 任何调用点都必须用 registry-aware ops；纯 NbtOps 对 registry-held 组件（附魔/药水效果等）编解码失败。可考虑写入 spec。
+
+## Session 14: NBT 全面审查 + 动画抽搐修复失败延期
+
+**Date**: 2026-08-01
+**Task**: 08-01-08-01-item-picker-nbt-registry-ops（当前）；08-01-08-01-form-list-preview-animation-twitch（延期）
+
+### Summary
+
+1. **NBT 全面审查**（3 个并行代理 + 实证诊断）：确认 `ItemStack.save` 需 `HolderLookup.Provider`；`BlockState.CODEC` 纯 NbtOps 安全（实证）；实体 `saveWithoutId`/`load` 走 level registry 安全；`DataStorageUtils`/`ServerNetwork` 安全。唯一残留低危项 A2（`ItemStackKeyframeFactory` 静默 registry 回退）已建延期任务 `08-01-08-01-itemstack-factory-registry-fallback`（不修复）。
+
+2. **Form 列表预览动画抽搐**：4 个菜单列表缩略图默认动画抽搐重复。根因假设：`renderInUI` 不 tick 实体 → `tickCount` 冻结 → `ageInTicks = tickCount + partialTick` 振荡。两个例外统一为共享 renderer 被模型方块持续 tick（用户澄清"烈焰人例外"实为模型方块选中过的 Form）。实现 `advanceUIAnimation`（partial tick 回绕时 `entity.tick()`）+ 回归测试，编译与 5 个测试套件全绿。
+
+3. **用户游戏内验证：动画修复未解决问题**。按用户要求：动画修复代码全部回退，任务延期不修复（PRD 已记录），分支只保留 NBT 面板修复。
+
+### Git Commits (new/)
+
+| Hash | Message |
+|------|---------|
+| 4d89f78d | fix(ui): registry-aware NBT for item picker editing of enchanted items |
+
+（动画修复已回退，未提交；分支当前只含上述 NBT 提交）
+
+### 任务状态
+
+- `08-01-08-01-item-picker-nbt-registry-ops`：in_progress（NBT 修复保留，待游戏内验证）
+- `08-01-08-01-form-list-preview-animation-twitch`：延期不修复
+- `08-01-08-01-itemstack-factory-registry-fallback`：延期（A2）
+
+### Next Steps
+
+- 用户游戏内验证 NBT 面板修复后可开 PR。
+- 动画抽搐后续调查需先推翻"列表不 tick → ageInTicks 振荡"假设或换方向。
+
+## Session 14b: NBT 修复 PR 提交，会话收尾
+
+**Date**: 2026-08-01
+**Task**: 08-01-08-01-item-picker-nbt-registry-ops（completed）
+
+### Summary
+
+NBT 面板修复提交为 PR。PR #16 已创建：https://github.com/FSRteam/bbs-FSR/pull/16（分支 `work/mcaxolotl-item-picker-nbt-registry`，1 提交 `4d89f78d`）。PR 正文按以往风格（Summary + commit 表格 + Testing），不含未完成修复内容。自动化测试全绿；游戏内验证清单见 PR Testing 段。
+
+trellis 闭环：
+- `08-01-08-01-item-picker-nbt-registry-ops` → completed（PR #16）
+- `08-01-08-01-form-list-preview-animation-twitch` → planning（延期不修复）
+- `08-01-08-01-itemstack-factory-registry-fallback` → planning（延期 A2）
+- `08-01-07-31-actor-fp-replay-invisible-render` → planning（既有）
+
+### PR
+
+- https://github.com/FSRteam/bbs-FSR/pull/16 (OPEN, 待 review/merge)
+
+### Status
+
+[OK] Session closed; PR #16 ready for review.
