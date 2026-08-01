@@ -195,3 +195,22 @@ this.collectIKSheets(sheets, this.replay.form.get());
 this.viewport.pickGizmoForm(context, form, bone);
 this.startGizmo(context, Gizmo.STENCIL_TRACKBALL);
 ```
+
+## 8. Publishing Record
+
+The 2026-08-01 migration was pushed and opened as a draft pull request.
+
+```text
+github_cli_path = C:\Users\29617\AppData\Local\Programs\gh\gh.exe
+github_cli_version = 2.96.0
+github_account = snowstarll
+github_remote = https://github.com/FSRteam/bbs-FSR.git
+pushed_branch = codex/sync-fs-5848363-to-fsr
+pull_request = https://github.com/FSRteam/bbs-FSR/pull/15
+pull_request_state = draft
+```
+
+On this machine Git's global proxy pointed at an unavailable local port. The
+successful push used the authenticated GitHub CLI credential helper and cleared
+the stale proxy only for that Git command; do not overwrite the user's global
+proxy setting as part of a migration.
