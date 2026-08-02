@@ -623,3 +623,47 @@ trellis 闭环：
 
 - 可选：清理已合并/关闭 PR 的远端分支（`codex/sync-fs-5848363-to-fsr`、`codex/new-local-backup-20260727`）。
 - PR #15 引入的迁移尚待游戏内 transform/IK/相机/Dock/焊缝冒烟与 shader-off/Iris/Photon 视觉人工验证。
+
+---
+
+## Session 16: 仪表盘 dock NPE 与模型方块显示槽修复，PR #17 实测通过
+
+**Date**: 2026-08-02
+**Task**: `08-02-fix-dashboard-dock-npe`、`08-02-fix-modelblock-display-slot-placeholder`（均 completed）
+**Branch**: `new/` 仓 `work/mcaxolotl-ui-defect-batch`（PR #17）；本 journal 在 `work/mcaxolotl-journal-init`
+
+### Summary
+
+同日连修两个脚本客户端回归，合入同一批量 PR（2 提交），实测通过后更新 PR 描述并闭环 trellis。
+
+### Main Changes
+
+1. **仪表盘 dock NPE（模型方块右键 / b·0 键崩溃）**：`UIFilmPanel` 的 `final dock` 字段原在构造器第 252 行才赋值，而 NeoForge 移植给 `UIReplaysEditor`→`UIReplayPropertiesPanel`/`UIReplaysListPanel` 构造器新加了 `getEditPanelTopOffsetPx()`（解引用 `dock.isLocked()`）调用，导致懒构建仪表盘时 NPE。右键路径被 BlockableEventLoop 吞掉（"交互无效"），tick 路径（b/0）外抛致命崩溃。参考仓对应面板构造期不触碰 dock。修复：`dock` 构造提前到 editors 创建块之前，删除原 252 行重复赋值，接线时序不变；提交 `46613ff5`。
+2. **模型方块显示槽空槽被解码为占位（一/三人称与物品栏空白、挪动/中键拾取回弹）**：参考仓 `FormUtils.fromData` 解析失败返回 `null`；移植改为返回非空 `MissingForm`，叠加 `MapType.getMap(missing)` 返回空 Map，`ModelProperties.fromData` 把未设置的 display 槽（default/third/first/inventory）解成非空占位，`getForm(mode)` 不再回退默认 form → 各视角空白，重解析即"回弹"。团队观测为"bbs:anchor"（实为 `MissingForm`，anchor 是 BBS 的空表单概念）。修复：`fromData` 四槽改读 `data.getMap(key, null)`，空槽=null，与 `toData` 对称，且不改全局 MissingForm 保留特性；提交 `05473fd6`。
+3. **对参考仓验证 + 审查 + 建 PR**：两修复方向均与 `ref/java/mods/bbs-fs-1.21.1/src` 对照确认；`compileJava`/`compileClientJava`/`testClientStructuralRegistration`（含 ModelProperties 往返 + UIFilmPanel 结构）全绿。分支 `fix/bugfix-batch` 重命名为 `work/mcaxolotl-ui-defect-batch`（沿袭 `work/mcaxolotl-editor-defect-batch` 批量命名），推送并开 PR #17（conventional commit，正文按仓 PR 模板）。
+4. **实测通过**：模型方块右键开面板、b/0 开仪表盘不崩；手持一/三人称、物品栏图标、挪动与中键拾取显示均正常；PR 描述 Validation 更新勾选。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `46613ff5` | fix(ui): construct UIFilmPanel dock before replay editors |
+| `05473fd6` | fix(modelblock): keep unset display slots null in ModelProperties.fromData |
+
+### PR
+
+- https://github.com/FSRteam/bbs-FSR/pull/17 (OPEN，2 commits，待 review/merge)
+
+### Testing
+
+- [OK] compileJava / compileClientJava / testClientStructuralRegistration
+- [OK] 游戏内实测：右键、b/0、手持一/三人称、物品栏、挪动、中键拾取
+
+### Status
+
+[OK] Session closed; 两任务 completed，PR #17 ready for review。
+
+### Next Steps
+
+- PR #17 review/merge；合并后可清理远端 `work/mcaxolotl-ui-defect-batch`（视团队习惯）。
+- 完整 `./gradlew build` 留 CI；PR 描述已如实标注。
