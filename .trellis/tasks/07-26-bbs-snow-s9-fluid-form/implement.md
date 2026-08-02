@@ -50,6 +50,11 @@
 - Gate D：自动 verifier/build/JAR audit 全绿后才安装运行时 addon，并且先确认没有正在使用对应 JAR 的客户端。
 - Gate E：严格客户端通过后进入 Trellis check；人工视觉项可按父任务约定留给 S10，但必须有清单。
 
+## Validation record
+
+- 2026-08-03 00:40：strict 客户端 `-PrunVerification=1` 全绿（`S9 runtime verification passed: targets=61 settings=20 headers=2 pbrFactories=2 shaders=2 clips=3 clipTracks=25/8/14 s4Mixins=8 s5Mixins=6 s6Mixins=5 s7Mixins=22 s9Mixins=4`），fluid 契约/预算/确定性/renderer+editor 注册/premiere fence 全部通过；addon 提交 `e781493`（S9 主体）与 `565bc45`（strict 修复）。游戏内三 mode 视觉/交互项登记于 S10 `s9-manual-acceptance.md`（2026-08-02 创建）。
+- 构建：`verifyBbsCoreJar build` EXIT=0（2026-08-02 23:56 与 2026-08-03 00:15 两次），jar 审计含 fluid/sim/ui-forms 15 个类与全部新 mixin 条目。
+
 ## 风险与回滚点
 
 - `FluidFormRenderer` 旧实现 784 行，按 API 骨架→单 mode→共享 budget 的顺序迁移；任何阶段都保留可编译 checkpoint，不一次性粘贴整文件。

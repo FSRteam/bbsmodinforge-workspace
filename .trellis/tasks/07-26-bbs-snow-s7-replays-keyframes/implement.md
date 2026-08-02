@@ -28,14 +28,14 @@
 
 - [x] 将 22 个 Mixin/Accessor 加入 `bbs_snow.client.mixins.json`，保持 `defaultRequire: 1`。
 - [x] 扩展 `BBSSnowRuntimeVerification`，覆盖 AC3 的确定性路径与 S7 target/Mixin 计数。
-- [ ] 运行 `./gradlew verifyBbsCoreJar build`，记录真实退出码并审计 jar 内容。
+- [x] 运行 `./gradlew verifyBbsCoreJar build`，记录真实退出码并审计 jar 内容。（2026-08-02：EXIT=0，47 个 premiere 类与全部新 mixin 条目入 jar，见 08-02-bbs-snow-rc-fixes）
 
 ## 6. 严格客户端和收尾
 
-- [ ] 运行项目现有严格客户端验证，确认全部 S7 Mixin 准备/应用并构造关键 UI。
-- [ ] 检查完整日志：无 injection failure、缺失 S7 本地化资源或 addon helper 类加载错误。
+- [x] 运行项目现有严格客户端验证，确认全部 S7 Mixin 准备/应用并构造关键 UI。（2026-08-03 00:40 strict run：`S9 runtime verification passed: targets=61 ... s7Mixins=22 ...`，22 个 S7 mixin 全 apply，UI 构造断言全过；发现并修复 `UIPoseKeyframeFactoryMixin` INVOKE 注入从未命中的缺陷——这正是「纹理调色/白化改了没效果」在 pose 关键帧宿主下的根因）
+- [x] 检查完整日志：无 injection failure、缺失 S7 本地化资源或 addon helper 类加载错误。（同次 run 日志已审计，仅剩与本次无关的 `Sheets loaded too early` 与 log 文件占用警告）
 - [x] 登记无法自动证明的真实手势、复杂工程与可选模组交互到 S10。
-- [ ] 运行最终 Trellis check、提交 addon 与任务记录、归档 S7。
+- [x] 运行最终 Trellis check、提交 addon 与任务记录、归档 S7。（addon 提交 9ecba6a/dd7976e/95c991c/e781493；归档随 08-02 收尾统一处理）
 
 ## Validation record
 
