@@ -583,3 +583,41 @@ trellis 闭环：
 ### Status
 
 [OK] Session closed; PR #16 ready for review.
+
+
+## Session 15: PR #15 审批并 squash 合并（FS 5848363c 迁移）
+
+**Date**: 2026-08-02
+**Task**: PR #15 审批并 squash 合并（FS 5848363c 迁移）
+**Branch**: `work/mcaxolotl-journal-init`
+
+### Summary
+
+审批并合并 PR #15（[codex] Sync FS 5848363c migration to FSR，作者 snowstar）。
+
+### Main Changes
+
+1. **PR 状态**：OPEN → `MERGEABLE` 但 `mergeStateStatus: BLOCKED`（`REVIEW_REQUIRED`，零审批）。
+2. **审批**：`gh pr review 15 --approve` 后 `reviewDecision: APPROVED`、`mergeStateStatus: CLEAN`。
+3. **合并**：用户确认后 `gh pr merge 15 --squash`，`mergedAt 2026-08-02`，merge commit `b66871f5`，状态 MERGED。
+4. **PR 内容**（snowstar 的 codex 会话产物）：FS `116ed397..5848363c` 行为迁移到 NeoForge 1.21.1 FSR；154 个上游提交 disposition：131 迁移 / 19 等价或已被取代 / 4 有意排除 / 0 阻塞。包含四元数变换、变换空间、拆分拖动策略、数字输入、DLS/classic IK、多目标求解、bone DoF、焊缝诊断、bone 选择器、轨道/正交相机编辑、冻结胶片帧、关键帧悬停预览、统一 Dock 行为、FormFrameCache；恢复胶片预览轴、ValueOrder 插入、replay 地面/疾跑状态三项修复；保留 FSR 远程输入保护、主题/音频/视频控制、粒子所有权、FormTranslucentQueue、glint/盔甲行为、预览姿态复用。
+5. **验证**：testUiInputMailbox / testFilmEditorMigration / testIkPhysicsConsistency / testReplayKeyframeConsistency / testAudioVerification / compileJava compileClientJava / check / build / git diff --check 全绿；严格 ffmpeg/ffprobe 媒体探测跳过（本地无工具）；游戏内 transform/IK/相机/freeze/Dock/焊缝冒烟与 shader-off/Iris/Photon 视觉检查仍待人工验证。
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b66871f5195a5d476662c685d3e8686d7107b6e2` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
