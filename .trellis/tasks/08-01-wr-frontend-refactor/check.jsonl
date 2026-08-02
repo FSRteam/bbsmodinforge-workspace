@@ -1,0 +1,5 @@
+{"file": ".trellis/tasks/08-01-wr-frontend-refactor/prd.md", "reason": "验收标准逐条核对：拆分、WebTest 导出、UX 修复、check 全绿"}
+{"file": ".trellis/tasks/08-01-wr-frontend-refactor/design.md", "reason": "核对模块归属、加载顺序、WebTest 形状是否与实现一致"}
+{"file": "bbs-web-remote/src/webTest/", "reason": "现有 8 个 webTest 全绿是本任务回归安全网；新增测试也放此目录"}
+{"file": "bbs-web-remote/build.gradle", "reason": "webRuntimeScripts 列表、verifyWeb 覆盖新文件、check 依赖"}
+{"file": "bbs-web-remote/src/client/resources/assets/bbswebremote/web/index.html", "reason": "script 加载顺序、诊断分级 DOM、toast 历史 DOM、demo 退出入口"}

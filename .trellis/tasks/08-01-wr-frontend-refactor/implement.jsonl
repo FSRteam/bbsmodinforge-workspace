@@ -1,0 +1,8 @@
+{"file": ".trellis/tasks/08-01-wr-frontend-refactor/prd.md", "reason": "需求、约束、验收标准的唯一来源；子代理实现前必须读"}
+{"file": ".trellis/tasks/08-01-wr-frontend-refactor/design.md", "reason": "模块划分、命名空间加载契约、UX 修复设计；决定文件结构与数据流"}
+{"file": ".trellis/tasks/08-01-wr-frontend-refactor/implement.md", "reason": "分步执行计划与回滚点；子代理按 Step 推进"}
+{"file": ".trellis/tasks/07-30-wr-ux-transport-feedback/prd.md", "reason": "toast 队列/历史、传输降级可见的原始需求与验收"}
+{"file": ".trellis/tasks/07-30-wr-ux-error-i18n/prd.md", "reason": "错误人话化前端部分的原始需求（映射表、reportError、兜底）"}
+{"file": ".trellis/tasks/07-30-wr-ux-interaction-polish/prd.md", "reason": "控制权文案、诊断分级、触摸可发现、demo/空状态的原始需求"}
+{"file": "bbs-web-remote/src/webTest/session-lifecycle.test.js", "reason": "webTest 加载方式与 WebTest 用法范例；拆分后 require 行须同步"}
+{"file": "bbs-web-remote/src/webTest/floating-toolbar.test.js", "reason": "FakeElement 模拟 DOM 的测试范式，新增模块测试仿此"}

@@ -915,6 +915,91 @@ Fixed the owner-aware pose UI verifier, passed strict S8 runtime verification an
 
 - None - task complete
 
+## 08-01 Death Keyframe Track (in_progress)
+
+### Task
+- 为 ReplayKeyframes 新增 death 关键帧通道，驱动死亡红闪 + 倒下动画。
+
+### 实施
+- `ReplayKeyframes`: 新增 `death` KeyframeChannel（DOUBLE），加入 CURATED_CHANNELS + add()；record() 采集 `isDead() ? 1 : 0`；新增 `applyDeath()` 将 0..1 映射到 0..20 deathTime，空通道 guard（不触碰死亡状态，backward compatible）；apply() 复用 applyDeath。
+- `IEntity`: 新增 default 方法 `isDead()/getDeath()/setDeath(float)`。
+- `MCEntity`: 映射到 `livingEntity.deathTime`（cast int）+ `isDeadOrDying()`。
+- `StubEntity`: 独立 `death` 字段。
+- `BaseFilmController`: overlay 计算加 `|| entity.isDead()`；actor overlay 由 apply() 内部 applyDeath 驱动。
+- 测试：`ReplayIndexRemappingTest` 新增 `testDeathKeyframeChannel` 往返测试。
+
+### 验证
+- `compileJava compileClientJava` BUILD SUCCESSFUL
+- `testReplayKeyframeConsistency` PASS（含新 death 测试）
+- trellis-check 子代理审查：修复 P1 空通道 setDeath(0) 回归（isEmpty guard）、P3 冗余 applyDeath 调用；补 death 往返测试。
+
+### 下一步
+- 子任务 B `08-01-cataclysm-armor-compat`: 灾变盔甲兼容（含 StubEntity 预览注入 + Cursium ghost 半透明层）。
+- 提交：等待用户确认，只提交 new/ 内本任务相关文件（避免误提交其他会话改动）。
+
+## 08-01 Cataclysm Armor Compat (in_progress)
+
+### Task
+- 让 BBS 盔甲关键帧轨道正常渲染 L_Ender's Cataclysm 模组自定义盔甲（含编辑器预览 + Cursium ghost 半透明层）。
+
+### 反编译确认
+- Cataclysm 3.32 / Lionfish-API 3.1 (1.21.1 NeoForge)：Lionfish 纯动画库无盔甲类；灾变盔甲全走标准 `IClientItemExtensions.getHumanoidArmorModel()`，模型 extends HumanoidModel，物品 extends ArmorItem。
+- Cursium ghost 特效 = `CMRenderTypes.GHOST`（energy-swirl shader + TRANSLUCENT + LEQUAL 深度）。
+
+### 实施
+- 缺口 A（编辑器预览解析 mod 盔甲）：
+  - `StubEntity` 新增 `entityOverride` + `setEntityOverride/getEntityOverride/isMcEntity/getMcEntity`。
+  - `ArmorRenderer.resolveModel` 扩展 MCEntity + StubEntity 双分支。
+  - `BaseFilmController` 新增 `resolvePreviewLivingEntity()` 钩子（默认 null），`createEntities` 注入 StubEntity override。
+  - `FilmEditorController` 覆写返回 `Minecraft.getInstance().player`。
+- 缺口 B（Cursium ghost 半透明层）：
+  - `ArmorRenderer` 新增 `isCursium()`（registry id 匹配）、`renderGhost()`（Tesselator 构建 mesh + FormTranslucentQueue.RenderLayerCommand 半透明延迟提交）、`uploadGhost()`。
+  - 自定义 `GHOST_RENDER_TYPE`（energy-swirl shader + TRANSLUCENT_TRANSPARENCY + LEQUAL + COLOR_DEPTH_WRITE，对应灾变 getGhost）。
+
+### 验证
+- `compileJava compileClientJava` BUILD SUCCESSFUL
+- `testReplayKeyframeConsistency` PASS
+- trellis-check 子代理审查：修复 depthWrite 矛盾（RenderLayerCommand depthWrite false→true）、排序原点回退（改用 modelView 平移量）；确认纹理路径 `cursium_armor_ghost.png` 在 3.32 jar 存在。
+
+### 下一步
+- 运行时冒烟（人工）：装配 Cataclysm 3.32 + Lionfish-API 到 dev mods，验证 actor 回放 + 编辑器预览的灾变盔甲显示 + Cursium ghost 效果。
+- 提交：等用户确认，只提交 new/ 内本任务相关文件。
+
+
+## Session 26: webremote 前端重构 app.js 拆分 + R5 UX
+
+**Date**: 2026-08-02
+**Task**: wr-frontend-refactor
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+bbs-web-remote 浏览器端从 5852 行单体 `app.js` 拆为 7 模块（protocol/error/style/media/input/control/ui/app），App 类 2130 行 / 126 方法；非 App 代码减 3700 行。重构中实现了 R5 UX（控制权文案三态收敛、诊断分级+localStorage 偏好、demo 进出/空状态引导、聚焦提示可见、触摸手势说明、修饰锁一键清除），并核验 R3 传输降级可见已全覆盖。
+
+### Main Changes
+
+- **Step 1 (error.js)**：`currentLocale`/`ERROR_MESSAGES`/`humanizeError` → ns.Error
+- **Step 2 (style.js)**：9 个颜色/几何工具 + `TintedImageCache` → ns.Style
+- **Step 3 (media.js)**：8 个媒体渲染/传输类簇 + 6 个依赖函数 → ns.Media
+- **Step 4 (input.js)**：`RemoteInput` + 触摸/修饰锁逻辑 → ns.Input
+- **Step 5 (ui.js)**：`FloatingToolbar` + `readToolbarState`/`writeToolbarState` → ns.UI
+- **Step 6 (control.js)**：新增 `controlStateLabel()` 纯函数 → 观看中/可控制/操作中三态文案收敛
+- **Step 7 (R3 诊断分级+传输降级)**：诊断面板拆基础+高级折叠；核验 `setTransportOverlay` 四种可见态已全覆盖
+- **Step 8 (R5 交互打磨)**：demo 退出+空状态引导+聚焦提示可见+触摸手势说明+修饰锁清除
+- **Step 9 (全量核对验证)**：`./gradlew check` exit 0（1m46s）；9 webTest 全绿；WebTest 导出完备
+
+### Testing
+
+- `verifyWeb` (9 test × Node) — all passed
+- `check` (testCoControl/testRemoteAccessInfo/verifyWeb) — BUILD SUCCESSFUL
+- 新增 `control-state-label.test.js` (7 断言)
+- 管道退出码：`> /tmp/x.out; echo REAL_EXIT=$?` 双确认
+
+### Status
+
+[IN_PROGRESS] — 手工冒烟清单待用户确认后提交
+
+
 ## Session 25: 完成 FS 5848363c 到 FSR 的完整迁移
 
 **Date**: 2026-08-01
