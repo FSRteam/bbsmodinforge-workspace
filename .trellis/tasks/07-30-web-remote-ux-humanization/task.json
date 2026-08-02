@@ -23,7 +23,8 @@
     "07-30-wr-ux-browser-onboarding",
     "07-30-wr-ux-transport-feedback",
     "07-30-wr-ux-error-i18n",
-    "07-30-wr-ux-interaction-polish"
+    "07-30-wr-ux-interaction-polish",
+    "08-01-wr-frontend-refactor"
   ],
   "parent": null,
   "relatedFiles": [],

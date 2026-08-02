@@ -15,6 +15,7 @@ This directory contains guidelines for frontend development. Fill in each file w
 | Guide | Description | Status |
 |-------|-------------|--------|
 | [BBS UI Theming](./bbs-ui-theming.md) | Mod UI (new/) theme token rules: semantic colors, alpha composition, hot-path red lines | Active |
+| [Web Remote Browser Client](./web-browser-client-architecture.md) | bbs-web-remote web bundle: IIFE ns module contract, WebTest export, no-service code rule | Active |
 | [Directory Structure](./directory-structure.md) | Module organization and file layout | To fill |
 | [Component Guidelines](./component-guidelines.md) | Component patterns, props, composition | Partial |
 | [Hook Guidelines](./hook-guidelines.md) | Custom hooks, data fetching patterns | To fill |

@@ -22,7 +22,7 @@ DoD = `prd.md` AC 全部满足。
 - [x] build.gradle `webRuntimeScripts` 加 error.js；index.html `<script>` 加 error.js（在 app.js 前）。
 - [x] 8 个 webTest require 行补 error.js（置于 protocol.js 后、app.js 前）。
 - [x] 验证：`./gradlew verifyWeb` 真实 exit 0 + 8 测试全过。**回滚点 R1**。
-- [ ] 后续：R4 的 `ERROR_MESSAGES` 扩展 + `reportError` 人话化留到实现 UX 时做（Step 7/8 前）。
+- [x] **R4 扩展**：`ERROR_MESSAGES` 已含网络/HTTP 失败映射；`reportError` 用 `humanizeError(error).text`（人话 + 兜底），`console.error` 保留原始串——原始技术串仅进 console，不进用户 toast。
 
 ## Step 2 — style.js（颜色/几何工具 + TintedImageCache）
 
@@ -64,7 +64,7 @@ DoD = `prd.md` AC 全部满足。
 - [x] build.gradle：`webRuntimeScripts` 加 control.js + `verifyWebControlSyntax` + verifyWebAppSyntax 索引 [7]；index.html/webTest 补 control.js。
 - [x] 新增 `webTest/control-state-label.test.js`（四态文案收敛，7 断言），注册 `testWebControlStateLabel`。
 - [x] 验证：`verifyWeb` 真实 exit 0 + 9 测试全过。
-- [ ] *注：`diagRole` 诊断文案保留原有详细描述（"协控 · 持有操作权"），session-lifecycle 锚定，与面向用户三态主线不冲突。
+- [x] *注：`diagRole` 诊断文案保留原有详细描述（"协控 · 持有操作权"），session-lifecycle 锚定，与面向用户三态主线不冲突。
 
 ## Step 7 — R3 传输降级可见 + 诊断分级
 
