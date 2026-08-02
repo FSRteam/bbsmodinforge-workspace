@@ -1033,3 +1033,37 @@ bbs-web-remote 浏览器端从 5852 行单体 `app.js` 拆为 7 模块（protoco
 ### Next Steps
 
 - None - task complete
+
+
+## Session 26: Frontend refactor: app.js modular split + R5 UX polish
+
+**Date**: 2026-08-02
+**Task**: Frontend refactor: app.js modular split + R5 UX polish
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+拆分 webremote bundle（app.js 5852→2729 行，App 类 2130 行）：8 模块 IIFE ns 契约（error/style/media/input/control/ui/app），WebTest 导出向后兼容，9 webTest 全绿。R5 UX：controlStateLabel 三态文案收敛（观看中/可控制/操作中）+ 新测试、诊断面板基础/高级分级 + localStorage 偏好、canvasHint 聚焦提示可见、demo 退出入口 + 空状态按权限引导、修饰锁一键清除、首次触摸手势说明。R3 传输降级/自动换档可见确认既有覆盖。check 全绿（exit 0）。spec 新增 web-browser-client-architecture.md。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `387e4ab` | (see git log) |
+| `206bed9` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

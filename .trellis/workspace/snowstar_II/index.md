@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 25
-- **Last Active**: 2026-08-01
+- **Total Sessions**: 26
+- **Last Active**: 2026-08-02
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~950 | Active |
+| `journal-1.md` | ~1069 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 26 | 2026-08-02 | Frontend refactor: app.js modular split + R5 UX polish | `387e4ab`, `206bed9` | `codex/bootstrap-trellis-workspace` |
 | 25 | 2026-08-01 | 完成 FS 5848363c 到 FSR 的完整迁移 | `94d2349f43b8d71dcf162e30f5f4294e3d9cc2e3`, `88cbfaba0b222d59c0e5e270f029e699c308ceef`, `a6c7e0bc35ea5b53484f9190aacbf50f8d9bd61f` | `codex/bootstrap-trellis-workspace` |
 | 24 | 2026-07-29 | 完成最新 FS 到 FSR 迁移 | `4143499b19d0f6138b7f8e8e1ff729a5a7ecbf77`, `a2261da` | `codex/bootstrap-trellis-workspace` |
 | 23 | 2026-07-29 | Complete BBS Snow S8 clips | `75854ef`, `e0fc678` | `codex/bootstrap-trellis-workspace` |
