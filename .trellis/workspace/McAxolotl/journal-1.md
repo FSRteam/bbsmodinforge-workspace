@@ -700,3 +700,36 @@ Analyzed the bbs-fs 2.5 migration delta (b66871f5): 2.5 switched bone lists from
 ### Next Steps
 
 - None - task complete
+
+
+## Session 17: Session 18 - tracker attachment picker adopts 2.5 tree + display names
+
+**Date**: 2026-08-03
+**Task**: Session 18 - tracker attachment picker adopts 2.5 tree + display names
+**Branch**: `work/mcaxolotl-journal-init`
+
+### Summary
+
+Follow-up defect from session 17: tracker clip attachment picker on MobForm still showed the old flat alphabetical list with raw internal matrix keys. Root cause: UIBoneTreeList.fillAttachments' formNodes only walked ModelForm subtrees, so pose form bones fell into the flat safety net (regressed the 9fe77292 display-name fix during the 2.5 migration). Fix in UIBoneTreeList: PoseForm branch builds the bone tree from BoneHierarchy (boneHierarchyRoots + remapFormKeys to matrix keys), safety net shows last path segment. Values stay exact collectMatrices() keys (TrackerFrame.resolve unaffected). Full test-strict build passed; trellis-check 0 defects. Commit 51b90e10 on work/mcaxolotl-tracker-attachment-bone-display (stacked on 309f5c24).
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `51b90e10` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
