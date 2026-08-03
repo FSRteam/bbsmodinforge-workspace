@@ -85,6 +85,10 @@ Invariants:
 - `treeLabel == fullLabel == labels[id]` — flat search mode (host sets
   `list.flat(!query.isEmpty())`) and tree mode agree on labels.
 - Search flattening is the host's job (`UIBoneList.filter`), not the tree list's.
+- `fillAttachments(form, keys)` walks ModelForm subtrees (`formBoneNodes`) AND
+  PoseForm bones (`formBoneHierarchyNodes` → `boneHierarchyRoots` + `remapFormKeys`);
+  node ids are matrix keys (`combinePaths(formPath, bone.id())`), labels are display
+  names. Without the PoseForm branch, mob/pose form bones fall flat as raw ids.
 
 ### Gotcha: flat MobForm bone lists are a legacy style
 
