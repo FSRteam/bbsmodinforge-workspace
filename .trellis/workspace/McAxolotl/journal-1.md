@@ -667,3 +667,36 @@ trellis 闭环：
 
 - PR #17 review/merge；合并后可清理远端 `work/mcaxolotl-ui-defect-batch`（视团队习惯）。
 - 完整 `./gradlew build` 留 CI；PR 描述已如实标注。
+
+
+## Session 16: Session 17 - MobForm bone lists adopt 2.5 hierarchy tree display
+
+**Date**: 2026-08-03
+**Task**: Session 17 - MobForm bone lists adopt 2.5 hierarchy tree display
+**Branch**: `work/mcaxolotl-journal-init`
+
+### Summary
+
+Analyzed the bbs-fs 2.5 migration delta (b66871f5): 2.5 switched bone lists from flat label rows to UIBoneTreeList outliner trees, synced only for IModel paths; MobForm (BoneHierarchy) paths stayed flat. Adapted all three MobForm bone-list paths (form panel pose editor, film pose keyframes, glint keyframes) to the tree style via new UIBoneTreeList.setHierarchy(BoneHierarchy, hidden, labels); removed dead hierarchicalLabels/getLabels(indent) code. Nested repo commit 309f5c24 (7 files, +103/-22); full test-strict build passed; trellis-check 0 defects. Spec: frontend/component-guidelines.md bone-list tree contract.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `13f95ef2` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

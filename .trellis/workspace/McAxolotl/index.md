@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 15
-- **Last Active**: 2026-08-02
+- **Total Sessions**: 16
+- **Last Active**: 2026-08-03
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~623 | Active |
+| `journal-1.md` | ~702 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 16 | 2026-08-03 | Session 17 - MobForm bone lists adopt 2.5 hierarchy tree display | `13f95ef2` | `work/mcaxolotl-journal-init` |
 | 15 | 2026-08-02 | PR #15 审批并 squash 合并（FS 5848363c 迁移） | `b66871f5195a5d476662c685d3e8686d7107b6e2` | `work/mcaxolotl-journal-init` |
 | 14b | 2026-08-01 | NBT 修复 PR #16 提交，会话收尾 | `4d89f78d` | `work/mcaxolotl-item-picker-nbt-registry` |
 | 14 | 2026-08-01 | NBT 全面审查 + 动画抽搐修复失败延期 | `4d89f78d` | `work/mcaxolotl-item-picker-nbt-registry` |
