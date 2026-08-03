@@ -3,7 +3,7 @@
 ## 结果速览（2026-08-03 收尾）
 
 - 构建：`verifyBbsCoreJar build` EXIT=0（×3），jar 审计通过。
-- strict 客户端：`-PrunVerification=1` 全绿（S9 runtime verification passed，targets=61，s7=22/s9=4 mixin，无 injection failure）。
+- strict 客户端：`-Pverify=1` 全绿（S9 runtime verification passed，targets=61，s7=22/s9=4 mixin，无 injection failure）。注：verify 开关在 08-03 改为 `-Pverify=1`（NeoGradle runs DSL tokenizer 会把含 "run" 前缀的标识符误解析成 run 类型）。
 - addon 提交：`9ecba6a` premiere、`dd7976e` texture-grade 修复、`95c991c` follow-orbit、`e781493` fluid S9、`565bc45` strict 修复。
 - 关键发现 1：GPT 的三个「没效果」中，**纹理调色/白化在 pose 关键帧宿主下确实有一个真 bug**——`UIPoseKeyframeFactoryMixin` 的 INVOKE 注入 owner 写成 `UIPoseFactoryEditor`，但字节码里 `add` 调用的 owner 是 `UIElement`，回调从未触发；已改为 RETURN 注入并加幂等 guard。
 - 关键发现 2：`UIModelPoseEditor` 在 FSR 已改名 `UIPoseFormEditor`，verification 目标列表一并修正。
