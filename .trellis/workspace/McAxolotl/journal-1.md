@@ -733,3 +733,45 @@ Follow-up defect from session 17: tracker clip attachment picker on MobForm stil
 ### Next Steps
 
 - None - task complete
+
+
+## Session 19: tracker desync in actor-mode replay (record-only) + tracker attachment PR
+
+**Date**: 2026-08-03
+**Task**: `08-03-08-03-tracker-actor-replay-desync`（记录分析，不修复）/ PR #18
+**Branch**: `work/mcaxolotl-journal-init`
+
+### Summary
+
+分析"摄像机编辑器 TrackerClip 追踪演员模式回放在运动时不同步有延迟"。三条代码可证的根因候选已记录进新任务 `08-03-08-03-tracker-actor-replay-desync`（已归档）：
+
+- **A. 时间基准差 1 tick**：实体在影片 tick `C+1` 处被 keyframes 应用（`kf(C+1)/prev kf(C)`），摄像机剪辑在 `(C+1, p)` 评估 → 路径处于 `C+1+p`，实体插值处于 `C+p`。纯位置追踪同步，relative 模式 / 编辑器反向求解时路径行程超前一个 tick 的路径速度。
+- **B. 演员位置多写者竞争**：服务端 `ActionPlayer.applySafely`（网络包 → vanilla `lerpSteps`）、vanilla `baseTick`、客户端 `applyActorReplay` 三方写 ActorEntity；任一次断言失败（actors 映射过期等）→ 可见演员落到网络滞后位置，追踪器（采样干净编辑器实体）领先。与既有任务 `08-01-07-31-actor-fp-replay-invisible-render` research Problem 4 一致。
+- **C. 骨骼采样源差异**：追踪器采样编辑器 StubEntity，用户看到世界 ActorEntity，姿态相位不同源。
+
+另按用户要求推送 PR #18（`work/mcaxolotl-tracker-attachment-bone-display` → FSRteam/bbs-FSR master，2 提交 309f5c24 + 51b90e10，追踪器附件选择器 2.5 树形显示）。
+
+### Main Changes
+
+- trellis：新建并归档任务 `08-03-08-03-tracker-actor-replay-desync`（prd.md + research/analysis.md，记录型，不修复）
+- new/ 仓库：`gh pr create` → https://github.com/FSRteam/bbs-FSR/pull/18
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| (待提交) | chore(task): archive 08-03-08-03-tracker-actor-replay-desync |
+| (待提交) | chore: record journal |
+
+### Testing
+
+- [OK] 无代码改动；分析基于代码走查（WorldFilmController/FilmEditorController/RunnerCameraController/TrackerFrame/BaseFilmController.applyActorReplay/ActionPlayer.applySafely/ActorEntity.tick）
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- PR #18 待 FSRteam 合入
+- 追踪器延迟问题待未来会话按 prd 验证步骤（A/B/C 区分）决定是否修复
