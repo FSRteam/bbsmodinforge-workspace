@@ -40,7 +40,14 @@
 
 ## 提交前检查
 
-- [ ] client 编译通过；`build`（含测试）通过
-- [ ] 无 `getLabels(true)` / `hierarchicalLabels` 残留
-- [ ] IModel 路径（model 面板、IK/物理/约束、拾取弹窗）未改动文件确认（git diff 复查）
-- [ ] 删除工作区 `.tmp/upstream-*` 参考克隆（或确认其被 .gitignore 覆盖）
+- [x] client 编译通过；`build`（含测试）通过（exit 0；UIMotionsTest / BBSUiSurfacePlacementTest / VideoExportUtilsTest 均通过）
+- [x] 无 `getLabels(true)` / `hierarchicalLabels` 残留（trellis-check 代理 grep 确认）
+- [x] IModel 路径（model 面板、IK/物理/约束、拾取弹窗）未改动文件确认（diff 仅限 7 文件）
+- [x] 删除工作区 `.tmp/upstream-*` 参考克隆
+
+## 实施结果
+
+- 提交：`new/` 仓库 `309f5c24`（feat(ui): render MobForm bone lists as 2.5 hierarchy trees，7 文件 +103/−22）
+- spec：`.trellis/spec/frontend/component-guidelines.md` 新增"Bone List Display Contract (2.5 hierarchy tree)"
+- trellis-check：0 缺陷，3 条非阻塞观察（风格/死分支/glint 孤儿渲染，均符合设计契约）
+- 待手动验证（需进游戏）：MobForm 面板/film pose 关键帧/glint 关键帧三处骨骼列表树形目检
