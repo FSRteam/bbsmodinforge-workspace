@@ -52,6 +52,50 @@ Questions to answer:
 
 ---
 
+## Bone List Display Contract (2.5 hierarchy tree)
+
+Every bone list backed by `UIBoneTreeList` renders flat unless the host feeds hierarchy
+metadata. The 2.5 migration wired this for `IModel` paths (model form panel, IK/physics/
+constraints panels, bone pickers, film model keyframes); `BoneHierarchy`-backed lists
+(mob forms' vanilla model parts, pose form bones) must feed it too:
+
+```java
+Map<String, String> labels = hierarchy.getLabels();
+
+this.groups.list.setHierarchy(hierarchy, null, labels);   // tree metadata
+this.groups.setSource(hierarchy.getBoneIds(), labels, false); // hierarchy order, no sort
+this.groups.filter(reset);
+```
+
+Signatures:
+
+- `setHierarchy(IModel model, Predicate<String> hidden)` — tree from a model's root/child keys.
+- `setHierarchy(BoneHierarchy hierarchy, Predicate<String> hidden, Map<String, String> labels)`
+  — tree from `BoneHierarchy.Bone` (`id`/`parentId`/`depth`). Layer roots and orphans
+  (parentId absent from the id set) become separate roots; a hidden bone dissolves into
+  its children in place; ids missing from the label map fall back to the raw id.
+- `getLabels()` — stable display names (e.g. `inner_armor_rightArm`); **no indent
+  parameter** — the tree list draws indentation/connectors itself.
+
+Invariants:
+
+- `BoneHierarchy.getBoneIds()` is pre-order: per-layer recursion with children sorted by
+  natural name order, layers ordered primary-first then by name. The parent-grouping
+  rebuild (`boneHierarchyRoots`) reproduces the exact list order — do not re-sort.
+- `treeLabel == fullLabel == labels[id]` — flat search mode (host sets
+  `list.flat(!query.isEmpty())`) and tree mode agree on labels.
+- Search flattening is the host's job (`UIBoneList.filter`), not the tree list's.
+
+### Gotcha: flat MobForm bone lists are a legacy style
+
+Before 2.5 the pose editor's bone list was `UIBoneHierarchyList` (flat label rows) and
+`fillGroups(BoneHierarchy)` cleared tree metadata (`setHierarchy(null, null)`). Since 2.5,
+new BoneHierarchy-backed lists must NOT clear metadata — pass the hierarchy so rows render
+as a tree. `setHierarchy(null, null)` remains correct only for plain string lists
+(`fillGroups(Collection)`, e.g. film anchor bones), which are intentionally flat + sorted.
+
+---
+
 ## Common Mistakes
 
 ### Curve editor coordinate transforms
