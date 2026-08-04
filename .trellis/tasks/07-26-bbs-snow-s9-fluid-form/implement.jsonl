@@ -1,0 +1,4 @@
+{"file":".trellis/spec/new/backend/external-addon-integration-contract.md","reason":"Defines common/client registration timing, source-pack/L10n order, Extra Form API, artifact lifecycle, and strict runtime verification."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Defines render space, semantic simulation space, simulation owner, hot-path allocation, and fixed-step solver review."}
+{"file":".trellis/spec/frontend/bbs-ui-theming.md","reason":"Defines current BBS UI semantic theming and control rendering constraints for the fluid panel."}
+{"file":".trellis/tasks/07-26-bbs-snow-s9-fluid-form/research/fluid-port-baseline.md","reason":"Records the seven-file source contract, target API mapping, source defects, performance calculation, and intentional deviations."}

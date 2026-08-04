@@ -1,0 +1,4 @@
+{"file":".trellis/spec/new/backend/index.md","reason":"Package guidance index for checking changes under new."}
+{"file":".trellis/spec/guides/code-reuse-thinking-guide.md","reason":"Check that direction/facing math is centralized and not duplicated inconsistently."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Check JSON parsing, editor controls, and render behavior remain aligned."}
+{"file":".trellis/tasks/06-08-particle-facing-blockbuster-parity/research/particle-facing-reference.md","reason":"Check implementation against Blockbuster and fixture requirements."}

@@ -1,0 +1,32 @@
+{
+  "id": "fs2-migration-finalize",
+  "name": "fs2-migration-finalize",
+  "title": "FS2.0 迁移收尾与运行时bug修复",
+  "description": "",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "snowstar_II",
+  "assignee": "snowstar_II",
+  "createdAt": "2026-06-20",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "06-20-fs2-runtime-bugfix",
+    "07-14-sync-latest-fs-to-fsr",
+    "07-19-sync-fs24-delta-to-fsr",
+    "07-29-complete-latest-fs-to-fsr",
+    "07-31-sync-fs-5848363-to-fsr"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}

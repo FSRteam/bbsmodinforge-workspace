@@ -1,0 +1,5 @@
+{"file":".trellis/spec/new/backend/external-addon-integration-contract.md","reason":"Check strict Mixin application, jar/resource layout, and lazy runtime evidence."}
+{"file":".trellis/spec/new/backend/fs-migration-baseline.md","reason":"Check that source/target decisions remain tied to the approved FSR baseline."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Check UI regressions, visibility, input fallback, and verification quality."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Check data flow from Actions and animation files through UI, persistence, and runtime behavior."}
+{"file":".trellis/tasks/07-26-bbs-snow-s7-replays-keyframes/research/source-target-drift.md","reason":"Check every included/excluded S7 source item and audited target contract."}

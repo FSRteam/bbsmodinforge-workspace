@@ -1,0 +1,32 @@
+{
+  "id": "fsr-theme-system",
+  "name": "fsr-theme-system",
+  "title": "FSR 主题/皮肤系统(高度 DIY 换肤)",
+  "description": "统领任务:主题 token 体系、动画层、皮肤设置栏、内置主题与规范样例;子任务分模块交付",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P1",
+  "creator": "snowstar_II",
+  "assignee": "snowstar_II",
+  "createdAt": "2026-07-23",
+  "completedAt": "2026-07-24",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "07-23-theme-core",
+    "07-23-theme-widget-tokens",
+    "07-23-theme-motion-layer",
+    "07-23-theme-skin-settings-ui",
+    "07-23-theme-builtin-packs"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}

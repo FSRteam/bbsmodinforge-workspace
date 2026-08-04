@@ -1,0 +1,34 @@
+{
+  "id": "film-recording-model-block-form-preview-followup",
+  "name": "film-recording-model-block-form-preview-followup",
+  "title": "修复影片外部录制、模型方块重入与Form预览回归",
+  "description": "对照 BBSFS 修复外部录制崩溃、模型方块重入输入失效、伪装发光/阴影差异和动画Form预览掉帧。",
+  "status": "in_progress",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P1",
+  "creator": "snowstar_II",
+  "assignee": "snowstar_II",
+  "createdAt": "2026-07-23",
+  "completedAt": null,
+  "branch": "codex/film-model-preview-followup",
+  "base_branch": "master",
+  "worktree_path": null,
+  "commit": "c82b28f2af024cce47464c3bc8feee59be06d7be",
+  "pr_url": "https://github.com/FSRteam/bbs-FSR/pull/7",
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "Implementation and automated verification are complete. In-game visual and frame-time acceptance remain for manual testing with the PR JAR.",
+  "meta": {
+    "functional_commits": [
+      "5a47cee38c2ed076ae735730761760d33cd811cc",
+      "c82b28f2af024cce47464c3bc8feee59be06d7be"
+    ],
+    "ci_run": "https://github.com/FSRteam/bbs-FSR/actions/runs/30070529551",
+    "artifact": "BBS_FSR_PR-7-run-17-attempt-1",
+    "artifact_expires_at": "2026-10-22T05:50:33Z"
+  }
+}

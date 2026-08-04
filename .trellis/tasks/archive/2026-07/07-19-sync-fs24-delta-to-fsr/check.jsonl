@@ -1,0 +1,4 @@
+{"file":".trellis/spec/new/backend/quality-guidelines.md","reason":"Review contracts and required validation"}
+{"file":".trellis/spec/new/backend/fs-migration-baseline.md","reason":"Verify migration markers, version lock, and particle policy"}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Audit cross-layer lifecycle and data flow"}
+{"file":".trellis/tasks/07-19-sync-fs24-delta-to-fsr/research/upstream-delta.md","reason":"Verify disposition of every upstream commit"}

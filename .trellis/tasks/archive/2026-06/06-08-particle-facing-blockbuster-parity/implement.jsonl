@@ -1,0 +1,4 @@
+{"file":".trellis/spec/new/backend/index.md","reason":"Package guidance index for changes under new."}
+{"file":".trellis/spec/guides/code-reuse-thinking-guide.md","reason":"Facing logic should reuse Blockbuster-style helpers instead of duplicating per-mode formulas."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Particle JSON, editor UI, emitter runtime, and renderer must preserve a consistent facing contract."}
+{"file":".trellis/tasks/06-08-particle-facing-blockbuster-parity/research/particle-facing-reference.md","reason":"Reference behavior and fixture facts for implementation."}

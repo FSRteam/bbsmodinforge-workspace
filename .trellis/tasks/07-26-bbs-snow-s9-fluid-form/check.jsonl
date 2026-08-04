@@ -1,0 +1,4 @@
+{"file":".trellis/spec/new/backend/external-addon-integration-contract.md","reason":"Check registration conflicts, dedicated-server boundary, core freshness, installed JAR lifecycle, L10n, and addon JAR contents."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Check fixed-step ownership, semantic matrices, replay interaction, budgets, allocation after warm-up, and cleanup."}
+{"file":".trellis/spec/frontend/bbs-ui-theming.md","reason":"Check the fluid editor uses current theme-aware components without hard-coded semantic UI colors."}
+{"file":".trellis/tasks/07-26-bbs-snow-s9-fluid-form/research/fluid-port-baseline.md","reason":"Check all source values/modes are covered and each intentional source deviation is implemented and verified."}

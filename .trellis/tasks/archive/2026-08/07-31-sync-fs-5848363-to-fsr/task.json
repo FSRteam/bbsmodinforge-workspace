@@ -1,0 +1,46 @@
+{
+  "id": "sync-fs-5848363-to-fsr",
+  "name": "sync-fs-5848363-to-fsr",
+  "title": "同步 FS 5848363c 到 FSR",
+  "description": "",
+  "status": "completed",
+  "dev_type": null,
+  "scope": "new",
+  "package": null,
+  "priority": "P2",
+  "creator": "snowstar_II",
+  "assignee": "snowstar_II",
+  "createdAt": "2026-07-31",
+  "completedAt": "2026-08-01",
+  "branch": "codex/sync-fs-5848363-to-fsr",
+  "base_branch": "codex/bootstrap-trellis-workspace",
+  "worktree_path": "D:/bbsinneoforge/bbsmodinforge/bbsmodinforge/.worktrees/new-fs-5848363c",
+  "commit": "94d2349f43b8d71dcf162e30f5f4294e3d9cc2e3",
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": "06-20-fs2-migration-finalize",
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {
+    "fsr_initial_commit": "0544eadacbd0d2d60fd27d2a317e9e73483fa468",
+    "fsr_terminal_commit": "94d2349f43b8d71dcf162e30f5f4294e3d9cc2e3",
+    "fs_master_source": "5848363c3e7c63ef124bad0c3b08809abd311f91",
+    "fs_1_20_1_source": "813be205e83b571823d58736b9213f8309811186",
+    "fs_1_21_1_source": "5ed645834b46f7fd8c81e6c40dbc3e453949ac0b",
+    "mod_version_lock": "0.0.11",
+    "artifact_lock": "BBS_FSR_beta_v0.0.11",
+    "migration_files": 171,
+    "upstream_disposition": {
+      "migrated": 131,
+      "equivalent_or_superseded": 19,
+      "excluded": 4,
+      "blocked": 0
+    },
+    "verification": {
+      "automated": "passed: focused migration tests, compileJava, compileClientJava, check, build, git diff --check",
+      "strict_media": "skipped: ffmpeg and ffprobe unavailable; hermetic audio contracts passed",
+      "manual_runtime": "pending: in-game transform/IK/camera/freeze/Dock/weld and shader/Iris/Photon visual matrix"
+    }
+  }
+}

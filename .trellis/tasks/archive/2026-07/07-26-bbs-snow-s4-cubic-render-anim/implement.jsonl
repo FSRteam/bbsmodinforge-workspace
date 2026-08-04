@@ -1,0 +1,3 @@
+{"file":".trellis/spec/new/backend/external-addon-integration-contract.md","reason":"Follow the strict Mixin-bearing standalone addon contract, core-jar freshness gate, and runtime client requirements."}
+{"file":".trellis/spec/new/backend/quality-guidelines.md","reason":"Apply strict exit-code, artifact-boundary, clean-snapshot, and runtime verification rules."}
+{"file":".trellis/tasks/07-26-bbs-snow-s4-cubic-render-anim/research/source-target-drift.md","reason":"Use the S4 ownership split, exact 1.21.1 descriptors, and target-specific pivot sequences."}

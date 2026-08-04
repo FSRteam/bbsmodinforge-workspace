@@ -1,0 +1,4 @@
+{"file":".trellis/spec/new/backend/quality-guidelines.md","reason":"Check lifecycle ownership, side isolation, compatibility and project-specific quality gates."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Audit complete flow from filesystem event through atomic generation swap to resource and classloader release."}
+{"file":".trellis/spec/guides/code-reuse-thinking-guide.md","reason":"Verify owner/teardown mechanisms are centralized and existing subscription patterns are reused."}
+{"file":".trellis/tasks/07-21-fsr-plugin-hot-reload/research/exa-hot-reload.md","reason":"Validate the implementation against the documented platform limits and external evidence."}

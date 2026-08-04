@@ -1,0 +1,4 @@
+{"file":".trellis/spec/new/backend/quality-guidelines.md","reason":"Verify exact Addon descriptors, lifecycle tests, and nested input restoration."}
+{"file":".trellis/spec/new/backend/fs-migration-baseline.md","reason":"Verify the required FSR compile, check, build, and manual-smoke reporting gates."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Review the full Fabric entrypoint to collector to event-bus data flow."}
+{"file":".trellis/tasks/07-26-fix-bbs-connector-input-compatibility/research/compatibility-findings.md","reason":"Check implementation against the evidenced incompatibilities rather than inferred Connector behavior."}

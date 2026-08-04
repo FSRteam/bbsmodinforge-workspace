@@ -1,0 +1,6 @@
+{"file": ".trellis/tasks/07-24-theme-v2-rounded-corners/design.md", "reason": "本任务完整技术规格:intermediary→NeoForge 1.21.1 映射对照表、原语签名、mask 资源、首批控件清单,编码前必读"}
+{"file": ".trellis/tasks/07-24-theme-v2/design.md", "reason": "父任务研究报告 §3.1:参考实现的圆角机制解读与坐标"}
+{"file": "temp/bbs-refreshed-2.0-public-1.20.1-decompiled/src/mchorse/bbs_mod/ui/framework/elements/utils/Batcher2D.java", "reason": "参考源(只读):roundedBox/roundedFrame 几何逻辑照抄对象,129-299 行"}
+{"file": "temp/bbs-refreshed-2.0-public-1.20.1-decompiled/src/mchorse/bbs_mod/ui/framework/elements/buttons/UIToggle.java", "reason": "参考源(只读):macOS 风格开关渲染样板,120-148 行"}
+{"file": ".trellis/spec/frontend/bbs-ui-theming.md", "reason": "v1 取色规约:语义函数、alpha 组合规则,圆角接入不得破坏"}
+{"file": "new/docs/theme-spec/README.md", "reason": "主题包数据格式契约,corner_radius 键须对齐并回写"}

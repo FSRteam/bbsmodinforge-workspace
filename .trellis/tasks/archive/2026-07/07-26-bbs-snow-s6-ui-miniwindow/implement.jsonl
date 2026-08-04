@@ -1,0 +1,4 @@
+{"file":".trellis/spec/new/backend/external-addon-integration-contract.md","reason":"Follow required Mixin, package isolation, client execution, jar audit, and source-boundary contracts."}
+{"file":".trellis/spec/frontend/component-guidelines.md","reason":"Preserve BBS UI element ownership, interaction, and composition conventions while adding mini windows."}
+{"file":".trellis/spec/frontend/state-management.md","reason":"Keep floating-window, active-tab, layout-tree, focus, and inspector state ownership coherent."}
+{"file":".trellis/tasks/07-26-bbs-snow-s6-ui-miniwindow/research/source-target-drift.md","reason":"Use the audited S6/S7 boundary, current target descriptors, layer rules, and audio-screen deferral."}

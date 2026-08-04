@@ -1,0 +1,3 @@
+{"file":".trellis/spec/new/backend/external-addon-integration-contract.md","reason":"Verify standalone addon resources, optional Iris config, Mixin runtime gates, and source isolation."}
+{"file":".trellis/spec/new/backend/quality-guidelines.md","reason":"Apply strict build exit-code, runtime verification, artifact, and clean-snapshot checks."}
+{"file":".trellis/tasks/07-26-bbs-snow-s3-pbr-texture-grade/research/source-inventory-and-target-drift.md","reason":"Check exact ownership split, target descriptors, shader PassMode compatibility, and deferred-state coverage."}

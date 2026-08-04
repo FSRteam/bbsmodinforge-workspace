@@ -1,0 +1,6 @@
+{"file":".trellis/spec/new/backend/hot-plugin-runtime-contract.md","reason":"All structural-capability work extends this contract; artifact, watcher, generation routing, ownership, refresh and teardown rules must be preserved verbatim."}
+{"file":".trellis/spec/new/backend/quality-guidelines.md","reason":"Follow FSR runtime ownership, side isolation, compatibility and test conventions while adding generation-scoped registries and the reload coordinator."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Trace the full chain: manifest capability -> validator -> SPI facade -> generation ledger -> main-thread safepoint -> snapshot/teardown/publish/rebuild -> client projection refresh."}
+{"file":".trellis/spec/guides/code-reuse-thinking-guide.md","reason":"Reuse existing ledger/lease/seal/drain mechanisms and MapType toData/fromData paths instead of inventing parallel lifecycle or migration machinery."}
+{"file":".trellis/tasks/07-21-fsr-plugin-hot-reload/design.md","reason":"Previous-phase design defines the generation/ledger/watcher architecture this task builds on; do not diverge from its published contracts."}
+{"file":".trellis/tasks/07-21-fsr-plugin-hot-reload/research/exa-hot-reload.md","reason":"Verified NeoForge, JDK WatchService/ClassLoader and platform constraints from the previous phase still apply."}

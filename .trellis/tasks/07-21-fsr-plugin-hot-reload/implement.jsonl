@@ -1,0 +1,4 @@
+{"file":".trellis/spec/new/backend/quality-guidelines.md","reason":"Preserve FSR runtime ownership, teardown, compatibility and test conventions while adding a new lifecycle boundary."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Trace artifact, loader, registration, dispatch, client/server thread and teardown contracts end to end."}
+{"file":".trellis/spec/guides/code-reuse-thinking-guide.md","reason":"Extend existing closeable subscriptions, execution boundaries and diagnostics instead of creating divergent lifecycle mechanisms."}
+{"file":".trellis/tasks/07-21-fsr-plugin-hot-reload/research/exa-hot-reload.md","reason":"Use verified NeoForge, JDK WatchService/ClassLoader, PF4J and local repository constraints during implementation."}

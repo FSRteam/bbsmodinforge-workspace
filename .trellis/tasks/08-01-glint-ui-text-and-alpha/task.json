@@ -1,0 +1,32 @@
+{
+  "id": "08-01-glint-ui-text-and-alpha",
+  "name": "08-01-glint-ui-text-and-alpha",
+  "title": "附魔UI文本精简与alpha光效修复",
+  "description": "附魔 section 标题/切换/速度文本精简 + 修复不透明度控制光效强弱",
+  "status": "in_progress",
+  "dev_type": null,
+  "scope": "new",
+  "package": null,
+  "priority": "P2",
+  "creator": "snowstar_II",
+  "assignee": "snowstar_II",
+  "createdAt": "2026-08-01",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "codex/bootstrap-trellis-workspace",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "new/src/client/java/mchorse/bbs_mod/cubic/render/GlintRenderState.java",
+    "new/src/client/java/mchorse/bbs_mod/cubic/render/CubicGlintCubeRenderer.java",
+    "new/src/client/java/mchorse/bbs_mod/forms/renderers/GlintTintVertexConsumer.java",
+    "new/src/client/resources/assets/bbs/assets/strings/zh_cn.json",
+    "new/src/client/resources/assets/bbs/assets/strings/en_us.json"
+  ],
+  "notes": "构建通过，回归测试通过。等待用户确认后提交 new/ 仓库。alpha 修复原理：energySwirl 加法混合忽略 alpha 通道，pre-multiply rbg 到 rgb 实现线性强控制。",
+  "meta": {}
+}

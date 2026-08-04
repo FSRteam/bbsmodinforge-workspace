@@ -1,0 +1,3 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/tasks/07-23-fsr-theme-system/design.md", "reason": "父任务总体架构与跨模块契约"}
+{"file": "new/docs/theme-spec/README.md", "reason": "对外主题数据格式与验收契约"}

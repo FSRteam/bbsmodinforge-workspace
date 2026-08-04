@@ -1,0 +1,5 @@
+{"file":".trellis/spec/new/backend/hot-plugin-runtime-contract.md","reason":"Check that structural-capability changes keep every previous-phase lifecycle contract: candidate-first, atomic swap, drain, ledger reverse-close, RESTART_REQUIRED breaker."}
+{"file":".trellis/spec/new/backend/quality-guidelines.md","reason":"Audit lifecycle ownership, physical-side isolation, binary compatibility and project quality gates."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Audit the complete flow from capability flip through safepoint snapshot/teardown/rebuild to client projection refresh and classloader release."}
+{"file":".trellis/tasks/07-23-fsr-plugin-structural-hot-reload/prd.md","reason":"Acceptance criteria are the check baseline, including regression items inherited from the previous phase."}
+{"file":".trellis/tasks/07-23-fsr-plugin-structural-hot-reload/design.md","reason":"Failure matrix and thread-model rules in the design are mandatory check dimensions (safepoint atomicity, no rollback after publish, degradation instead of crash)."}

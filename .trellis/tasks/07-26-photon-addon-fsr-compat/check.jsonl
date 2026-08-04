@@ -1,0 +1,2 @@
+{"file": ".trellis/tasks/07-26-photon-addon-fsr-compat/research/upstream-api-surface.md", "reason": "核对改造后代码是否仍引用 BBSFSR 不存在的 API；§3 签名差异表用于复核 override 合法性"}
+{"file": ".trellis/tasks/07-26-photon-addon-fsr-compat/research/fsr-addon-protocol.md", "reason": "核对 addon 注册时序（构造期窗口）与各注册通道是否用对；§5 推荐方案是验收基准"}

@@ -1,0 +1,42 @@
+gradle.taskGraph.whenReady { graph ->
+    graph.allTasks.findAll { it.name in ['runClient', 'runServer'] }.each { task ->
+        def smokeDir = task.project.findProperty('smokeDir')
+        if (smokeDir != null && !smokeDir.toString().isBlank()) {
+            task.workingDir(task.project.file(smokeDir.toString()))
+        }
+
+        def smokeHeap = task.project.findProperty('smokeHeap') ?: '2g'
+        task.jvmArgs('-Xms512m', "-Xmx${smokeHeap}")
+
+        if ((task.project.findProperty('smokeUseJars') ?: 'false').toString().toBoolean()) {
+            task.environment('MOD_CLASSES', '')
+            def buildRoot = task.project.layout.buildDirectory.get().asFile.toPath().toAbsolutePath().normalize()
+            task.classpath = task.classpath.filter { file ->
+                def path = file.toPath().toAbsolutePath().normalize()
+                !(path.startsWith(buildRoot.resolve('classes')) || path.startsWith(buildRoot.resolve('resources')))
+            }
+        }
+
+        if (task.name == 'runClient') {
+            def smokeName = task.project.findProperty('smokeName') ?: 'SmokePlayer'
+            def smokeUuid = task.project.findProperty('smokeUuid')
+            def smokeConnect = task.project.findProperty('smokeConnect') ?: '127.0.0.1:25565'
+            def smokeWebPort = task.project.findProperty('smokeWebPort')
+
+            task.args('--username', smokeName.toString())
+            if (smokeUuid != null && !smokeUuid.toString().isBlank()) {
+                task.args('--uuid', smokeUuid.toString())
+            }
+            task.args('--width', '854', '--height', '480')
+            task.args('--quickPlayMultiplayer', smokeConnect.toString())
+            if (smokeWebPort != null && !smokeWebPort.toString().isBlank()) {
+                task.systemProperty('bbs.webRemote.port', smokeWebPort.toString())
+            }
+        }
+
+        task.doFirst {
+            task.workingDir.mkdirs()
+            println("SMOKE ${task.name}: dir=${task.workingDir}, args=${task.args}, MOD_CLASSES='${task.environment['MOD_CLASSES']}'")
+        }
+    }
+}

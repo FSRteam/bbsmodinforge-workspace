@@ -1,0 +1,5 @@
+{"file":".trellis/spec/new/backend/external-addon-integration-contract.md","reason":"Defines strict Mixin-bearing addon, resource, registration, and runtime verification contracts."}
+{"file":".trellis/spec/new/backend/fs-migration-baseline.md","reason":"Defines the pinned FS-to-FSR comparison and migration evidence rules."}
+{"file":".trellis/spec/frontend/component-guidelines.md","reason":"Guides additive BBS UI controls, ownership, and interaction behavior."}
+{"file":".trellis/spec/guides/code-reuse-thinking-guide.md","reason":"Requires reuse of S2/S3/S6 owners instead of parallel Actions, PBR, or mini-window abstractions."}
+{"file":".trellis/tasks/07-26-bbs-snow-s7-replays-keyframes/research/source-target-drift.md","reason":"Records the audited S7 inventory, target descriptors, semantic drift, and exclusions."}
