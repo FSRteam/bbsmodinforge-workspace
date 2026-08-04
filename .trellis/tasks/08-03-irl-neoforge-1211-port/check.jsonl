@@ -1,3 +1,0 @@
-{"file":".trellis/spec/new/backend/external-addon-integration-contract.md","reason":"复核 Addon API 注册、BBS 依赖和 Mixin 配置是否符合现有 BBSFSR 合同。"}
-{"file":".trellis/spec/new/backend/quality-guidelines.md","reason":"复核构建、JAR 内容、运行时注册和 GL/Iris 风险验证。"}
-{"file":".trellis/tasks/08-03-irl-neoforge-1211-port/research/runtime-log-2026-08-04.md","reason":"复核最新客户端日志中的首个致命错误、修复后的验证边界和剩余人工验收。"}

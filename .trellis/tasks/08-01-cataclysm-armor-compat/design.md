@@ -77,43 +77,25 @@ private HumanoidModel<?> resolveModel(ItemStack itemStack, IEntity entity, Equip
 **光影兼容**：`energySwirl` 是原版标准 RenderType，Iris 为其提供显式支持路径（与 charged-creeper/wither armor 同）。在 Iris 光影世界渲染时，优先 energySwirl 路径；降级到 `armorEntityGlint` 作为后备。
 **已知限制**：某些不具备 `energySwirl` RenderType 支持的光影包可能显示为纯白色或缺失。不影响无光影的基准行为。
 
-### 方案 C：铁魔法（Iron's Spellbooks / Iron's Lib）GeckoLib 盔甲接入（用户确认本轮纳入）
-
-研究结论（`research/geckolib-armor-integration.md`）：
-- 铁魔法盔甲 `ExtendedArmorItem extends ArmorItem implements GeoItem`，走 **`GeoItem.createGeoRenderer → GeoRenderProvider.getGeoArmorRenderer`**，不走 `IClientItemExtensions`。BBS 现有 `resolveModel` 对它只画原版方盒。
-- GeckoLib 自身的渲染链：`HumanoidArmorLayerMixin` → `InternalUtil.tryRenderGeoArmorPiece` → `getGeoArmorRenderer` → `prepForRender` → `renderToBuffer`。
-
-实现：
-1. **依赖**：`build.gradle` 加 `clientCompileOnly "software.bernie.geckolib:geckolib-neoforge-1.21.1:4.7.5.1"`（Cloudsmith 仓库，`content { includeGroup 'software.bernie.geckolib' }`）。compileOnly 不进成品 jar → 无 geckolib 环境完全照旧。
-2. **桥接类** `GeoArmorSupport.java`（client source set，唯一 geckolib 直引点）：`isAvailable()`（Class.forName 缓存）、`isGeoArmor(ItemStack)`（无实体哨兵调用）、`renderGeoArmor(...)`（getGeoArmorRenderer → prepForRender → renderToBuffer；整体 try/catch 兜底）。
-3. **`ArmorRenderer.renderSlot` 顶部插 geo 分支**：`isGeoArmor` 时 `renderGeoArmor(...)` 后 return（跳过 vanilla ArmorItem 路径）。geo 分支刚性渲染（skinning=false，GeckoLib 自建 buffer 拦截不到 BBS 顶点）；不叠加 trim/ghost/glint（geckolib 自管 foil/RenderLayer）。
-
-强制约束：
-- `renderToBuffer` 必须 `currentEntity != null` → **必须真实 LivingEntity**（编辑器预览复用方案 A 的 StubEntity override）。
-- `renderToBuffer` 自取 `levelRenderer.renderBuffers.bufferSource()` 且走实时动画时钟 → 绕过 BBS 延迟绘制/顶点 hijack，**无法随 BBS 电影时钟 scrub**（已知局限）。
-
 ## 兼容性与风险
 
 - 方案 A（缺口 A）：StubEntity 新增字段+方法（纯增量），resolveModel 加 else-if 分支（无 override 时行为不变）。风险低。
 - 方案 B（ghost 层）：在 ArmorRenderer 中增加 Cursium 特判（通过 registry id 字符串匹配），无编译期灾变依赖。ghost RenderType 复用 `GlintRenderState.energySwirl` 路径已验证。风险中低。
-- 方案 C（铁魔法/GeckoLib）：`clientCompileOnly` + `GeoArmorSupport` 桥接 + `Class.forName` 哨兵 + try/catch 兜底。无 geckolib 时 `isGeoArmor` 恒 false → 100% 不变。风险中（依赖 API 版本锁定 4.7.5.1 / 4.9.2 兼容；编辑器/离屏下主 buffer 直写行为需实测）。
-- GeckoLib 为 compileOnly（非硬依赖），`new/` 无 geckolib 时编译运行不受影响。
+- 不引入 GeckoLib / Iron's Lib 依赖。
+- `new/` 无灾变模组时编译运行不受影响（无灾变类直接引用）。
 
 ## 测试
 
-- 编译通过（含 geckolib compileOnly）。
-- 运行时装配：Cataclysm + Lionfish-API + GeckoLib + Iron's Lib + 铁魔法（用户环境已装，见 PCL 日志 mods 列表）。
+- 编译通过（无灾变依赖）。
+- 运行时装配：在开发 mods 目录放入 Cataclysm + Lionfish-API jar。
 - 验证纹理：Ignitium/Cursium/Bone_Reptile 自定义模型形状与材质正确。
 - Cursium ghost 层：验证半透明鬼影闪烁效果，含光影下显示。
-- 铁魔法：wizard/法师盔甲显示 geo 造型与纹理；编辑器预览（StubEntity override 生效后）正常。
 - 覆盖场景：actor 回放 + 编辑器预览。
 
 ## 主要改动文件
 
 - `new/src/main/java/mchorse/bbs_mod/forms/entities/StubEntity.java`（新增 LivingEntity override）
 - `new/src/main/java/mchorse/bbs_mod/forms/entities/IEntity.java`（可选的 isMcEntity 接口方法）
-- `new/src/client/java/mchorse/bbs_mod/cubic/render/vanilla/ArmorRenderer.java`（resolveModel 扩展 + ghost 渲染 + geo 分支）
-- `new/src/client/java/mchorse/bbs_mod/cubic/render/vanilla/GeoArmorSupport.java`（新增，geckolib 桥接）
-- `new/build.gradle`（geckolib compileOnly 依赖 + Cloudsmith 仓库）
+- `new/src/client/java/mchorse/bbs_mod/cubic/render/vanilla/ArmorRenderer.java`（resolveModel 扩展 + ghost 渲染）
 - `new/src/client/java/mchorse/bbs_mod/film/BaseFilmController.java`（createEntities → resolvePreviewLivingEntity 钩子）
 - `new/src/client/java/mchorse/bbs_mod/ui/film/controller/FilmEditorController.java`（覆写 resolvePreviewLivingEntity 返回 LocalPlayer）
