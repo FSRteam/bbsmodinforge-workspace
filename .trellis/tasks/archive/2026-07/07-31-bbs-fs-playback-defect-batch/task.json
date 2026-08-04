@@ -1,0 +1,30 @@
+{
+  "id": "bbs-fs-playback-defect-batch",
+  "name": "bbs-fs-playback-defect-batch",
+  "title": "BBS-FS 回放缺陷修复批次",
+  "description": "对照 bbs-fs-master 参考源码分析三个回放缺陷，统一分析后逐项修复；每项在用户构建运行验证通过后才提交。",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "McAxolotl",
+  "assignee": "McAxolotl",
+  "createdAt": "2026-07-31",
+  "completedAt": "2026-07-31",
+  "branch": null,
+  "base_branch": "work/mcaxolotl-journal-init",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": "https://github.com/FSRteam/bbs-FSR/pull/14",
+  "subtasks": [],
+  "children": [
+    "07-31-external-recording-enchantment-data",
+    "07-31-mobform-health-zero-death-animation",
+    "07-31-actor-form-gizmo-anchor-follow"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}
