@@ -1067,3 +1067,39 @@ bbs-web-remote 浏览器端从 5852 行单体 `app.js` 拆为 7 模块（protoco
 ### Next Steps
 
 - None - task complete
+
+
+## Session 27: 完成 FS 27a6866c 到 FSR 的 Dock 增量迁移
+
+**Date**: 2026-08-04
+**Task**: 完成 FS 27a6866c 到 FSR 的 Dock 增量迁移
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+在独立 new worktree 中迁移 Dock 交互、布局持久化和外置属性面板生命周期修复；确认剪裁修复在 FSR 已等价；补充回归测试并通过 compile、check、build；保持 0.0.11 版本及粒子核心和 FormTranslucentQueue 不变。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7b81a6a0` | (see git log) |
+| `a4aaa47b` | (see git log) |
+| `1f46ac02` | (see git log) |
+| `f1a9e64` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
