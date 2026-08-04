@@ -124,3 +124,24 @@ Vector2d point = this.toGraph(time, value);
 
 This prevents panned or zoomed views from rendering in one coordinate system while
 dragging or hit testing uses another.
+
+### Collapsible sections inside scroll views
+
+When a `UISection` adds or removes its body, the layout owner is the nearest
+`UIScrollView`, not only the section's direct parent. The scroll view must resize
+immediately so three values stay in sync: following-child positions, `scrollSize`,
+and the clamped current scroll offset. A window resize must never be the event that
+repairs a stale collapsed layout.
+
+For responsive editors that rebuild their children in `resize()`, every width
+branch must re-add the same logical section. Keep a feature's mode, color, speed,
+and transform controls under one reusable `UISection` instead of rebuilding an
+unfolded copy in one branch. Do not stretch a list to consume height released by a
+fold; that converts a successful collapse into a large empty list area.
+
+Regression coverage should assert the behavior through the real scroll container:
+
+- the next sibling moves upward immediately;
+- `scrollSize` shrinks after collapse and grows after expansion;
+- an old bottom scroll offset is clamped to the new range;
+- every responsive layout branch still contains the section.

@@ -1,0 +1,33 @@
+{
+  "id": "web-remote-ux-humanization",
+  "name": "web-remote-ux-humanization",
+  "title": "bbs-web-remote UX 人性化",
+  "description": "修复 bbs-web-remote 面向用户的非人性设计:URL/配对码可发现性、角色升级、传输与画质反馈、错误人话化与本地化、交互打磨。父任务持有需求集与跨子验收。",
+  "status": "in_progress",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P1",
+  "creator": "snowstar_II",
+  "assignee": "snowstar_II",
+  "createdAt": "2026-07-30",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "codex/bootstrap-trellis-workspace",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "07-30-wr-ux-server-discovery",
+    "07-30-wr-ux-browser-onboarding",
+    "07-30-wr-ux-transport-feedback",
+    "07-30-wr-ux-error-i18n",
+    "07-30-wr-ux-interaction-polish",
+    "08-01-wr-frontend-refactor"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}

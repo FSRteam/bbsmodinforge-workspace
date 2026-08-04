@@ -1,0 +1,29 @@
+{
+  "id": "bone-glint-armor-parent",
+  "name": "bone-glint-armor-parent",
+  "title": "伪装编辑器骨骼附魔与Blockbuster盔甲模型移植",
+  "description": "",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "snowstar_II",
+  "assignee": "snowstar_II",
+  "createdAt": "2026-07-26",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "codex/bootstrap-trellis-workspace",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "07-26-bone-edge-glint",
+    "07-26-blockbuster-armor-model"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}

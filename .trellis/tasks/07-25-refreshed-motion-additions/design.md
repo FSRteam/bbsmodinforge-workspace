@@ -39,3 +39,11 @@
 - ThemeParser:`toggle`/`drag_follow` 两个新 entry(text_entry 不建;notification 不建);defaultDark:toggle disabled、drag_follow disabled。
 - UIMotionsTest:两个新 entry 的解析/回退/settled 短路;UIToggle 插值端点断言(0→旧 off 渲染值,1→旧 on 渲染值)。
 - docs/theme-spec:新 key 文档 + example-theme 全 key 显式 + jar 同步(与兄弟任务改同一文件,注意 rebase 顺序:本任务排在 theme-tokens 后)。
+
+## 6. 2026-07-27 用户验收补充:翻译与模板导出
+
+- `skins` 分类补齐 `motion_enabled` / `motion_speed` 的 en_us、zh_cn 名称与 comment;键名沿用 `UIValueFactory` 的既有生成规则,不新增 UI 特例。
+- `UIThemeOverlayPanel` 导出动作读取 `list.getCurrentFirst()`;无选择时回退当前已生效主题,不得再固定读取 `example`。
+- 输出目录以 `<source-id>-copy[-n]` 命名。主题 JSON 用 `DataToString` 结构化解析,只改写 `assets:themes/<source-id>/...` 形式的同主题资源链接到输出 id。
+- 收集 `textures.icons`、`textures.background` 与 `decorations[].texture` 中的同主题 assets 链接并逐项复制;路径必须规范化并验证仍位于输出目录下。外部链接和继承的其他主题链接保持原样。
+- Refreshed 验收必须证明导出目录同时含 `theme.json` 与逐字节一致的 `icons.png`;其他主题的 JSON 内容随选择变化。

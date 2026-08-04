@@ -1,0 +1,40 @@
+{
+  "id": "sync-fs-27a6866c-to-fsr",
+  "name": "sync-fs-27a6866c-to-fsr",
+  "title": "同步 FS 27a6866c Dock 与生命周期修复到 FSR",
+  "description": "",
+  "status": "completed",
+  "dev_type": null,
+  "scope": "new",
+  "package": null,
+  "priority": "P2",
+  "creator": "snowstar_II",
+  "assignee": "snowstar_II",
+  "createdAt": "2026-08-04",
+  "completedAt": "2026-08-04",
+  "branch": "codex/sync-fs-27a6866c-to-fsr",
+  "base_branch": "master",
+  "worktree_path": "D:/bbsinneoforge/bbsmodinforge/bbsmodinforge/.worktrees/new-fs-27a6866c",
+  "commit": "1f46ac02ad07c98e47d43d6100df58fb0ae23acb",
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "Automated compile, focused tests, check and build passed. In-game Dock/visual smoke remains manual acceptance.",
+  "meta": {
+    "fsr_initial_commit": "156d0bffc2b884d7bf645225d27fc72bb57f3cb5",
+    "fsr_terminal_commit": "1f46ac02ad07c98e47d43d6100df58fb0ae23acb",
+    "fs_master_previous": "5848363c3e7c63ef124bad0c3b08809abd311f91",
+    "fs_master_source": "4220b453bf96fbe41dde88f3ca51aa7fe9fcd612",
+    "fs_1_20_1_previous": "813be205e83b571823d58736b9213f8309811186",
+    "fs_1_20_1_source": "27a6866c14e5351aed50fd3b85c9d6c5fa97467c",
+    "mod_version_lock": "0.0.11",
+    "artifact_lock": "BBS_FSR_beta_v0.0.11",
+    "upstream_disposition": {
+      "6f4f9ec9": "migrate",
+      "0cecc8c9": "equivalent-audit",
+      "4220b453": "migrate"
+    }
+  }
+}

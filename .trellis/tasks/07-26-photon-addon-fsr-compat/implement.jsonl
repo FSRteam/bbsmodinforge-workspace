@@ -1,0 +1,2 @@
+{"file": ".trellis/tasks/07-26-photon-addon-fsr-compat/research/upstream-api-surface.md", "reason": "上游 46 项 BBS API 与 BBSFSR 的逐项核对表、6 个缺失项的替代方案、4 处签名/可见性差异"}
+{"file": ".trellis/tasks/07-26-photon-addon-fsr-compat/research/fsr-addon-protocol.md", "reason": "BBSFSR 两代 addon 协议、外部 NeoForge 模组接入入口、各注册需求的落地通道汇总表、构建依赖形态"}

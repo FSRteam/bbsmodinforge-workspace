@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 15
-- **Last Active**: 2026-07-23
+- **Total Sessions**: 27
+- **Last Active**: 2026-08-04
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~517 | Active |
+| `journal-1.md` | ~1105 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,18 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 27 | 2026-08-04 | 完成 FS 27a6866c 到 FSR 的 Dock 增量迁移 | `7b81a6a0`, `a4aaa47b`, `1f46ac02`, `f1a9e64` | `codex/bootstrap-trellis-workspace` |
+| 26 | 2026-08-02 | Frontend refactor: app.js modular split + R5 UX polish | `387e4ab`, `206bed9` | `codex/bootstrap-trellis-workspace` |
+| 25 | 2026-08-01 | 完成 FS 5848363c 到 FSR 的完整迁移 | `94d2349f43b8d71dcf162e30f5f4294e3d9cc2e3`, `88cbfaba0b222d59c0e5e270f029e699c308ceef`, `a6c7e0bc35ea5b53484f9190aacbf50f8d9bd61f` | `codex/bootstrap-trellis-workspace` |
+| 24 | 2026-07-29 | 完成最新 FS 到 FSR 迁移 | `4143499b19d0f6138b7f8e8e1ff729a5a7ecbf77`, `a2261da` | `codex/bootstrap-trellis-workspace` |
+| 23 | 2026-07-29 | Complete BBS Snow S8 clips | `75854ef`, `e0fc678` | `codex/bootstrap-trellis-workspace` |
+| 22 | 2026-07-29 | Sound morph stage 2 loop interval delivery | `e11ca91b`, `fb6d74b` | `codex/bootstrap-trellis-workspace` |
+| 21 | 2026-07-27 | BBS Snow S6 mini-window port | `3e720d3`, `786971c` | `codex/bootstrap-trellis-workspace` |
+| 20 | 2026-07-27 | bbs_snow S5 particle extensions | `19781b6`, `8fda54b` | `codex/bootstrap-trellis-workspace` |
+| 19 | 2026-07-27 | Complete bbs_snow S4 Cubic rendering and animation | `6d37471`, `32aed30` | `codex/bootstrap-trellis-workspace` |
+| 18 | 2026-07-27 | Complete bbs_snow S3 PBR texture-grade gate | `8975a7e`, `8b1578e` | `codex/bootstrap-trellis-workspace` |
+| 17 | 2026-07-27 | Complete bbs_snow S2 core API gate | `1d73747`, `ff9093b` | `codex/bootstrap-trellis-workspace` |
+| 16 | 2026-07-27 | Complete bbs_snow S1 Mixin gate | `cad8464`, `f06f4b1` | `codex/bootstrap-trellis-workspace` |
 | 15 | 2026-07-23 | Fix dashboard morph and model editor regressions | `b6b37ad4` | `-` |
 | 14 | 2026-07-19 | Sync latest FS fixes to NeoForge | `36a8e0dd8edea23f857cfe431cc6e29ef3113cc0`, `50b95cea2a68486faf601331aabf874dd033694d` | `-` |
 | 13 | 2026-07-16 | 修复模型物理空间并优化 IK/物理骨骼 | `6a5785bd`, `8386d180` | `-` |

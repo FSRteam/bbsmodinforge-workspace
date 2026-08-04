@@ -608,3 +608,498 @@ hot-reload 任务的 MissingClip 占位符保留)——属 07-23-fsr-plugin-stru
   单次 `gradlew check` 于 5m31s 完成,真实退出码 0。
 - 未 commit/归档:`new/` 工作区同时含 plugin structural hot reload 等其他任务的大量未提交改动,
   需由用户按任务边界选择性提交。
+
+
+## Session 16: Complete bbs_snow S1 Mixin gate
+
+**Date**: 2026-07-27
+**Task**: Complete bbs_snow S1 Mixin gate
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+Verified the standalone NeoForge addon skeleton, Mixin runtime gate, addon registration bridge, strict BBS jar validation, and archived S1 before advancing to S2.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `cad8464` | (see git log) |
+| `f06f4b1` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 17: Complete bbs_snow S2 core API gate
+
+**Date**: 2026-07-27
+**Task**: Complete bbs_snow S2 core API gate
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+Ported the bbs_snow core data/API contracts, verified 17 Mixins and addon localization/settings at runtime, recorded the external addon integration contract, and archived S2.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `1d73747` | (see git log) |
+| `ff9093b` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 18: Complete bbs_snow S3 PBR texture-grade gate
+
+**Date**: 2026-07-27
+**Task**: Complete bbs_snow S3 PBR texture-grade gate
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+Ported and verified PBR rendering/editors, texture grading, deferred GL state, screen effects, and Iris isolation; archived S3 after a strict runtime pass.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `8975a7e` | (see git log) |
+| `8b1578e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 19: Complete bbs_snow S4 Cubic rendering and animation
+
+**Date**: 2026-07-27
+**Task**: Complete bbs_snow S4 Cubic rendering and animation
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+Ported Cubic pivot rendering, additive and procedural animation overlays, Molang scopes, Geo step parsing, and strict S4 runtime verification; client verifier passed with all eight S4 Mixins and the task was archived.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `6d37471` | (see git log) |
+| `32aed30` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 20: bbs_snow S5 particle extensions
+
+**Date**: 2026-07-27
+**Task**: bbs_snow S5 particle extensions
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+Ported particle morph rendering, editor controls, browser search/favorites/recent, and six strict Mixins; added deterministic runtime coverage, fixed conditional Mixin fallback sorting regression, and passed build/Jar/client verification.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `19781b6` | (see git log) |
+| `8fda54b` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 21: BBS Snow S6 mini-window port
+
+**Date**: 2026-07-27
+**Task**: BBS Snow S6 mini-window port
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+Completed and archived S6 UI mini-window integration: five required Mixins, dock and Film floating-window lifecycle, overlay resizing, strict runtime verification including merge and resize interactions, jar isolation audit, and deferred full manual interaction smoke to S10.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `3e720d3` | (see git log) |
+| `786971c` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 22: Sound morph stage 2 loop interval delivery
+
+**Date**: 2026-07-29
+**Task**: Sound morph stage 2 loop interval delivery
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+Completed timeline-driven sound loop intervals across Form, grouped keyframes, direct/reflected spatial playback, UI and regression coverage; updated the audio contract; built and verified BBS_FSR_beta_v0.0.10-sound-stage2-loop-20260729.jar without launching the client. Task remains active for user save smoke testing.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e11ca91b` | (see git log) |
+| `fb6d74b` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 23: Complete BBS Snow S8 clips
+
+**Date**: 2026-07-29
+**Task**: Complete BBS Snow S8 clips
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+Fixed the owner-aware pose UI verifier, passed strict S8 runtime verification and the full addon/JAR gates, committed the combined S7/S8 addon snapshot, recorded S8 manual checks in S10, and archived S8.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `75854ef` | (see git log) |
+| `e0fc678` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 24: 完成最新 FS 到 FSR 迁移
+
+**Date**: 2026-07-29
+**Task**: 完成最新 FS 到 FSR 迁移
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+更新本地 FS 到 116ed397/31bd255e/c3d1a477，迁移审计后的 UI、录制、渲染与构建修复到 FSR 4143499b，保留粒子和半透明策略，完成干净构建验证并创建 r8-a1 本地 nightly 标签。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `4143499b19d0f6138b7f8e8e1ff729a5a7ecbf77` | (see git log) |
+| `a2261da` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+## 08-01 Death Keyframe Track (in_progress)
+
+### Task
+- 为 ReplayKeyframes 新增 death 关键帧通道，驱动死亡红闪 + 倒下动画。
+
+### 实施
+- `ReplayKeyframes`: 新增 `death` KeyframeChannel（DOUBLE），加入 CURATED_CHANNELS + add()；record() 采集 `isDead() ? 1 : 0`；新增 `applyDeath()` 将 0..1 映射到 0..20 deathTime，空通道 guard（不触碰死亡状态，backward compatible）；apply() 复用 applyDeath。
+- `IEntity`: 新增 default 方法 `isDead()/getDeath()/setDeath(float)`。
+- `MCEntity`: 映射到 `livingEntity.deathTime`（cast int）+ `isDeadOrDying()`。
+- `StubEntity`: 独立 `death` 字段。
+- `BaseFilmController`: overlay 计算加 `|| entity.isDead()`；actor overlay 由 apply() 内部 applyDeath 驱动。
+- 测试：`ReplayIndexRemappingTest` 新增 `testDeathKeyframeChannel` 往返测试。
+
+### 验证
+- `compileJava compileClientJava` BUILD SUCCESSFUL
+- `testReplayKeyframeConsistency` PASS（含新 death 测试）
+- trellis-check 子代理审查：修复 P1 空通道 setDeath(0) 回归（isEmpty guard）、P3 冗余 applyDeath 调用；补 death 往返测试。
+
+### 下一步
+- 子任务 B `08-01-cataclysm-armor-compat`: 灾变盔甲兼容（含 StubEntity 预览注入 + Cursium ghost 半透明层）。
+- 提交：等待用户确认，只提交 new/ 内本任务相关文件（避免误提交其他会话改动）。
+
+## 08-01 Cataclysm Armor Compat (in_progress)
+
+### Task
+- 让 BBS 盔甲关键帧轨道正常渲染 L_Ender's Cataclysm 模组自定义盔甲（含编辑器预览 + Cursium ghost 半透明层）。
+
+### 反编译确认
+- Cataclysm 3.32 / Lionfish-API 3.1 (1.21.1 NeoForge)：Lionfish 纯动画库无盔甲类；灾变盔甲全走标准 `IClientItemExtensions.getHumanoidArmorModel()`，模型 extends HumanoidModel，物品 extends ArmorItem。
+- Cursium ghost 特效 = `CMRenderTypes.GHOST`（energy-swirl shader + TRANSLUCENT + LEQUAL 深度）。
+
+### 实施
+- 缺口 A（编辑器预览解析 mod 盔甲）：
+  - `StubEntity` 新增 `entityOverride` + `setEntityOverride/getEntityOverride/isMcEntity/getMcEntity`。
+  - `ArmorRenderer.resolveModel` 扩展 MCEntity + StubEntity 双分支。
+  - `BaseFilmController` 新增 `resolvePreviewLivingEntity()` 钩子（默认 null），`createEntities` 注入 StubEntity override。
+  - `FilmEditorController` 覆写返回 `Minecraft.getInstance().player`。
+- 缺口 B（Cursium ghost 半透明层）：
+  - `ArmorRenderer` 新增 `isCursium()`（registry id 匹配）、`renderGhost()`（Tesselator 构建 mesh + FormTranslucentQueue.RenderLayerCommand 半透明延迟提交）、`uploadGhost()`。
+  - 自定义 `GHOST_RENDER_TYPE`（energy-swirl shader + TRANSLUCENT_TRANSPARENCY + LEQUAL + COLOR_DEPTH_WRITE，对应灾变 getGhost）。
+
+### 验证
+- `compileJava compileClientJava` BUILD SUCCESSFUL
+- `testReplayKeyframeConsistency` PASS
+- trellis-check 子代理审查：修复 depthWrite 矛盾（RenderLayerCommand depthWrite false→true）、排序原点回退（改用 modelView 平移量）；确认纹理路径 `cursium_armor_ghost.png` 在 3.32 jar 存在。
+
+### 下一步
+- 运行时冒烟（人工）：装配 Cataclysm 3.32 + Lionfish-API 到 dev mods，验证 actor 回放 + 编辑器预览的灾变盔甲显示 + Cursium ghost 效果。
+- 提交：等用户确认，只提交 new/ 内本任务相关文件。
+
+
+## Session 26: webremote 前端重构 app.js 拆分 + R5 UX
+
+**Date**: 2026-08-02
+**Task**: wr-frontend-refactor
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+bbs-web-remote 浏览器端从 5852 行单体 `app.js` 拆为 7 模块（protocol/error/style/media/input/control/ui/app），App 类 2130 行 / 126 方法；非 App 代码减 3700 行。重构中实现了 R5 UX（控制权文案三态收敛、诊断分级+localStorage 偏好、demo 进出/空状态引导、聚焦提示可见、触摸手势说明、修饰锁一键清除），并核验 R3 传输降级可见已全覆盖。
+
+### Main Changes
+
+- **Step 1 (error.js)**：`currentLocale`/`ERROR_MESSAGES`/`humanizeError` → ns.Error
+- **Step 2 (style.js)**：9 个颜色/几何工具 + `TintedImageCache` → ns.Style
+- **Step 3 (media.js)**：8 个媒体渲染/传输类簇 + 6 个依赖函数 → ns.Media
+- **Step 4 (input.js)**：`RemoteInput` + 触摸/修饰锁逻辑 → ns.Input
+- **Step 5 (ui.js)**：`FloatingToolbar` + `readToolbarState`/`writeToolbarState` → ns.UI
+- **Step 6 (control.js)**：新增 `controlStateLabel()` 纯函数 → 观看中/可控制/操作中三态文案收敛
+- **Step 7 (R3 诊断分级+传输降级)**：诊断面板拆基础+高级折叠；核验 `setTransportOverlay` 四种可见态已全覆盖
+- **Step 8 (R5 交互打磨)**：demo 退出+空状态引导+聚焦提示可见+触摸手势说明+修饰锁清除
+- **Step 9 (全量核对验证)**：`./gradlew check` exit 0（1m46s）；9 webTest 全绿；WebTest 导出完备
+
+### Testing
+
+- `verifyWeb` (9 test × Node) — all passed
+- `check` (testCoControl/testRemoteAccessInfo/verifyWeb) — BUILD SUCCESSFUL
+- 新增 `control-state-label.test.js` (7 断言)
+- 管道退出码：`> /tmp/x.out; echo REAL_EXIT=$?` 双确认
+
+### Status
+
+[IN_PROGRESS] — 手工冒烟清单待用户确认后提交
+
+
+## Session 25: 完成 FS 5848363c 到 FSR 的完整迁移
+
+**Date**: 2026-08-01
+**Task**: 完成 FS 5848363c 到 FSR 的完整迁移
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+将 FS 116ed397..5848363c 的适用行为完整迁移到 NeoForge 1.21.1 FSR，审计 154 个上游提交与 77 个拒绝补丁，保留 FSR 粒子、透明队列、远程输入、主题、音频和渲染边界；聚焦测试、完整 check/build 与差异检查通过，游戏内及 Iris/Photon 视觉矩阵仍明确待手工验证。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `94d2349f43b8d71dcf162e30f5f4294e3d9cc2e3` | (see git log) |
+| `88cbfaba0b222d59c0e5e270f029e699c308ceef` | (see git log) |
+| `a6c7e0bc35ea5b53484f9190aacbf50f8d9bd61f` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 26: Frontend refactor: app.js modular split + R5 UX polish
+
+**Date**: 2026-08-02
+**Task**: Frontend refactor: app.js modular split + R5 UX polish
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+拆分 webremote bundle（app.js 5852→2729 行，App 类 2130 行）：8 模块 IIFE ns 契约（error/style/media/input/control/ui/app），WebTest 导出向后兼容，9 webTest 全绿。R5 UX：controlStateLabel 三态文案收敛（观看中/可控制/操作中）+ 新测试、诊断面板基础/高级分级 + localStorage 偏好、canvasHint 聚焦提示可见、demo 退出入口 + 空状态按权限引导、修饰锁一键清除、首次触摸手势说明。R3 传输降级/自动换档可见确认既有覆盖。check 全绿（exit 0）。spec 新增 web-browser-client-architecture.md。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `387e4ab` | (see git log) |
+| `206bed9` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 27: 完成 FS 27a6866c 到 FSR 的 Dock 增量迁移
+
+**Date**: 2026-08-04
+**Task**: 完成 FS 27a6866c 到 FSR 的 Dock 增量迁移
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+在独立 new worktree 中迁移 Dock 交互、布局持久化和外置属性面板生命周期修复；确认剪裁修复在 FSR 已等价；补充回归测试并通过 compile、check、build；保持 0.0.11 版本及粒子核心和 FormTranslucentQueue 不变。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7b81a6a0` | (see git log) |
+| `a4aaa47b` | (see git log) |
+| `1f46ac02` | (see git log) |
+| `f1a9e64` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

@@ -1,0 +1,31 @@
+{
+  "id": "fsr-sound-morph-parent",
+  "name": "fsr-sound-morph-parent",
+  "title": "FSR 声音伪装目标(圆形/圆锥)",
+  "description": "",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "snowstar_II",
+  "assignee": "snowstar_II",
+  "createdAt": "2026-07-26",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "codex/bootstrap-trellis-workspace",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "07-26-fsr-sound-acoustic-core",
+    "07-26-fsr-sound-morph-sphere",
+    "07-26-fsr-sound-morph-cone",
+    "07-26-fsr-sound-morph-export"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}

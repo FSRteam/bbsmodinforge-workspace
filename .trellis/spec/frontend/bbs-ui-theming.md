@@ -23,10 +23,17 @@
      禁用态/更暗文字暂保留常量,v2 再考虑 textDisabled token。
 4. 控件默认色字段(`UIButton.textColor`、`UIToggle.color`、`UIText`、`UILabel`、`Textbox`)以
    `Colors.WHITE` 为"跟随主题"哨兵:render 期 `== Colors.WHITE ? BBSSettings.textColor() : 字段`。
-   给控件显式设色时不受主题影响;想要主题字色就不要设色。
+   给控件显式设色时不受主题影响;想要主题字色就不要设色。`UIButton` 的默认文字必须逐帧
+   只由这个映射决定,禁止再根据按钮 normal/hover 填充色自动切换黑白,否则 hover 会制造
+   非设计的文字翻色反馈。
 5. 文字绘制默认色的汇聚点在 `Batcher2D.text/textShadow/textCard`(无 color 重载)与
    `text(label,x,y,color,shadow)`(textShadow token 拦截、light darkenWhite)。改动文字全局
    行为只动这些单点,不要在调用点散改。
+6. 当文字位于一个会被浅色主题旧兼容逻辑反色的贴图表面上(当前实例:教程按键提示的
+   key-cap),前景色必须与**实际渲染后的**表面配对:浅色主题黑键帽配白字,其余白键帽配黑字。
+   这类显式配对使用 `Batcher2D.textExactColor`,避免白字再次被 `darkenWhite` 压成黑字;
+   普通正文不得使用该逃生口。`ThemeWidgetForegroundTest` 必须同时锁定按钮哨兵映射、普通
+   白字旧转换和 exact-color/key-cap 配对。
 
 ### Refreshed 扩展 token 契约
 
@@ -99,9 +106,11 @@ field.textbox.area.w -= 20;
   高亮统一调用 `UIDockStyleRenderer`,禁止在宿主内复制绘制分支。Refreshed 分支分别消费
   `area_tint*`、`splitter_*`、`drop_*` 与 `cornerWidget()/cornerPanel()`;对应扩展 token
   全为 0 时必须进入旧 primary 方形/单像素路径。
-- **仪表盘整体自动隐藏**:`UIDashboardPanels` 的活动面板与底栏共享同一
-  `hiddenAmount * rootHeight` 纵向位移。位移必须写入实际布局坐标并统一 resize,使绘制和
-  命中同步;根容器保持静止以承载底部 reveal strip。禁止仅移动底栏或只变换渲染矩阵。
+- **仪表盘界面栏自动隐藏**:`UIDashboardPanels` 只把底部任务栏按自身高度向下滑出;
+  `UIDataDashboardPanel` 只把顶部 `tabBar`(含 Film 顶部操作按钮)按自身高度向上滑出,并同步
+  缩小编辑区的上下 inset。活动面板根容器必须始终锚定,禁止按 `rootHeight` 整体移动或把
+  编辑器主体推到屏幕外。位移必须写入实际布局坐标并统一 resize,使绘制和命中同步;根容器
+  保持静止以承载顶部和底部 reveal strip,禁止只变换渲染矩阵。
 - **解析期定死**:一切新 schema(tracks/decorations/corner_radius/background_mode)在
   `ThemeParser` 解析为不可变结构,坏值逐 key 回退 + warn(延续 v1 契约);渲染期零查表零分配。
 

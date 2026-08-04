@@ -48,9 +48,12 @@ deferred render/cache optimization.
   `context.modelRenderer`.
 - `BOBJModelVAO.updateMesh(StencilMap, Matrix4f[])` owns the last GPU-uploaded
   armature snapshot and the immutable dominant-bone picking data.
-- `ModelFormRenderer` may reuse a solved preview pose only for the picking pass
-  which receives the exact `FormRenderingContext` instance used by the preceding
-  normal pass.
+- `FormRenderer.renderUI()` installs the BBSFS form-list diffuse-light pair before
+  drawing each thumbnail. `UIModelRenderer` transforms its viewport light pair by
+  the preview camera view before installing it.
+- `ModelFormRenderer` owns the solved preview pose used by the normal draw,
+  picking, same-frame attachment/Gizmo matrix sampling, and the Model Editor's
+  secondary thumbnail.
 
 #### 3. Contracts
 
@@ -69,9 +72,15 @@ deferred render/cache optimization.
   the last uploaded snapshot. Picking IDs derive from immutable vertex weights and
   bone indices, so their buffer is rebuilt only when `StencilMap.increment`
   changes. Animation time, IK, physics, and constraints are not downsampled.
-- A solved preview pose cache is renderer-local and one-shot. Its key includes the
-  context, simulation owner, entity identity, model identity, entity age, and exact
-  transition bits; consuming or mismatching it invalidates it immediately.
+- A solved preview pose cache is renderer-local. Picking and secondary thumbnail
+  draws consume it once; same-frame matrix sampling may restore it without
+  consuming it. Its key includes the exact context where applicable, simulation
+  owner, entity identity, model identity, entity age, exact transition bits,
+  semantic base matrix, and world-target/collision capabilities.
+- Form-list thumbnails must not inherit arbitrary diffuse light from a previously
+  rendered widget. The BBSFS list pair is `(0, 1, -0.2)` and
+  `(-0.85, 0.85, 1)`, normalized. Full 3D preview lights are transformed by the
+  current preview camera view so orbiting the camera preserves BBSFS shading.
 - Vanilla Mob preview rendering saves and restores the incoming model-view matrix.
   Its UI thumbnail light matches BBSFS `MAX_BLOCK_LIGHT_COORDINATE`
   (`LightTexture.FULL_BLOCK`), while Form editor preview lighting remains governed
@@ -90,6 +99,8 @@ deferred render/cache optimization.
   exact match -> reuse geometry and update only picking state if required.
 - Preview context/owner/entity/model/age/transition mismatch -> solve animation,
   constraints, IK, and physics normally and replace the one-shot snapshot.
+- Preview semantic base or world capability mismatch -> do not reuse the solved
+  pose for matrix sampling.
 
 #### 5. Good/Base/Bad Cases
 
@@ -97,7 +108,10 @@ deferred render/cache optimization.
   is registered again without switching to another panel first.
 - Good: Film form preview renders Allay/Vex/Player translucent layers immediately.
 - Good: an animated Form normal preview solves once and its immediately following
-  stencil pass restores the exact solved Cubic/BOBJ pose without advancing physics.
+  stencil pass, Gizmo matrix samples, and Model Editor thumbnail restore the exact
+  solved Cubic/BOBJ pose without advancing physics.
+- Good: form-list thumbnails use the fixed BBSFS list lights, while a full preview
+  rotates its light directions with its own camera view.
 - Base: world Actor/ModelBlock/Film replay forms still enter the deferred
   translucent queue and flush at the world translucent boundary.
 - Bad: `setPanel(currentPanel)` is expected to reactivate a panel even though its
@@ -118,9 +132,10 @@ deferred render/cache optimization.
   transforms have a `hotkeyDrag` source for R view/sphere modes.
 - BOBJ regression asserts unchanged armatures bypass CPU skinning and static
   dominant-bone picking data is not uploaded every frame.
-- Preview regression asserts the pose snapshot is one-shot, context-identity bound,
-  and keyed by owner/entity/model/age/transition; Mob regression asserts per-layer
-  picker shader setup plus model-view restoration.
+- Preview regression asserts consuming draws are one-shot, matrix sampling is
+  non-consuming, and reuse is keyed by context/owner/entity/model/age/transition/
+  semantic policy; it also covers list and camera-space viewport lighting. Mob
+  regression asserts per-layer picker shader setup plus model-view restoration.
 - Run `testUiInputMailbox`, `testFilmEditorMigration`, `compileClientJava`, and an
   in-game Morph/Film/ModelBlock matrix with translucent mobs and an animated BOBJ.
 
@@ -198,6 +213,144 @@ Tests required:
   fixed in world space while the camera moves.
 - In-game visual check with Iris shaders enabled: ordinary form/morph entities
   and film replay targets stay fixed in world space while the camera moves.
+
+#### Local geometry and effect transform composition
+
+Any transform defined in model, bone, attachment, or effect-local space must be
+composed before a matrix that contains camera-relative placement or a view
+transform:
+
+```text
+render/view base * local delta * attachment/effect transform * local vertex
+```
+
+Never left-multiply a completed render matrix with a model-local delta. Doing so
+rotates the camera-relative translation as part of the joint/effect and makes the
+geometry change orientation when the camera moves.
+
+The same rule applies when a secondary pass is generated in different geometry
+backends:
+
+- VAO vertices remain local until the shader, so a local effect matrix may be a
+  shader uniform between `ModelViewMat` and `Position`.
+- Immediate, billboard, and captured vanilla vertices are transformed through a
+  `PoseStack` before upload. Apply local effect transforms to that stack before
+  emitting vertices and keep the later shader transform at identity.
+- A secondary material pass that samples the base texture's alpha must restore the
+  exact texture used by each material. The texture left bound by the last material
+  is not valid for every material in the model.
+- Picking/stencil passes must skip decorative secondary passes entirely; their
+  output encodes object or bone identity rather than visible color.
+- For non-uniform scale, normals use the inverse transpose of the effect's linear
+  matrix. Degenerate scale requires a finite fallback rather than inverting a
+  singular matrix.
+
+Review and validation:
+
+- Classify every secondary-pass vertex source as local-until-shader or
+  pose-baked-before-upload before deciding where its transform belongs.
+- Check a stationary object while translating and rotating the camera.
+- Check non-identity translation, rotation, uniform scale, and non-uniform scale.
+- Check multi-material cutouts and confirm transparent texels sample their own
+  material texture.
+- Check normal picking with the secondary effect enabled.
+- Run `./gradlew.bat compileClientJava` and the full `./gradlew.bat build`; shader
+  compilation and camera invariance still require an in-game visual check.
+
+#### Decorative RenderType pass ordering and state ownership
+
+Minecraft `RenderType.setupRenderState()` / `clearRenderState()` owns shader,
+texture, texturing matrix, blend, cull, lightmap, overlay, and depth state for a
+standalone draw. A BBS secondary pass invoked inside a larger form/model render
+must treat those values as borrowed caller state.
+
+- Finish every base-material draw in the model, including VAO and immediate
+  fallback geometry, before submitting glint or another decorative RenderType.
+  Never alternate `base bone -> glint bone -> base bone`; the RenderType clear
+  handler can disable blend/lightmap/overlay or replace textures needed by later
+  bones.
+- If a base surface is deferred to `FormTranslucentQueue`, append its decorative
+  pass to the same queue after the base commands. Drawing the decoration
+  immediately can precede the surface that supplies its depth mask.
+- Snapshot and restore the incoming shader, shader color, shader texture slots,
+  texture matrix, active texture, blend equation/factors/enabled state, depth
+  test/function/write mask, and cull state around a nested RenderType draw.
+- An unchanged secondary geometry pass uses `GL_EQUAL`: a shader that does not
+  sample the base texture alpha may then shade only pixels where the base surface
+  actually wrote depth. The base and secondary passes must also split their
+  transform chain at the same point. If the base submits local vertices with
+  `global * bone` in the shader, do not CPU-bake `bone * vertex` and submit only
+  `global` for the secondary pass: floating-point reassociation changes depth bits
+  and makes `GL_EQUAL` pass over only direction-dependent arcs. Use `GL_LEQUAL`
+  only when an explicit local transform makes the secondary geometry differ from
+  the base.
+- Immediate batches that mix unchanged and transformed secondary geometry must
+  be split by depth mode. One transformed bone must not widen depth testing for
+  every unchanged bone in the batch.
+
+Required visual matrix: opaque and cutout multi-material models, partially
+transparent forms, one glinted bone followed by ordinary bones, VAO/immediate/
+hybrid paths, shaders off, and Iris shaders on. Confirm later bones keep their
+base material, transparent texels do not turn black, and geometry remains hidden
+behind nearer blocks/entities.
+
+Shader-pack compatibility is a program-routing contract, not merely a known
+Minecraft `RenderType` name. For glint and similar special compositors:
+
+- Inspect representative packs for the exact gbuffer program they implement.
+  A pack may provide `gbuffers_armor_glint` while treating `energy_swirl` as an
+  ordinary entity or omitting equivalent overlay behavior.
+- Under an active Iris world pipeline, route enchantment overlays through the
+  dedicated armor-glint RenderType when that is the shared pack contract. Preserve
+  that RenderType's vanilla texture matrix unless the representative packs have
+  been pixel-tested with an override. A matrix that is valid for the vanilla core
+  shader can sample an invisible region or violate a pack's armor-glint program;
+  custom speed must degrade before visibility does.
+- Check which inputs the pack consumes. One pack may read `gl_Color`, while
+  another samples only the glint texture. In the latter case tint, opacity, and
+  per-vertex Fresnel cannot be promised even though visibility and composition
+  are correct; document the fallback instead of claiming pixel parity.
+- For CPU Fresnel, position and normal must come from the same coordinate space.
+  Derive the camera in that space by transforming the view-space origin through
+  the inverse of the matrix that will still be applied at draw time. Do not assume
+  that PoseStack-baked values always use `(0, 0, 0)` as the camera: UI cameras,
+  hand scopes, and view transforms may leave translation in the global model-view.
+
+Wrong:
+
+```java
+// Base VAO: global * bone * local; edge mesh: global * (bone * local)
+edgeRenderer.renderGroup(builder, boneStack, group, model);
+drawEdge(mesh, globalModelView); // GL_EQUAL is not bit-exact
+```
+
+Correct:
+
+```java
+edgeRenderer.renderGroup(builder, new PoseStack(), group, model);
+drawEdge(mesh, globalModelView.mul(boneStack.last().pose()));
+```
+
+#### Sparse mesh deformation contract
+
+A smooth weight function does not create a smooth surface when the source mesh has
+no vertices inside the deformation interval. A four-corner cube face remains two
+planar triangles after rasterization, so moving only its endpoints produces a chord
+and can make the joint appear pinched rather than bent.
+
+- Inspect source topology before choosing a vertex deformation algorithm. If a face
+  spans a joint with only endpoint vertices, subdivide it in the deformation
+  direction before applying weights.
+- Choose subdivision density in model space and cap it explicitly. Preserve winding,
+  UVs, color, light, overlay, and normals for every generated strip.
+- For a rigid joint, interpolate rotation around the joint pivot and keep the exact
+  upper/lower transforms at weights 0 and 1. Linear blending of transformed points
+  may be used only as a documented fallback for scale or shear because it loses
+  cross-section volume at large angles.
+- Material, trim, glint, and other secondary passes must use the same subdivided
+  geometry and deformation entry point as the base surface.
+- Visual validation must include 30, 60, and 90 degree bends, both inner and outer
+  joint surfaces, cross-section thickness, normals, and camera movement.
 
 ### Film actor replay ownership
 
@@ -1958,6 +2111,14 @@ local/remote controller handoff.
 - Timeline elements that need to rebuild a property panel during a press defer
   that hierarchy mutation until release; a canceled press restores its initial
   selection instead of leaving the timeline and property panel out of sync.
+- A numeric geometry handle stores both the property's press-time value and the
+  press-time raw ray/geometry coordinate. Movement writes
+  `clamp(startValue + currentRaw - anchorRaw)`, never the absolute raw coordinate.
+  Press without movement is exact identity even when the raw coordinate differs
+  from the property value because of a coarse pick volume or interpolated preview.
+- Visible guide geometry, pick geometry, and drag math share one signed local-axis
+  convention. Film keyframe drags use the selected keyframe's press-time value as
+  `startValue`; an interpolated preview must not become an absolute keyframe write.
 - Long-lived elements may compare their owner token with
   `UIBaseMenu.getMouseCaptureGeneration(button)` during render. A changed
   capture generation means the physical release was consumed elsewhere and
@@ -1984,12 +2145,16 @@ local/remote controller handoff.
 | Programmatic callback throws | Retire its token and rethrow; later clicks still work. |
 | One cancellation callback throws | Continue canceling the remaining captured inputs. |
 | Timeline panel rebuild is requested during a drag | Defer the rebuild; do not commit selection from `mouseCanceled`. |
+| Numeric handle is pressed without mouse movement | Keep the property/keyframe bitwise unchanged even if raw pick geometry is offset. |
+| Directional guide uses local `+Z` | Render, pick, and drag against `+Z`; do not negate only the visible guide. |
 
 #### 5. Good / Base / Bad Cases
 
 - Good: a context-menu Delete action runs only on its matching physical release.
 - Good: a click callback synchronously dispatches a scroll; the outer click
   resumes with its original viewport object and pointer state.
+- Good: a spotlight range handle starts at `8`, its ray anchor is `-37`, and
+  unchanged input remains `8`; moving the raw coordinate to `-35` produces `10`.
 - Base: an ordinary button press/release invokes its callback once.
 - Bad: synthesize `mouseReleased` during disconnect; a pending Delete action
   can run while the UI is being torn down.
@@ -2002,6 +2167,8 @@ local/remote controller handoff.
   overlay barriers, destructive menu cancellation, screen generations,
   local/remote handoff, press-owner release routing, nested wheel context,
   exception cleanup, same-frame viewport underflow, and Gizmo cancellation.
+- Custom numeric guide tests cover zero-movement identity, continuous first
+  movement, lower/upper clamps, every handle type, and Form plus Film keyframes.
 - `compileClientJava` verifies every concrete input adapter implements the
   distinct cancellation terminal.
 
@@ -2458,6 +2625,83 @@ that the PR contains all symbols visible to the compiler.
 
 Correct: inspect the committed diff, validate the exact commit in a clean
 worktree, then push a narrowly scoped follow-up commit if CI exposes drift.
+
+## Scenario: External-renderer OpenGL texture state ownership
+
+### 1. Scope / Trigger
+
+Apply when BBS or an addon uploads, reads back, or temporarily rebinds an OpenGL texture while
+Iris, Sodium, or another renderer can change GL state outside Minecraft's `GlStateManager` cache.
+
+### 2. Signatures
+
+- Real binding query: `GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D)`.
+- Matching bind/restore: `GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId)`.
+- Optional verification: `GL11.glGetTexImage(...)` while the target texture is still bound.
+
+### 3. Contracts
+
+- A temporary state transaction uses one state authority from query through restore. A real GL
+  query must be paired with direct GL bind and direct GL restore; do not cross that boundary through
+  cached `GlStateManager._bindTexture` calls.
+- Preserve and restore the actual active texture unit, texture binding, pixel-unpack buffer, and
+  changed pixel-store fields. A diagnostic readback happens before restoration.
+- Synchronous GPU readback is opt-in diagnostics only. Normal rendering must not allocate its
+  buffer or call `glGetTexImage` per frame.
+- Producer diagnostics compare expected CPU values with actual GPU texels. Their de-duplication key
+  includes both sides so a stuck GPU value is still reported when expected input changes.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| External renderer changed the real binding but not Minecraft's cache | Directly bind the owned texture, upload, then directly restore the queried binding. |
+| Cached and real state already agree | The same direct transaction remains valid and restores the caller unchanged. |
+| GPU texel differs from CPU input in diagnostic mode | Log the target id, first mismatch index, expected transition, and actual encoded values. |
+| Diagnostic mode is disabled | Allocate no readback buffer and perform no synchronous texture readback. |
+
+### 5. Good / Base / Bad Cases
+
+- Good: an Iris composite pass leaves an unrelated texture bound; the addon directly binds its R32F
+  texture, uploads, verifies it in debug mode, and restores the exact prior object.
+- Base: vanilla rendering owns both cache and GL state; the direct transaction is still balanced.
+- Bad: query `GL_TEXTURE_BINDING_2D`, call `_bindTexture(ownedId)`, upload, then call
+  `_bindTexture(previousId)`. Either cached call can be skipped against stale cache state.
+
+### 6. Tests Required
+
+- Compile and build the owning addon/core on the target Minecraft and Java versions.
+- Inspect release bytecode for direct bind/restore calls and the absence of cached binds in the
+  transaction.
+- In an Iris-enabled client, require GPU readback to match a marker plus at least `0`, baseline, and
+  a materially different encoded value; separately prove the consuming program binds and executes.
+- Finish with a fixed-camera pixel matrix. Correct upload and binding alone are not consumer proof.
+
+### 7. Wrong vs Correct
+
+Wrong:
+
+```java
+int previous = GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D);
+GlStateManager._bindTexture(ownedTexture); // may trust stale cache
+GL11.glTexSubImage2D(/* ... */);
+GlStateManager._bindTexture(previous);
+```
+
+Correct:
+
+```java
+int previous = GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D);
+try
+{
+    GL11.glBindTexture(GL11.GL_TEXTURE_2D, ownedTexture);
+    GL11.glTexSubImage2D(/* ... */);
+}
+finally
+{
+    GL11.glBindTexture(GL11.GL_TEXTURE_2D, previous);
+}
+```
 
 ## Code Review Checklist
 

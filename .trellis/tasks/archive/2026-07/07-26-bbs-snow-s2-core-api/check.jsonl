@@ -1,0 +1,3 @@
+{"file":".trellis/spec/new/backend/external-addon-integration-contract.md","reason":"Verify external addon registration, Mixin runtime gates, resource loading, and build isolation."}
+{"file":".trellis/spec/new/backend/quality-guidelines.md","reason":"Apply project quality, clean-snapshot, and runtime verification requirements."}
+{"file":".trellis/tasks/07-26-bbs-snow-s2-core-api/research/source-inventory.md","reason":"Check exact counts, target members, removed autoLerp injections, and settings behavior."}

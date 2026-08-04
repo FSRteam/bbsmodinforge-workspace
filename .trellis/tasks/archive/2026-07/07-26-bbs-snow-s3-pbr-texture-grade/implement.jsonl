@@ -1,0 +1,3 @@
+{"file":".trellis/spec/new/backend/external-addon-integration-contract.md","reason":"External addon resource, Mixin config, client lifecycle, build isolation, and runtime gate contracts."}
+{"file":".trellis/tasks/07-26-bbs-snow-s3-pbr-texture-grade/research/source-inventory-and-target-drift.md","reason":"Exact S3 source inventory, split ownership, target signatures, shader drift, and deferred-render risks."}
+{"file":".trellis/tasks/archive/2026-07/07-26-bbs-snow-s2-core-api/design.md","reason":"S2 data/API contracts and PBR context boundary that S3 must consume without duplicating."}

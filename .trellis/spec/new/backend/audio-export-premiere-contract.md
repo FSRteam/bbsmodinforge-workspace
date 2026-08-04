@@ -122,6 +122,17 @@ The source-backed baselines are:
   remains a separate distribution-gated step. If direct registration throws
   before Core accepts or queues it, the idempotence guard must allow a retry.
 
+- When the Premiere implementation is embedded in an existing multi-feature
+  addon such as `bbs_snow`, do not keep the standalone Premiere mod/bootstrap
+  or register a second settings file. The addon's client constructor must
+  initialize one button installer, and the settings adapter must read and write
+  the addon's existing `CMLSettings` values directly.
+- A registered setting is not a feature entry point. The installer must poll
+  the current dashboard instance, re-read the enabled value until installation
+  succeeds, and install at most one button per dashboard. Enabling the setting
+  after the dashboard was created must expose the button without a restart.
+  Do not mark a disabled dashboard as installed.
+
 - F4 owns an open-ended live-world range. A second F4 press normally stops only
   its active recording; during warm-up it cancels. It must not truncate an F6
   session. F4 has no Film clip manifest and must not fabricate Premiere audio
@@ -206,6 +217,8 @@ The source-backed baselines are:
 | Package audio/XML generation fails with a usable video | `FAILED` by default; `DEGRADED` only when explicit `RETAIN_VIDEO` policy is present and named. |
 | Disconnect/world unload while a panel export owns resources | Fence startup, cancel panel/world sessions while owners are reachable, then clear UI/controller ownership and release lower-level resources. |
 | External add-on listens for `BBSAddonRegisterEvent` on its own mod bus | Registration never arrives; replace it with one idempotent construction-time `BBSMod.registerAddon(...)` call. |
+| Embedded addon exposes Premiere settings but never initializes the client installer | Reject the integration; settings visibility alone cannot create the monitor button or consume typed completion results. |
+| Premiere is enabled after the dashboard was opened | Install once on the active dashboard during a later client tick; no restart and no duplicate button. |
 
 ## 5. Good / Base / Bad Cases
 
@@ -261,6 +274,12 @@ The source-backed baselines are:
 - Also run the affected client compilation and `git diff --check` in the owning
   repository. Never weaken a contract assertion because the optional media
   tier or the exact configured addon core JAR is unavailable.
+- For an embedded integration, inspect the release JAR for the button,
+  installer, handler, completion fence, media probe, atomic publisher and XMEML
+  classes. Assert the client entry point calls the installer, the handler uses
+  `setFinishedResultListener`, and no source or bytecode contains
+  `findLatestMp4`, recording-state polling, Fabric/Yarn client names, or the
+  standalone Premiere mod/bootstrap package.
 
 ## 7. Wrong vs Correct
 
@@ -302,4 +321,19 @@ Path published = publisher.publish(staging, uniqueTarget); // no replacement
 
 session.cancel();       // owner is still reachable
 dashboard = null;       // release UI ownership afterward
+```
+
+Embedded wrong versus correct:
+
+```java
+// Wrong: the option is visible, but nothing projects it into the monitor UI.
+premiereExportEnabled = builder.getBoolean("premiere_export_enabled", false);
+
+// Correct: initialization is idempotent and the installer keeps checking a
+// disabled dashboard until the existing setting becomes enabled.
+PremiereExportButtonInstaller.initialize();
+if (PremiereExportSettings.isEnabled() && !installed(dashboard))
+{
+    installButton(dashboard);
+}
 ```

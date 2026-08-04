@@ -383,3 +383,97 @@ Updating the encoder texture does not update the window, and rebinding the
 window framebuffer does not draw the private framebuffer into it. Define which
 consumer receives overlays, when the copy happens, and whether presentation is
 full-screen or owned by a UI region.
+
+---
+
+## GPU Publication Is Not Consumer Verification
+
+A setting that crosses generated shader code has more boundaries than its CPU
+data structure suggests:
+
+```text
+UI/property -> CPU registry -> GPU buffer/texture -> sampler/binding
+            -> generated shaderpack -> selected program/pass -> framebuffer pixels
+```
+
+Source inspection, method descriptors, packed JAR contents, and a successful
+GPU upload prove publication only. They do not prove that the selected generated
+pack declares the same contract, that Iris binds the resource to the consuming
+program, that the intended pass runs, or that different values change pixels.
+
+For every changed GPU value:
+
+- give the producer/consumer contract an explicit version or detectable marker;
+- keep old/new combinations on a deliberate fallback path when practical;
+- verify the exact generated artifact selected at runtime, not only its template;
+- separate sampler/buffer binding evidence from shader-compilation evidence;
+- finish with a fixed-camera pixel matrix using at least zero, baseline, and a
+  materially different value;
+- exercise every registration path that can assign a different packed index.
+
+When the fixture has no active shaderpack or never opens the consuming UI/pass,
+record the run as startup verification only. Do not promote it to visual or GPU
+consumer acceptance even when every Java symbol and bundled GLSL string is present.
+
+---
+
+## Missing Plugin Object → UI Projection Boundary
+
+Plugin-owned data can outlive the plugin that registered its Java class and UI metadata:
+
+```text
+serialized film -> factory decode -> MissingClip placeholder -> timeline metadata -> renderer/actions
+```
+
+Treat an unavailable registration as a normal degraded state, not an exceptional value that
+every renderer may assume away.
+
+- Preserve the original serialized map and type id in a non-executing placeholder so reinstalling
+  the plugin can recover the object without data loss.
+- Centralize one immutable fallback color/icon record for UI projection. Do not allocate fallback
+  metadata inside a per-frame render method.
+- Render an understandable label containing the original type id, and keep plugin-owned actions
+  such as conversion unavailable while registration metadata is absent.
+- After adding a placeholder type, search every direct `factory.getData(object)` consumer. Data-layer
+  degradation is incomplete until renderers, rulers, context menus, and property panels all tolerate it.
+- Treat copy, clone, snapshot, undo, preview-entity, and playback-entity creation as placeholder
+  consumers too. A missing object must copy its preserved source map directly; never send its
+  placeholder Java class back through the unavailable plugin registry.
+- Test delete/degrade, render projection, and reinstall/recover as separate boundaries. A lifecycle
+  test that only proves the placeholder exists does not prove the client UI can open or create
+  playback entities for the film.
+
+**Real-world example**: removing `bbs_snow` correctly decoded its Color/Cinematic/Hotbar clips as
+`MissingClip`, but `UIClipRenderer` still dereferenced `ClipFactoryData.color`. Opening the film
+therefore crashed even though serialization and plugin teardown were working. The fix centralized
+fallback metadata in `UIClips`, routed every timeline color consumer through it, disabled unavailable
+converters, and added a client-side regression alongside the plugin lifecycle tests.
+
+**Real-world example**: `MissingForm` preserved an unavailable form's source map and could be decoded
+and displayed, but `FormUtils.copy` still passed the placeholder class to the normal form factory.
+Opening a Film copied replay forms while creating preview entities and crashed before the editor
+appeared. The fix gave the shared copy boundary an explicit `MissingForm` branch and extended the
+plugin delete/degrade lifecycle test to copy the placeholder and compare its preserved source data.
+
+---
+
+## Setting Visibility Is Not Feature Reachability
+
+When a migrated option appears in settings but its button, listener, renderer,
+or export action is missing, trace the complete projection before changing the
+setting again:
+
+```text
+registered value -> lifecycle initializer -> live UI/runtime owner
+                 -> action/listener -> typed terminal result -> visible output
+```
+
+- Verify the initializer is called, not merely present in the JAR.
+- If the value can change while a screen already exists, re-evaluate it until
+  the per-screen installation succeeds; do not cache the disabled state as
+  complete.
+- Prove the final consumer path. A visible setting and a compilable handler do
+  not prove a monitor icon, shader execution, or package publication.
+- Add one negative assertion for the old disconnected implementation, such as
+  no polling for the newest file and no deferred draw command that loses the
+  captured render state.
