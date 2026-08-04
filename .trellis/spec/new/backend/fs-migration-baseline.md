@@ -1,9 +1,9 @@
 # FS → FSR Migration Baseline
 
-> Last updated: 2026-08-01. This is the source of truth for selecting the next
+> Last updated: 2026-08-04. This is the source of truth for selecting the next
 > FS range to migrate into `new/` (FSR, NeoForge 1.21.1).
 
-> **Current target lock (2026-08-01):** The completed migration preserves
+> **Current target lock (2026-08-04):** The completed migration preserves
 > `mod_version=0.0.11` and artifact identity
 > `BBS_FSR_beta_v0.0.11.jar`. Upstream FS release numbers must not be copied into
 > FSR. Historical `0.0.10` evidence remains available in Git history.
@@ -20,14 +20,18 @@ Minecraft branch, or an obsolete FSR history line from becoming the baseline.
 legacy_old2_checkout = old2.0/bbs-fs@27844c61802d13c1623fbe1553a89a19124d18a8
 legacy_old2_status = stale-reference-only; not the migrated-through marker
 
-fs_master_migrated_through = 5848363c3e7c63ef124bad0c3b08809abd311f91
-fs_1_21_1_reference_through = 5ed645834b46f7fd8c81e6c40dbc3e453949ac0b
-fs_1_20_1_reference_through = 813be205e83b571823d58736b9213f8309811186
-fs_reference_merge_base = 5848363c3e7c63ef124bad0c3b08809abd311f91
+fs_master_migrated_through = 4220b453bf96fbe41dde88f3ca51aa7fe9fcd612
+fs_1_21_1_reference_through = 218bcd3156da8717add279c2c957a4b00e497a23
+fs_1_20_1_reference_through = 27a6866c14e5351aed50fd3b85c9d6c5fa97467c
+fs_reference_merge_base = 4220b453bf96fbe41dde88f3ca51aa7fe9fcd612
 
-fsr_previous_target_commit = 0544eadacbd0d2d60fd27d2a317e9e73483fa468
-fsr_target_commit = 94d2349f43b8d71dcf162e30f5f4294e3d9cc2e3
-fsr_target_branch = codex/sync-fs-5848363-to-fsr
+fsr_previous_target_commit = 156d0bffc2b884d7bf645225d27fc72bb57f3cb5
+fsr_target_commit = 1f46ac02ad07c98e47d43d6100df58fb0ae23acb
+fsr_target_branch = codex/sync-fs-27a6866c-to-fsr
+
+fs_delta_6f4f9ec9 = ported
+fs_delta_0cecc8c9 = target-equivalent-width-height-audit
+fs_delta_4220b453 = ported
 
 fsr_mod_version_before_after = 0.0.11 -> 0.0.11
 fsr_artifact_identity = BBS_FSR_beta_v0.0.11.jar
@@ -42,19 +46,19 @@ Reference checkout:
 ```text
 temp/bbs-fs-2.3
 local branch = codex/fsr-sync-20260729
-origin/master = 5848363c3e7c63ef124bad0c3b08809abd311f91
-origin/1.21.1 = 5ed645834b46f7fd8c81e6c40dbc3e453949ac0b
-origin/1.20.1 = 813be205e83b571823d58736b9213f8309811186
+origin/master = 4220b453bf96fbe41dde88f3ca51aa7fe9fcd612
+origin/1.21.1 = 218bcd3156da8717add279c2c957a4b00e497a23
+origin/1.20.1 = 27a6866c14e5351aed50fd3b85c9d6c5fa97467c
 ```
 
 ## 3. Contracts
 
-- `5848363c` is the migrated master behavior tip and the audited merge base of
+- `4220b453` is the migrated master behavior tip and the audited merge base of
   the recorded 1.20.1 and 1.21.1 reference tips.
-- `5ed64583` is the 1.21.1 API reference and `813be205` is the requested 1.20.1
+- `218bcd31` is the 1.21.1 API reference and `27a6866c` is the requested 1.20.1
   behavior reference. Both contain the recorded master tip.
-- `94d2349f` is the migration-owned FSR terminal commit; its parent is
-  `0544eada`. Existing changes in the original `new` checkout are outside this
+- `1f46ac02` is the migration-owned FSR terminal commit; its initial boundary is
+  `156d0bff`. Existing changes in the original `new` checkout are outside this
   dedicated-worktree boundary.
 - The migration preserves `mod_version=0.0.11` and artifact identity
   `BBS_FSR_beta_v0.0.11.jar`; upstream release numbers are not copied into FSR.
@@ -77,6 +81,16 @@ origin/1.20.1 = 813be205e83b571823d58736b9213f8309811186
   retain FSR remote-input protection and X/Y four-edge cursor wrapping;
   `UIValueMap` must retain audio channel, theme, motion, accent-follow, and video
   controls; trackpads/sliders must retain theme colors and Refreshed radii.
+- `SplitterHandleInfo` is geometry-only in FSR. Splitter handles and
+  `EditorLayoutNode.collectSplitters(...)` both use pre-order traversal; operations
+  such as double-click-to-even must resolve the splitter through that ordered tree
+  list, never through a nonexistent node field on the handle geometry.
+- Dock hidden-panel IDs and unlocked state are stored by layout ID in
+  `ValueEditorLayout`. Film editor-specific IDs use `film.<editor>` while the shared
+  film and particle layouts keep `film` and `particle`.
+- `onLayoutSettled` fires after completed layout bounds changes and splitter drag
+  end, not on each drag frame. Film preview auto-sizing must subscribe to this
+  callback so maximize, undo, hide/show, tab activation, drop and reset stay in sync.
 - Model-editor secondary thumbnails reuse the renderer's solved preview pose.
   DLS file diagnostics remain disabled by default and are enabled only for an
   explicit debugging session.
@@ -125,14 +139,14 @@ origin/1.20.1 = 813be205e83b571823d58736b9213f8309811186
 
 ```powershell
 git -C temp/bbs-fs-2.3 fetch --prune origin master 1.21.1 1.20.1
-git -C temp/bbs-fs-2.3 cat-file -e '5848363c^{commit}'
-git -C temp/bbs-fs-2.3 cat-file -e '5ed64583^{commit}'
-git -C temp/bbs-fs-2.3 cat-file -e '813be205^{commit}'
-git -C temp/bbs-fs-2.3 merge-base --is-ancestor 5848363c 5ed64583
-git -C temp/bbs-fs-2.3 merge-base --is-ancestor 5848363c 813be205
-git -C new merge-base --is-ancestor 0544eada 94d2349f
-git -C new diff --quiet 0544eada..94d2349f -- ':(glob)**/*particle*'
-git -C new diff --quiet 0544eada..94d2349f -- src/client/java/mchorse/bbs_mod/forms/renderers/FormTranslucentQueue.java
+git -C temp/bbs-fs-2.3 cat-file -e '4220b453^{commit}'
+git -C temp/bbs-fs-2.3 cat-file -e '218bcd31^{commit}'
+git -C temp/bbs-fs-2.3 cat-file -e '27a6866c^{commit}'
+git -C temp/bbs-fs-2.3 merge-base --is-ancestor 4220b453 218bcd31
+git -C temp/bbs-fs-2.3 merge-base --is-ancestor 4220b453 27a6866c
+git -C new merge-base --is-ancestor 156d0bff 1f46ac02
+git -C new diff --quiet 156d0bff..1f46ac02 -- src/main/java/mchorse/bbs_mod/particles
+git -C new diff --quiet 156d0bff..1f46ac02 -- src/client/java/mchorse/bbs_mod/forms/renderers/FormTranslucentQueue.java
 Select-String -Path new/gradle.properties -Pattern '^mod_version=0.0.11$'
 ```
 
@@ -141,6 +155,8 @@ For an implementation migration also run:
 ```powershell
 cd new
 .\gradlew.bat --no-daemon compileJava compileClientJava
+.\gradlew.bat --no-daemon testUiInputMailbox
+.\gradlew.bat --no-daemon testFilmEditorMigration
 .\gradlew.bat --no-daemon check
 .\gradlew.bat --no-daemon build
 git diff --check
