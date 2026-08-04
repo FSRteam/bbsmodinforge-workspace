@@ -454,3 +454,26 @@ and displayed, but `FormUtils.copy` still passed the placeholder class to the no
 Opening a Film copied replay forms while creating preview entities and crashed before the editor
 appeared. The fix gave the shared copy boundary an explicit `MissingForm` branch and extended the
 plugin delete/degrade lifecycle test to copy the placeholder and compare its preserved source data.
+
+---
+
+## Setting Visibility Is Not Feature Reachability
+
+When a migrated option appears in settings but its button, listener, renderer,
+or export action is missing, trace the complete projection before changing the
+setting again:
+
+```text
+registered value -> lifecycle initializer -> live UI/runtime owner
+                 -> action/listener -> typed terminal result -> visible output
+```
+
+- Verify the initializer is called, not merely present in the JAR.
+- If the value can change while a screen already exists, re-evaluate it until
+  the per-screen installation succeeds; do not cache the disabled state as
+  complete.
+- Prove the final consumer path. A visible setting and a compilable handler do
+  not prove a monitor icon, shader execution, or package publication.
+- Add one negative assertion for the old disconnected implementation, such as
+  no polling for the newest file and no deferred draw command that loses the
+  captured render state.

@@ -11,8 +11,9 @@
 - 回滚点 R0：未改动任何源码。
 
 ## Step 1 — 深链解析 + 自动填充 + 擦除（AC1/AC2/AC3）
+- [x] 删除连接表单的服务地址输入框；`connectFromForm()` 固定使用 `location.origin`，离线文件保留 loopback 开发回退。
 - [ ] `app.js` 新增 `consumeDeeplink()`：解析 `location.hash` 的 `pair`/`role`/`name`/`autoconnect`；`code` 走 `boundedText`+正则 `^[0-9]{4,12}$` 白名单，非法忽略。
-- [ ] 命中时填 `$("pairCode")` / `$("serverUrl")=location.origin` / 预选 role / 预填 name。
+- [ ] 命中时填 `$("pairCode")` / 预选 role / 预填 name；服务地址始终由当前网页同源推导。
 - [ ] `history.replaceState(null,"",location.pathname+location.search)` 擦除 fragment。
 - [ ] 在构造末尾（demo 判定同处）调用 `consumeDeeplink()`；`autoconnect=1` 时才 `connectFromForm()`（默认关）。
 - [ ] Node 回归：新增用例覆盖 合法 `#pair=123456`、含 role、畸形码被忽略、擦除后 `location.hash` 为空。

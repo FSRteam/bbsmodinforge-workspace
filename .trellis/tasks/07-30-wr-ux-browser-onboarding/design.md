@@ -6,8 +6,8 @@
 
 | 文件 | 现状 | 本任务改动 |
 |---|---|---|
-| `resources/assets/bbswebremote/web/app.js` | `connectFromForm`(~3881)、`setDefaultServer`(~3873)、`handleJsonMessage`(~4166)、`setPermissionRole`(~4801)、`setAuthorizedRole`(~4827)、`toggleControl`(~5009)、`updateControlUi`(~4920) | 新增深链解析+自动填充+URL 擦除；新增 `requestRoleUpgrade()`；`toggleControl`/`updateControlUi` 支持不断线升级；`handleJsonMessage` 处理升级结果（复用 ROLE/WELCOME 通道） |
-| `resources/assets/bbswebremote/web/index.html` | 连接表单(~46-76)、`<script>`(~222) | 可选：QR 展示位（若前端渲染）；升级提示 DOM |
+| `resources/assets/bbswebremote/web/app.js` | `connectFromForm`、`handleJsonMessage`、`setPermissionRole`、`setAuthorizedRole`、`toggleControl`、`updateControlUi` | 连接目标固定为当前网页同源；新增深链解析+自动填码+URL 擦除；新增 `requestRoleUpgrade()`；`toggleControl`/`updateControlUi` 支持不断线升级；`handleJsonMessage` 处理升级结果（复用 ROLE/WELCOME 通道） |
+| `resources/assets/bbswebremote/web/index.html` | 连接表单、`<script>` | 删除服务地址输入框，仅保留配对码等用户选择；可选 QR 展示位（若前端渲染）；升级提示 DOM |
 | `resources/assets/bbswebremote/web/qr.js`（新，可选） | 无 | 轻量内联 QR 生成（仅当选"前端渲染"路线） |
 | 服务端 `client/control/*` 或 UI socket 消息处理 | 现有 ROLE/CONTROL 处理 | 新增可选 C2S `ROLE_UPGRADE_REQUEST` 裁决，复用既有 `ROLE`/`WELCOME` S2C 下发 |
 | `strings/en_us.json`+`zh_cn.json` | — | 新增本任务可见文案 key（对齐 `wr-ux-error-i18n` 的 `bbswebremote.<domain>.<name>` 约定） |
@@ -28,6 +28,8 @@ http://<host>:<port>/#pair=<code>[&role=CONTROLLER][&name=<n>]
 
 ## 3. 浏览器解析 + 自动填充 + 擦除
 
+普通打开网页与深链共用同一连接规则：`connectFromForm()` 从 `location.origin` 取得服务地址，不读取用户输入。网页由哪台 FSR 服务提供，就直接连接回该服务；`file:` 离线演示仅保留 `http://127.0.0.1:8765` 作为开发回退。
+
 在 `App` 构造末尾（现有 `location.search` demo 判定 ~3675 附近）新增 `consumeDeeplink()`：
 
 ```
@@ -35,7 +37,6 @@ parse location.hash -> URLSearchParams(hash.slice(1))
 if has pair:
   code = boundedText(pair, 12) 且 /^[0-9]{4,12}$/ 校验；非法则忽略
   $("pairCode").value = code
-  $("serverUrl").value = location.origin        // 同源，天然带 host:port
   role = params.get("role") -> 命中 CONTROLLER 才勾选，否则默认 VIEWER
   name = boundedText(params.get("name"), MAX_PARTICIPANT_NAME) -> 预填
   history.replaceState(null, "", location.pathname + location.search)  // 擦除 #pair

@@ -1,0 +1,3 @@
+{"file":".trellis/spec/new/backend/external-addon-integration-contract.md","reason":"NeoForge 外部 BBSFSR 插件的注册窗口、依赖声明、客户端隔离和 Mixin 约束。"}
+{"file":".trellis/spec/new/backend/quality-guidelines.md","reason":"外部渲染器、运行时状态和客户端回归验证的项目质量约束。"}
+{"file":".trellis/tasks/08-03-irl-neoforge-1211-port/research/runtime-log-2026-08-04.md","reason":"真实客户端日志暴露的 BBSFSR 0.0.11 UITrackpad 二进制兼容约束和修复证据。"}
