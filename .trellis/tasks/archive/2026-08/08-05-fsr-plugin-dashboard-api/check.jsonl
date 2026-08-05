@@ -1,0 +1,3 @@
+{"file":".trellis/spec/new/backend/hot-plugin-runtime-contract.md","reason":"复核热替换、卸载和 classloader 可回收性。"}
+{"file":".trellis/spec/new/backend/external-addon-integration-contract.md","reason":"复核外部 Addon API 使用方式和兼容边界。"}
+{"file":".trellis/spec/new/backend/quality-guidelines.md","reason":"复核 Dashboard 生命周期和 JVM binary compatibility。"}
