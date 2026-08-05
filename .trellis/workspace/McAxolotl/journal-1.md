@@ -775,3 +775,76 @@ Follow-up defect from session 17: tracker clip attachment picker on MobForm stil
 
 - PR #18 待 FSRteam 合入
 - 追踪器延迟问题待未来会话按 prd 验证步骤（A/B/C 区分）决定是否修复
+
+
+## Session 20: form picker thumbnail animation + freeze toggle
+
+**Date**: 2026-08-05 ~ 2026-08-06
+**Task**: `08-05-form-list-animation-playback-freeze` / PR #20
+**Branch**: `work/mcaxolotl-form-list-animation-freeze`（new）/ `work/mcaxolotl-form-list-animation-freeze-journal`（trellis）
+
+### Summary
+
+修复伪装列表 Form 缩略图动画抽搐，并新增「冻结形态动画」开关。承接 `08-01-08-01-form-list-preview-animation-twitch`（该任务因修复方向被用户实测推翻而延期）。
+
+**根因**：缩略图走 `FormRenderer.renderInUI`，从不经过 `Form.update`，无人推进动画时钟；vanilla 用 `ageInTicks = tickCount + partialTick` 采样冻结状态，partial tick 每帧 0..1 来回扫 → 抽搐。
+
+**上一任务失败的原因（本次推翻并验证）**：伪造单调 `tickCount` 不成立。存在一整类生物，其动画依赖只有 `tick()` 才产生的状态：
+
+- 蝙蝠 / 美西螈：`AnimationState` 只在 `setupAnimationStates()` 里 `startIfStopped(tickCount)` 启动，不 tick 则 `animate()` 是空操作 → **完全静止**
+- 鹦鹉 / 末影龙：模型 lerp 的是每 tick 端点（`flap`/`oFlap`、`flapTime`/`oFlapTime`），只在 `aiStep` 推进
+- 远古守卫者：`GuardianModel.setupAnim` 自己用 `ageInTicks - tickCount` 反推 partial tick，去 lerp 同样只在 `aiStep` 推进的 `clientSideTailAnimation(O)`
+
+因此这两类分别表现为「卡两 tick 之间」与「完全静止」—— 与用户实测报告完全吻合。
+
+**最终方案**：不伪造时钟，改为按 UI tick 真正 tick，并解决共享渲染器的记账问题。
+
+### Main Changes
+
+new/ 仓库（1 提交 `ac43c350`，11 文件）：
+
+- `FormRenderer`：新增 `pollUIAnimationTicks`（按 `UIContext.getTick()` 配速，十 tick 追帧上限，对齐 `UIModelRenderer#updateLogic`）、`driveUIAnimation`、`recordExternalTick`、`isRecentlySelected`、`UI_FROZEN_TRANSITION`
+- `MobFormRenderer` / `ModelFormRenderer`：`advanceUIAnimation` 通过各自已有的 `ITickable.tick` 消费欠下 tick；`tick` 开头记账；冻结时钉住 partial tick
+- `FormUtilsClient.renderUI` / `FormRenderer.renderUI`：新增带 `selected` 的重载
+- `UIFormCategory` / `UIForms` / `UISelectorList`：传递 `selected`
+- `UIPickableFormRenderer.update`：`this.update || this.target == null` → 实体选择器预览自驱动
+- `BBSSettings.freezeFormAnimations` + `en_us` / `zh_cn` 语言条目
+
+### Debugging Journey（三轮用户实测驱动）
+
+1. **首版**（伪造 `uiAnimationAge` 覆盖 `tickCount`）→ 用户报：ModelForm 与远古守卫者仍卡两 tick；蝙蝠 / 鹦鹉 / 美西螈 / 末影龙**不再播放**。原因见上；且 `ModelFormRenderer` 首版根本没改。
+2. **二版**（改为真 tick）→ 用户报：编辑 3D 预览动画速度异常。根因：渲染器缓存在 form 上是**共享实例**，编辑器里部件列表缩略图与 3D 预览同屏，同一渲染器每 tick 被推进两次 → 双倍速。加入外部 tick 记账。
+3. **三版** → 用户报：实体选择器菜单下预览卡顿；冻结启用时选中 Form 仍卡两 tick，编辑预览大量 Form 卡住或静止。双根因：
+   - `UIForms` / `UISelectorList` 调的是旧重载，`selected` 恒 false → 冻结豁免从未生效
+   - 时钟由「本 tick 第一个绘制点」结算，而它未必持有选中态 → 绘制顺序竞争
+   - 实体选择器 palette 从不调 `updatable()`，其 3D 预览此前寄生于缩略图的 tick
+   → 修为：时钟每 tick 只结算一次（所有绘制点看到一致的冻结判定）+ 选中态按渲染器记录并留一 tick 容差 + 预览自驱动。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ac43c350` | feat(ui): animate form picker thumbnails and add a freeze toggle |
+
+### Testing
+
+- [OK] `./gradlew build`（test-strict 全量）通过
+- [OK] `:testIkPhysicsConsistency` 通过 —— 中途曾因把 `StubEntity` 作为 `FormRenderer` 字段初始化器而崩溃（`Not bootstrapped`），改懒初始化后修复
+- [OK] 用户游戏内验证：列表动画、冻结开关、选中豁免、编辑预览速度均正常
+
+### Pitfalls（值得写进 spec 的隐式契约）
+
+- **`FormRenderer` 及子类的构造过程不得触碰原版注册表 / `ItemStack` / `BuiltInRegistries`**。多个 headless 测试套件直接 `new` 渲染器子类；往基类加字段极易踩中。`:testIkPhysicsConsistency` 事实上守着这条线。
+- **`:testUiMotions` 打印的 "Not bootstrapped" 堆栈是既有良性回退**，`ThemeManager.loadThemeMap` 显式 `catch (Exception | LinkageError)` 后回退默认主题，测试照常通过。排查时勿与上一条混淆 —— 判别法：看栈里有无本次改动的文件。
+- **UI 侧动画一律按 `UIContext.getTick()` 配速，绝不按渲染帧**。缩略图重绘频率是 tick 率的 3-12 倍。
+- **渲染器缓存在 form 上是共享实例**，同一 form 可能在一帧内被多个绘制点绘制（选择器单元格 / 部件列表行 / 3D 预览）。任何挂在渲染器上的每 tick 状态都必须考虑重复推进与绘制顺序竞争。
+
+### Status
+
+[OK] **Completed**（待 PR 合入）
+
+### Next Steps
+
+- PR #20 待 FSRteam 合入：https://github.com/FSRteam/bbs-FSR/pull/20
+- 未验证场景（记于 `risks.md` D 节）：影片菜单复用姿态预览、模型方块菜单、`paused` 关键帧驱动与冻结开关叠加
+- 可考虑将上述 Pitfalls 沉淀进 `.trellis/spec/frontend/`
