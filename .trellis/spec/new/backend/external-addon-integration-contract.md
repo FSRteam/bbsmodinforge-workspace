@@ -514,3 +514,85 @@ UIKeyframeSheet sheet = new UIKeyframeSheet(0, false, poseChannel, modelForm.pos
 sheet.selection.add(poseKeyframe);
 poseKeyframes.addSheet(sheet);
 ```
+
+## 9. Client-started versus server-connected network timing
+
+### 9.1 Scope / Trigger
+
+Apply when an external addon registers client broker receivers during startup and sends an
+initial handshake, settings state, or another C2S payload after joining a server.
+
+### 9.2 Signatures
+
+- Startup-only initialization: `BBSClientApi.onClientStarted(Consumer<Minecraft>)`.
+- Play-connection event: `ClientPlayerNetworkEvent.LoggingIn` on `NeoForge.EVENT_BUS`.
+- Transport entry: `BBSClientApi.sendNetworkToServer(BBSAddonDescriptor, ResourceLocation, FriendlyByteBuf)`.
+- Active connection check: `Minecraft.getInstance().getConnection() != null`.
+
+### 9.3 Contracts
+
+- `onClientStarted` means BBS client resources and callbacks are ready. It also fires at the
+  main menu, where no server connection exists, so it must not send C2S packets.
+- Register receivers and non-network client state during construction/startup, but send the
+  first hello/color/session payload from `ClientPlayerNetworkEvent.LoggingIn`.
+- Every addon-owned C2S helper must fail closed before encoding/sending when the Minecraft
+  connection is absent. This also protects settings callbacks at the title screen and late
+  callbacks during disconnect.
+- Protocol `connected` state remains false until the server acknowledges the addon handshake.
+  Disconnect and client stopping clear that state and all session-owned data idempotently.
+
+### 9.4 Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Main menu invokes `onClientStarted` | Register resources/UI only; send no C2S payload and log no handler failure. |
+| A setting callback fires with no connection | Return `false`/no-op before calling `PacketDistributor.sendToServer`. |
+| `LoggingIn` fires with an active play connection | Send one addon hello and initial client state. |
+| Server acknowledgment has not arrived | Keep collaboration features disconnected; do not treat local registration as a negotiated session. |
+| Disconnect or client stop | Clear connection, Film session, locks, transfers, and progress state; reconnect starts with a fresh hello. |
+
+### 9.5 Good / Base / Bad Cases
+
+- Good: translations activate at the main menu; joining a server fires `LoggingIn`, sends the
+  hello, and the server reply enables collaboration.
+- Base: the player stays at the main menu, so the addon remains registered but disconnected
+  without warnings or exceptions.
+- Bad: call `sendNetworkToServer` from `onClientStarted`; NeoForge's
+  `PacketDistributor.sendToServer` dereferences a missing connection and aborts the remaining
+  startup handlers.
+
+### 9.6 Tests Required
+
+- Start a development client to the main menu and assert no `client-started handler failed`,
+  `NullPointerException`, or addon C2S send appears.
+- Join a local or dedicated server and assert exactly one hello is sent after `LoggingIn`, then
+  assert server acknowledgment changes the addon connection state.
+- Disconnect and reconnect; assert cleanup runs and the next connection performs a fresh
+  handshake without retaining Film sessions, locks, or transfers.
+- Fire an addon settings callback at the title screen and assert the guarded sender returns
+  without invoking the broker transport.
+
+### 9.7 Wrong vs Correct
+
+Wrong:
+
+```java
+BBSClientApi.onClientStarted(client -> sendHello());
+```
+
+Correct:
+
+```java
+BBSClientApi.onClientStarted(client -> activateClientResources());
+NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingIn event) -> sendHello());
+
+private static boolean send(ResourceLocation id, FriendlyByteBuf payload)
+{
+    if (Minecraft.getInstance().getConnection() == null)
+    {
+        return false;
+    }
+
+    return BBSClientApi.sendNetworkToServer(DESCRIPTOR, id, payload);
+}
+```
