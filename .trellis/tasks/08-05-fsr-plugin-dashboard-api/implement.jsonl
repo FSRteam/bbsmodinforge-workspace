@@ -1,5 +1,0 @@
-{"file":".trellis/spec/new/backend/hot-plugin-runtime-contract.md","reason":"热插件 generation、staged commit、ledger cleanup 与 client safepoint 合同。"}
-{"file":".trellis/spec/new/backend/external-addon-integration-contract.md","reason":"Addon API 2.0 client UI、面板和外部 addon 接入合同。"}
-{"file":".trellis/spec/new/backend/quality-guidelines.md","reason":"Dashboard 可复用面板生命周期与 Addon API 二进制兼容合同。"}
-{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"API -> registry -> Dashboard -> UI 内容的跨层数据与生命周期检查。"}
-
