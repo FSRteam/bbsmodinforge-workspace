@@ -1137,3 +1137,37 @@ bbs-web-remote 浏览器端从 5852 行单体 `app.js` 拆为 7 模块（protoco
 ### Next Steps
 
 - None - task complete
+
+
+## Session 29: FSR plugin Dashboard panel API
+
+**Date**: 2026-08-05
+**Task**: FSR plugin Dashboard panel API
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+Added Addon API 2.0 and hot-plugin Dashboard panel registration, lifecycle-safe dynamic projection, diagnostics, generation-safe reload cleanup, tests, docs, fixtures, and completed visual v1/v2/unload client smoke.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `75e51f0a` | (see git log) |
+| `2a160f9` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
