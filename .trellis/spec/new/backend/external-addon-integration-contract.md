@@ -43,9 +43,10 @@ event to register itself.
 
 ### 3.2 Pick API 1.x unless you need Addon 2.0 capabilities
 
-API 2.0's `BBSAddonRegistrationContext` exposes only
-`resources()/forms()/settings()/clips()/particles()/network()/events()`. It has **no**
-facade for form renderers, editor panels, icons, or L10n — those go through static entry
+API 2.0's common `BBSAddonRegistrationContext` exposes only
+`resources()/forms()/settings()/clips()/particles()/network()/events()`. Client-only
+Dashboard content is registered separately through `BBSClientApi.registerDashboardPanel(...)`;
+form renderers, form editor panels, standalone icons, and L10n still use the static entry
 points regardless of which API generation you pick. So for an addon whose needs are
 "register a form + render it + edit it", API 1.x plus the static entry points in §3.4 is
 strictly less machinery.
@@ -74,6 +75,7 @@ bootstrap class, so the common `@Mod` class never references a client-only type.
 | L10n | `@Subscribe registerL10n(RegisterL10nEvent e)` captures `e.l10n`; `onClientStarted` registers the provider after the source pack | `Link.source` must equal the source-pack prefix; do not encode `assets/<namespace>` in the link path. Registering the provider during the earlier event makes the initial reload print missing-asset failures. |
 | Add form to the "Extra" picker category | `BBSModClient.getFormCategories().addExtraForm(Form)` (`FormCategories.java:80`) | Purpose-built public API; also calls `markDirty()`. Paired `removeExtraForm` (`:94`) |
 | Extra controls on a string keyframe editor | `UIStringKeyframeFactory.registerDecorator(IStringKeyframeDecorator)` (`:18`) | Receives `(factory, track)` where `track` is the sheet id; use `factory.addControl(UIElement)` and `factory.setStringValue(String)` |
+| Dashboard panel | `BBSClientApi.registerDashboardPanel(BBSAddonDescriptor, BBSDashboardPanelSpec, BBSDashboardPanelFactory)` | Requires `CLIENT_UI`; host composes `<addonId>:<localId>`, owns the wrapper, and isolates factory/lifecycle failures. |
 | Client lifecycle / tick hooks | `BBSClientApi.onClientStarted` (`:82`), `onStartClientTick` (`:97`), `onEndClientTick` (`:107`), `onClientStopping` (`:87`), `onDisconnect` (`:92`), `onEndWorldTick` (`:102`) | One-to-one replacements for the Fabric `ClientLifecycleEvents` / `ClientTickEvents` an addon ported from BBS CML will be using |
 | Game directory | `BBSMod.getGameFolder()` (`:322`) | Prefer over `FMLPaths` — one less platform API in an addon that already depends on BBS |
 | Timeline track colour / icon | Reflection on private `UIReplaysEditor.COLORS` / `ICONS` (`:86,87`) | **No public channel.** Degrade to default styling on failure; never propagate |
@@ -153,6 +155,26 @@ l10n.reload();
 Anything registered after `BBSResources.init()` rebuilds form categories gets wiped, so
 source packs and `addExtraForm` belong in an `onClientStarted` callback. Renderer, panel,
 icon and decorator registration are plain static maps and can run during construction.
+
+### 3.4.2 Addon Dashboard panel contract
+
+- Declare `BBSAddonCapability.CLIENT_UI` and call
+  `BBSClientApi.registerDashboardPanel(...)` during the addon client bootstrap.
+- `BBSDashboardPanelSpec.id()` is owner-local and matches
+  `[a-z0-9][a-z0-9_.-]{0,63}`. Never pass a namespaced/full id; the host composes
+  `<addonId>:<localId>` and applies first-wins.
+- The factory returns `BBSDashboardPanelContent` with one non-null, unattached
+  `UIElement` root. The host owns the `UIDashboardPanel` wrapper and mounts the
+  root full-size without exposing internal Dashboard types.
+- Client-thread callback order is
+  `open -> appear -> update* -> disappear -> close`. A Dashboard is reused
+  across screen sessions, so session resources belong in `open/close` and
+  selection resources in `appear/disappear`.
+- Rejected registration is recorded at `REGISTER_CLIENT`; factory or lifecycle
+  failure is recorded at `CLIENT_SETUP` and isolated. Addon registrations are
+  startup-only and have no unload facade.
+- The legacy `RegisterDashboardPanelsEvent` remains available and is still
+  emitted after host-owned API contributions are projected.
 
 ### 3.5 Do not extend a registration surface by overwriting it
 
