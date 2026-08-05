@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 27
-- **Last Active**: 2026-08-04
+- **Total Sessions**: 28
+- **Last Active**: 2026-08-05
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1105 | Active |
+| `journal-1.md` | ~1139 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 28 | 2026-08-05 | 移植 BBS Together 1.6.14 到 BBSFSR | `df362dd`, `4013527` | `codex/bootstrap-trellis-workspace` |
 | 27 | 2026-08-04 | 完成 FS 27a6866c 到 FSR 的 Dock 增量迁移 | `7b81a6a0`, `a4aaa47b`, `1f46ac02`, `f1a9e64` | `codex/bootstrap-trellis-workspace` |
 | 26 | 2026-08-02 | Frontend refactor: app.js modular split + R5 UX polish | `387e4ab`, `206bed9` | `codex/bootstrap-trellis-workspace` |
 | 25 | 2026-08-01 | 完成 FS 5848363c 到 FSR 的完整迁移 | `94d2349f43b8d71dcf162e30f5f4294e3d9cc2e3`, `88cbfaba0b222d59c0e5e270f029e699c308ceef`, `a6c7e0bc35ea5b53484f9190aacbf50f8d9bd61f` | `codex/bootstrap-trellis-workspace` |

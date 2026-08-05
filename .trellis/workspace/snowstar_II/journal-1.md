@@ -1103,3 +1103,37 @@ bbs-web-remote 浏览器端从 5852 行单体 `app.js` 拆为 7 模块（protoco
 ### Next Steps
 
 - None - task complete
+
+
+## Session 28: 移植 BBS Together 1.6.14 到 BBSFSR
+
+**Date**: 2026-08-05
+**Task**: 移植 BBS Together 1.6.14 到 BBSFSR
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+完成独立 NeoForge 1.21.1 插件工程、BBSFSR Addon API 2.0 协作与安全资产同步，修复预登录握手发送问题；测试、构建、JAR 审计和客户端启动验证通过。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `df362dd` | (see git log) |
+| `4013527` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
