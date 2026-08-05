@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "mchorse.bbs_together.mixin.client",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "IUIKeyframeGraphMixin",
+    "UIDataOverlayPanelMixin",
+    "UIFilmPanelMixin",
+    "UIReplayListMixin",
+    "UIReplaysOverlayPanelMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
