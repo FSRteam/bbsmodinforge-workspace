@@ -1,6 +1,6 @@
 # FS → FSR Migration Baseline
 
-> Last updated: 2026-08-04. This is the source of truth for selecting the next
+> Last updated: 2026-08-07. This is the source of truth for selecting the next
 > FS range to migrate into `new/` (FSR, NeoForge 1.21.1).
 
 > **Current target lock (2026-08-04):** The completed migration preserves
@@ -96,6 +96,15 @@ origin/1.20.1 = 27a6866c14e5351aed50fd3b85c9d6c5fa97467c
   explicit debugging session.
 - A successful migration advances the master, both Minecraft reference markers and
   `fsr_target_commit` together. Trellis task metadata must record the same terminal SHA.
+- A Minecraft-version backport is not startup-verified by Java compilation or Mixin
+  annotation processing alone. Every required Mixin descriptor must be checked against
+  the target runtime, and the exact Java/toolchain target must complete a client launch
+  through resource reload to the title screen.
+- On the locked NeoForge 1.20.1 runtime, do not use Mixin 0.8.5 `@ModifyArgs` on the
+  per-part model render path. Its generated `org.spongepowered.asm.synthetic.args.Args$*`
+  class is not reliably visible through the ModLauncher module classloader. Use an exact
+  `@Redirect` plus private `@Shadow` for the target invocation when composition with an
+  optional renderer is not required.
 
 ## 4. Validation & Error Matrix
 
@@ -116,6 +125,8 @@ origin/1.20.1 = 27a6866c14e5351aed50fd3b85c9d6c5fa97467c
 | An upstream shared-file replacement removes FSR-only settings/input/theme behavior | Restore the target behavior and add a focused source or logic assertion before commit |
 | DLS diagnostics create files during normal editing | Disable file diagnostics by default; require explicit opt-in for debugging |
 | Build passes but interactive Iris/audio/UI/physics smoke is not run | Record it as pending; never report it as passed |
+| Required Mixin compiles but the target descriptor differs at runtime | Reject; derive the complete 1.20.1 descriptor and rerun the Java 17 client smoke |
+| NeoForge 1.20.1 model rendering uses `@ModifyArgs` | Reject; use the startup-safe exact invocation redirect and retain a source gate |
 | Code commit exists but task/spec terminal SHA is missing | Task is incomplete; backfill exact SHA |
 
 ## 5. Good / Base / Bad Cases
@@ -157,10 +168,16 @@ cd new
 .\gradlew.bat --no-daemon compileJava compileClientJava
 .\gradlew.bat --no-daemon testUiInputMailbox
 .\gradlew.bat --no-daemon testFilmEditorMigration
+.\gradlew.bat --no-daemon testPlatformResourceConsistency
 .\gradlew.bat --no-daemon check
 .\gradlew.bat --no-daemon build
 git diff --check
 ```
+
+For Minecraft-version backports, also run `runClient` with the target Java version.
+Passing means the client completes resource reload and remains stable at the title
+screen without `MixinApplyError`, `InvalidInjectionException`, generated `Args$*`
+class failures, or a new crash report.
 
 For viewport-pick and replay-track migration regressions also run:
 
