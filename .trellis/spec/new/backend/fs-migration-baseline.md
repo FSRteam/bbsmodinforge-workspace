@@ -105,6 +105,11 @@ origin/1.20.1 = 27a6866c14e5351aed50fd3b85c9d6c5fa97467c
   class is not reliably visible through the ModLauncher module classloader. Use an exact
   `@Redirect` plus private `@Shadow` for the target invocation when composition with an
   optional renderer is not required.
+- A required Mixin must not rely on a Mojmap `@Shadow` member merely because it works in
+  the development runtime. Before delivery, the reobfuscated JAR's refmap must contain
+  the member mapping and its transformed bytecode must target the expected production
+  name. When the target already exposes a public accessor, prefer a normal Java call so
+  the reobfuscation task owns the mapping instead of the Mixin refmap.
 
 ## 4. Validation & Error Matrix
 
@@ -127,6 +132,7 @@ origin/1.20.1 = 27a6866c14e5351aed50fd3b85c9d6c5fa97467c
 | Build passes but interactive Iris/audio/UI/physics smoke is not run | Record it as pending; never report it as passed |
 | Required Mixin compiles but the target descriptor differs at runtime | Reject; derive the complete 1.20.1 descriptor and rerun the Java 17 client smoke |
 | NeoForge 1.20.1 model rendering uses `@ModifyArgs` | Reject; use the startup-safe exact invocation redirect and retain a source gate |
+| Development launch resolves an `@Shadow` but the reobfuscated refmap omits it | Reject the artifact; use a mapped public accessor or repair the member mapping, then inspect the rebuilt production JAR |
 | Code commit exists but task/spec terminal SHA is missing | Task is incomplete; backfill exact SHA |
 
 ## 5. Good / Base / Bad Cases
@@ -171,8 +177,13 @@ cd new
 .\gradlew.bat --no-daemon testPlatformResourceConsistency
 .\gradlew.bat --no-daemon check
 .\gradlew.bat --no-daemon build
+.\gradlew.bat --no-daemon reobfJarJar
 git diff --check
 ```
+
+For required Mixins that access Minecraft members, inspect the reobfuscated class with
+JDK 17 `javap -c -p` and inspect its refmap entry. A source-only or development-runtime
+check is insufficient because missing member mappings fail only under production names.
 
 For Minecraft-version backports, also run `runClient` with the target Java version.
 Passing means the client completes resource reload and remains stable at the title
