@@ -1784,6 +1784,71 @@ lifecycle.execute(() -> {
 });
 ```
 
+### Web Remote reconnect frame replay and control-handoff contract
+
+#### 1. Scope / Trigger
+
+Apply this contract when changing Web Remote UI-session publication, browser
+WebSocket reconnect, co-control disconnect handling, or native `UIScreen`
+input ownership. These paths are one lifecycle: a browser can reconnect only
+if the transport can reconstruct the current UI and resolve its old controls.
+
+#### 2. Signatures
+
+- `LatestUiFrameReplay.publish(sessionEpoch, FrameInput)` retains one immutable
+  encoded input for the current UI epoch.
+- `CoControlCoordinator.disconnect(peer)` starts the ordinary reconnect grace;
+  `disconnectImmediately(peer)` is reserved for server stop and terminal paths.
+- `BBSUiInputDispatcher.preemptForLocalInput(screen, sessionId)` transfers the
+  current native screen back to physical FSR input on the client thread.
+
+#### 3. Contracts
+
+- Cache only a frame whose native `sessionId` still matches the active session,
+  and tag it with the current unsigned `sessionEpoch`. Opening or closing a UI
+  session, disconnecting the Minecraft client, and final addon shutdown clear
+  the cache. Runtime Web server stop/start preserves it with the live mirror
+  session so the replacement server can restore the current UI.
+- A new UI WebSocket receives the active `SESSION` gate first, then every
+  current resource definition, then the cached frame. Check the socket identity
+  and epoch before resource replay and again before frame replay. Never replay
+  a frame across epochs, even when its dimensions or command handles look valid.
+- Ordinary WebSocket disconnect marks the peer disconnected immediately,
+  rejects new input, and starts a 10-second grace period. The lease and held
+  snapshot remain resumable only for the same authenticated participant id and
+  the same maximum permission. Reconnect rebinds the existing participant;
+  grace expiry performs the normal cancellation/release path exactly once.
+- Runtime server stop, session replacement, world disconnect, and final client
+  stop bypass reconnect grace. They must not leave held native input active.
+- Physical FSR input is always available: an in-progress local mouse/key gesture
+  blocks remote acquisition, while any physical mouse, wheel, key, or text event
+  cancels a current remote held state before the local event is dispatched.
+  Remote mouse cleanup uses cancellation rather than a committing release.
+
+#### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Refresh during an unchanged active UI epoch | Send `SESSION`, resources, and the cached frame; do not wait for a future repaint. |
+| Old encoder callback finishes after a session change | Drop it; it cannot populate or replay the new epoch cache. |
+| Same authenticated controller reconnects within 10 seconds | Rebind the participant and preserve its lease/held snapshot. |
+| Grace expires without a valid reconnect | Cancel held buttons, release held keys, and free the lease once. |
+| Local FSR input arrives while remote input owns the screen | Cancel the remote gesture, then deliver the physical event normally. |
+| Runtime Web server stops | Release browser control immediately but preserve the active UI session/frame for a later start. |
+
+#### 5. Tests Required
+
+- `testServerSmoke` must cover same-epoch latest-frame replay, replacement by a
+  newer frame, cross-epoch rejection, and explicit cache clear.
+- `testCoControl` must cover reconnect within a shortened deterministic grace,
+  release only after expiry, identity/permission mismatch, and terminal cleanup.
+- Core `testUiInputMailbox` must cover active-local rejection, local preemption,
+  ordered synthetic key release, mouse cancellation, and retained local event
+  delivery after the handoff.
+- Release gates are `new\gradlew.bat testUiInputMailbox jar` and
+  `bbs-web-remote\gradlew.bat check build`, followed by a real browser refresh
+  while a Film editor is open.
+
 ### Web Remote settings, public proxy, telemetry and text-input contract
 
 #### 1. Scope / Trigger
