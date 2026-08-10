@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 29
-- **Last Active**: 2026-08-05
+- **Total Sessions**: 30
+- **Last Active**: 2026-08-10
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1173 | Active |
+| `journal-1.md` | ~1206 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 30 | 2026-08-10 | 修复 WebRemote 影片入口网页卡死 | `5612d3c` | `codex/bootstrap-trellis-workspace` |
 | 29 | 2026-08-05 | FSR plugin Dashboard panel API | `75e51f0a`, `2a160f9` | `codex/bootstrap-trellis-workspace` |
 | 28 | 2026-08-05 | 移植 BBS Together 1.6.14 到 BBSFSR | `df362dd`, `4013527` | `codex/bootstrap-trellis-workspace` |
 | 27 | 2026-08-04 | 完成 FS 27a6866c 到 FSR 的 Dock 增量迁移 | `7b81a6a0`, `a4aaa47b`, `1f46ac02`, `f1a9e64` | `codex/bootstrap-trellis-workspace` |

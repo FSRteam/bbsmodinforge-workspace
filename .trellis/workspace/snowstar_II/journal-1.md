@@ -18,7 +18,11 @@ Fixed particle parser hardening, Bezier chain and curve editor interactions, tex
 
 ### Main Changes
 
-(Add details)
+- Reproduced a transient Film Surface `drawImage()` failure in the browser
+  renderer and proved that the previous code aborted the frame.
+- Isolated dynamic Surface draw failures, guaranteed Canvas `restore()` in a
+  `finally` block, and added failure-then-recovery coverage.
+- Recorded the Canvas media command isolation rule in the frontend quality spec.
 
 ### Git Commits
 
@@ -1171,3 +1175,40 @@ Added Addon API 2.0 and hot-plugin Dashboard panel registration, lifecycle-safe 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 30: 修复 WebRemote 影片入口网页卡死
+
+**Date**: 2026-08-10
+**Task**: 修复 WebRemote 影片入口网页卡死
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+确认影片 Surface 短暂不可绘制会中断 Canvas 帧；在浏览器渲染器中隔离动态 Surface drawImage 失败并保证 restore，新增恢复回归，verifyWeb 18 项通过。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5612d3c` | docs: require canvas surface error isolation |
+
+### Testing
+
+- [OK] `bbs-web-remote\\gradlew.bat verifyWeb --no-daemon --console=plain`
+  (18 tasks, including render fidelity, session lifecycle, WebRTC, input, and
+  syntax checks)
+- [OK] `node src/webTest/render-fidelity.test.js`
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Repeat the Film-entry flow against a real Minecraft client and browser to
+  confirm the runtime symptom is gone; the broader WebRemote task remains open.
