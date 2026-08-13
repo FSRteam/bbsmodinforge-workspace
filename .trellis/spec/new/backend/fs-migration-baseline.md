@@ -120,6 +120,15 @@ origin/1.20.1 = 27a6866c14e5351aed50fd3b85c9d6c5fa97467c
   must fail unless its archive contains exactly one `bbs.client.refmap.json` with the
   locked production mappings. Setter accessors for final fields, including
   `Minecraft.mainRenderTarget`, must also carry `@Mutable`.
+- Film preview framebuffer handoff must not depend on the camera controller being absent.
+  BBS screens hide the vanilla HUD while the Film runner remains active, so `Gui.render`
+  is skipped and the `GameRenderer` hidden-HUD hook becomes the only path that copies the
+  private world target and restores `Minecraft.mainRenderTarget`. The copy method owns an
+  idempotent inactive guard; callers must not add a `currentController == null` guard.
+- Oculus 1.8 on Minecraft 1.20.1 exposes main-target state through
+  `pipeline.getRenderTargetStateListener().setIsMainBound(boolean)`, not the later
+  `WorldRenderingPipeline.setIsMainBound(boolean)` API. Keep this bridge optional and
+  reflection-only unless the exact Oculus artifact becomes a declared dependency.
 
 ## 4. Validation & Error Matrix
 
@@ -145,6 +154,8 @@ origin/1.20.1 = 27a6866c14e5351aed50fd3b85c9d6c5fa97467c
 | Development launch resolves an `@Shadow` but the reobfuscated refmap omits it | Reject the artifact; use a mapped public accessor or repair the member mapping, then inspect the rebuilt production JAR |
 | Slim JAR contains the client refmap but JarJar/reobfJarJar does not | Reject the artifact; declare the generated refmap as a compile output and explicit JarJar input, then rebuild |
 | Setter accessor targets a final Minecraft field without `@Mutable` | Reject; add `@Mutable` before runtime mutation can produce `IllegalAccessError` on Java 17 |
+| Hidden-HUD preview hook requires the camera controller to be null | Reject; Film keeps a runner active while hiding HUD, so the preview copy and target restore would never execute |
+| Oculus 1.20.1 bridge calls `WorldRenderingPipeline.setIsMainBound` | Reject; use `getRenderTargetStateListener().setIsMainBound` and fail closed when Oculus is absent |
 | Code commit exists but task/spec terminal SHA is missing | Task is incomplete; backfill exact SHA |
 
 ## 5. Good / Base / Bad Cases
