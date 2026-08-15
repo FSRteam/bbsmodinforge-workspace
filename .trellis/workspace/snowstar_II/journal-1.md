@@ -1212,3 +1212,42 @@ Added Addon API 2.0 and hot-plugin Dashboard panel registration, lifecycle-safe 
 
 - Repeat the Film-entry flow against a real Minecraft client and browser to
   confirm the runtime symptom is gone; the broader WebRemote task remains open.
+
+
+## Session 31: 完成 FS 770c0e7c 到 FSR 迁移
+
+**Date**: 2026-08-16
+**Task**: 完成 FS 770c0e7c 到 FSR 迁移
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+完成 16 个上游提交的逐项处置；迁移渲染深度写、VIEW Gizmo、滑条、主题、九槽电影与图标；聚焦测试、check、build/jarJar 验证通过，人工游戏内烟测保留为发布前检查。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `89dc7d6c` | (see git log) |
+| `fe01d69f` | (see git log) |
+| `874d67e5` | (see git log) |
+| `8e490d02` | (see git log) |
+| `4a81674c` | (see git log) |
+| `19d4d030` | (see git log) |
+| `4d73e9f` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
