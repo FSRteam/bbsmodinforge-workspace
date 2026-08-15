@@ -1,9 +1,9 @@
 # FS → FSR Migration Baseline
 
-> Last updated: 2026-08-07. This is the source of truth for selecting the next
+> Last updated: 2026-08-16. This is the source of truth for selecting the next
 > FS range to migrate into `new/` (FSR, NeoForge 1.21.1).
 
-> **Current target lock (2026-08-04):** The completed migration preserves
+> **Current target lock (2026-08-16):** The completed migration preserves
 > `mod_version=0.0.11` and artifact identity
 > `BBS_FSR_beta_v0.0.11.jar`. Upstream FS release numbers must not be copied into
 > FSR. Historical `0.0.10` evidence remains available in Git history.
@@ -22,18 +22,34 @@ from a custom source set and the published artifact is assembled by JarJar.
 legacy_old2_checkout = old2.0/bbs-fs@27844c61802d13c1623fbe1553a89a19124d18a8
 legacy_old2_status = stale-reference-only; not the migrated-through marker
 
-fs_master_migrated_through = 4220b453bf96fbe41dde88f3ca51aa7fe9fcd612
-fs_1_21_1_reference_through = 218bcd3156da8717add279c2c957a4b00e497a23
-fs_1_20_1_reference_through = 27a6866c14e5351aed50fd3b85c9d6c5fa97467c
-fs_reference_merge_base = 4220b453bf96fbe41dde88f3ca51aa7fe9fcd612
+fs_master_migrated_through = 770c0e7c6b69cacc6dabf70eb63bf349f24bbaa6
+fs_1_21_1_reference_through = a982f1dc121185b04dbb26387f4cfa110b0a4c26
+fs_1_20_1_reference_through = 17183d15cb32e5eff25d74ca6f7538ab5387faac
+fs_reference_merge_base = 770c0e7c6b69cacc6dabf70eb63bf349f24bbaa6
 
-fsr_previous_target_commit = 156d0bffc2b884d7bf645225d27fc72bb57f3cb5
-fsr_target_commit = 1f46ac02ad07c98e47d43d6100df58fb0ae23acb
-fsr_target_branch = codex/sync-fs-27a6866c-to-fsr
+fsr_previous_target_commit = 637d6f76c5cdb08915c37682ef33ed0aa4c23e51
+fsr_target_commit = 19d4d0302ad8fd79a66baf231604ddd632c3a212
+fsr_target_branch = codex/sync-fs-770c0e7c-to-fsr
 
 fs_delta_6f4f9ec9 = ported
 fs_delta_0cecc8c9 = target-equivalent-width-height-audit
 fs_delta_4220b453 = ported
+fs_delta_5b8d714f = rejected-with-reason
+fs_delta_378bac69 = ported
+fs_delta_95a110e2 = target-equivalent
+fs_delta_8a293161 = ported
+fs_delta_8c48a185 = ported
+fs_delta_c02aa6e6 = ported
+fs_delta_7f99e757 = rejected-with-reason
+fs_delta_459e9db7 = ported
+fs_delta_52c5db8f = ported
+fs_delta_d0f3754d = ported
+fs_delta_bb1ac00f = ported
+fs_delta_fe552a58 = ported
+fs_delta_0773f9df = ported
+fs_delta_861257a7 = ported
+fs_delta_baafc5a4 = ported
+fs_delta_770c0e7c = ported
 
 fsr_mod_version_before_after = 0.0.11 -> 0.0.11
 fsr_artifact_identity = BBS_FSR_beta_v0.0.11.jar
@@ -51,19 +67,19 @@ Reference checkout:
 ```text
 temp/bbs-fs-2.3
 local branch = codex/fsr-sync-20260729
-origin/master = 4220b453bf96fbe41dde88f3ca51aa7fe9fcd612
-origin/1.21.1 = 218bcd3156da8717add279c2c957a4b00e497a23
-origin/1.20.1 = 27a6866c14e5351aed50fd3b85c9d6c5fa97467c
+origin/master = 770c0e7c6b69cacc6dabf70eb63bf349f24bbaa6
+origin/1.21.1 = a982f1dc121185b04dbb26387f4cfa110b0a4c26
+origin/1.20.1 = 17183d15cb32e5eff25d74ca6f7538ab5387faac
 ```
 
 ## 3. Contracts
 
-- `4220b453` is the migrated master behavior tip and the audited merge base of
+- `770c0e7c` is the migrated master behavior tip and the audited merge base of
   the recorded 1.20.1 and 1.21.1 reference tips.
-- `218bcd31` is the 1.21.1 API reference and `27a6866c` is the requested 1.20.1
+- `a982f1dc` is the 1.21.1 API reference and `17183d15` is the requested 1.20.1
   behavior reference. Both contain the recorded master tip.
-- `1f46ac02` is the migration-owned FSR terminal commit; its initial boundary is
-  `156d0bff`. Existing changes in the original `new` checkout are outside this
+- `19d4d030` is the migration-owned FSR terminal commit; its initial boundary is
+  `637d6f76`. Existing changes in the original `new` checkout are outside this
   dedicated-worktree boundary.
 - The migration preserves `mod_version=0.0.11` and artifact identity
   `BBS_FSR_beta_v0.0.11.jar`; upstream release numbers are not copied into FSR.
@@ -184,14 +200,14 @@ origin/1.20.1 = 27a6866c14e5351aed50fd3b85c9d6c5fa97467c
 
 ```powershell
 git -C temp/bbs-fs-2.3 fetch --prune origin master 1.21.1 1.20.1
-git -C temp/bbs-fs-2.3 cat-file -e '4220b453^{commit}'
-git -C temp/bbs-fs-2.3 cat-file -e '218bcd31^{commit}'
-git -C temp/bbs-fs-2.3 cat-file -e '27a6866c^{commit}'
-git -C temp/bbs-fs-2.3 merge-base --is-ancestor 4220b453 218bcd31
-git -C temp/bbs-fs-2.3 merge-base --is-ancestor 4220b453 27a6866c
-git -C new merge-base --is-ancestor 156d0bff 1f46ac02
-git -C new diff --quiet 156d0bff..1f46ac02 -- src/main/java/mchorse/bbs_mod/particles
-git -C new diff --quiet 156d0bff..1f46ac02 -- src/client/java/mchorse/bbs_mod/forms/renderers/FormTranslucentQueue.java
+git -C temp/bbs-fs-2.3 cat-file -e '770c0e7c^{commit}'
+git -C temp/bbs-fs-2.3 cat-file -e 'a982f1dc^{commit}'
+git -C temp/bbs-fs-2.3 cat-file -e '17183d15^{commit}'
+git -C temp/bbs-fs-2.3 merge-base --is-ancestor 770c0e7c a982f1dc
+git -C temp/bbs-fs-2.3 merge-base --is-ancestor 770c0e7c 17183d15
+git -C new merge-base --is-ancestor 637d6f76 19d4d030
+git -C new diff --quiet 637d6f76..19d4d030 -- src/main/java/mchorse/bbs_mod/particles
+git -C new grep -n "class FormTranslucentQueue" 19d4d030 -- src/client/java/mchorse/bbs_mod/forms/FormTranslucentQueue.java
 Select-String -Path new/gradle.properties -Pattern '^mod_version=0.0.11$'
 ```
 
