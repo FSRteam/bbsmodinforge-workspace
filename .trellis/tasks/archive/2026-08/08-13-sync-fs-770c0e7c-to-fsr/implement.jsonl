@@ -1,0 +1,7 @@
+{"file": ".trellis/spec/new/backend/fs-migration-baseline.md", "reason": "FS→FSR 迁移的唯一权威:签名标记、共享文件语义合并契约、粒子/FormTranslucentQueue 所有权红线、版本锁。开工 fetch 校验与收尾签名回填都以它为准"}
+{"file": ".trellis/tasks/08-13-sync-fs-770c0e7c-to-fsr/research/fs-upstream-diff-2026-08-13.md", "reason": "16 个上游提交的逐条行为分析、关键文件、移植注意点与依赖分组;每组实现前必读对应小节"}
+{"file": ".trellis/spec/frontend/bbs-ui-theming.md", "reason": "Group C 主题刷新(色阶/阴影高光/UIToggle)必须经 FSR 主题 token 落地,禁止用上游原始色码;含 alpha 合成与热路径红线"}
+{"file": ".trellis/spec/new/backend/quality-guidelines.md", "reason": "new/ 代码标准与禁止模式,迁移新增/改写代码需符合"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "判断上游实现应复用 FSR 现有抽象还是新增,避免整文件覆盖式移植"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Group B 跨层改动(存档格式→网络包→UI 轨道)需要端到端数据流一致性检查"}
+{"file": ".trellis/spec/new/backend/external-addon-integration-contract.md", "reason": "Group I(UITrackpad ABI 协变覆写)的处置依据:FSR 对外部 addon 的 ABI 承诺范围"}
