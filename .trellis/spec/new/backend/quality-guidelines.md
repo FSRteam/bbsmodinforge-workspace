@@ -476,8 +476,9 @@ stubs, held-item forms, nested body parts, and list/UI previews.
 - `FormRenderingContext.world`: semantic simulation `PoseStack`; it never
   contains camera/view transforms.
 - `FormRenderingContext.simulationOwner`: stable identity that owns mutable
-  simulation history. World paths default to `context.entity`; editor previews
-  set this to the preview renderer instance.
+  physics history. World paths default to `context.entity`; editor previews set
+  this to the preview renderer instance. FS-style IK evaluation is stateless and
+  must not use this owner.
 - `FormRenderingContext.allowWorldTargetOverrides` and
   `allowWorldCollisions`: explicit capabilities of the semantic host. They are
   both false for local simulation even when its clock entity has a live level.
@@ -533,9 +534,9 @@ stubs, held-item forms, nested body parts, and list/UI previews.
   entity selection, and captured bone caches are one exception-safe scope.
   Invisible forms, nested renderer failures, and recursive matrix failures must
   leave all of them restored.
-- Mutable Verlet/solver history is owned by the form renderer plus
+- Mutable Verlet/physics history is owned by the form renderer plus
   `simulationOwner`; it must not be keyed globally by shared `ModelInstance`
-  or model resource id alone.
+  or model resource id alone. Production IK has no renderer/owner history.
 - Compiled immutable IK/physics/constraint data may be cached by source data;
   simulation positions, previous positions, velocities, and tick history may
   not.
@@ -543,10 +544,11 @@ stubs, held-item forms, nested body parts, and list/UI previews.
   wanted bones, physics wanted bones/chain ids, rest lengths, and rest
   directions. A normal render must not rebuild these with copied lists or new
   sets.
-- Retain mutable pivot frames and solver scratch under the renderer plus
-  `simulationOwner`. Frame collectors must update the existing vectors and
-  quaternions in place after warm-up; never move mutable workspace onto the
-  shared `ModelInstance` to save allocations.
+- Retain mutable physics pivot frames and solver scratch under the renderer plus
+  `simulationOwner`. Never move mutable physics state onto the shared
+  `ModelInstance`. Do not apply this optimization to production IK by creating
+  persistent `ChainWorkspace` state: FS-compatible IK recomputes from the
+  current frame.
 - Performance work must preserve configured iterations, physics fixed substeps,
   collision/constraint behavior, and deterministic catch-up. Lower simulation
   quality is not an acceptable substitute for removing redundant topology work
@@ -561,8 +563,8 @@ stubs, held-item forms, nested body parts, and list/UI previews.
   tiny bend on the opposite side of a zero-degree limit. Use the authored rest
   bend to define the plane, keep the stable bend side until the predicted angle
   is at least 20 degrees, then return to live/pole control. Store that stable
-  bend normal with the same renderer/owner/model/chain ownership as other
-  mutable solver state.
+  bend normal deterministically from current/rest inputs; it must not depend on
+  renderer/owner history.
 - Explicit `softness > 0` opts out of exact straight restore as well as exact
   reach; do not let the dead zone erase the user's requested asymptotic bend.
 - Bend magnitude and bend-plane direction are separate invariants. Hysteresis
@@ -577,26 +579,17 @@ stubs, held-item forms, nested body parts, and list/UI previews.
   the child parent frame with that clamped value. If the target becomes
   unreachable, preserve the hard joint limit instead of letting the rendered
   mesh cross it while debug joint positions still reach the target.
-- IK bend hints and pole controls are direction inputs, not absolute pose
-  inputs. On the first effective frame, store target, pole, and optional tip
-  rotation in the chain root-parent frame owned by
-  renderer/`simulationOwner`/model/chain. Rebind after compiled data changes,
-  owner changes, disable/re-enable, or weight returning from zero.
-- The current animated FK chain is the maintain-offset reference every frame.
-  With target translation delta zero, pole angular delta zero,
-  `poleAngle == 0`, no absolute override, and tip-rotation delta identity, IK
-  must return without writing `orient`. A static bind-pose snapshot would
-  freeze animation; an absolute pole solve would manufacture a pose change.
-- Apply ordinary target movement as a root-parent-local bind delta added to the
-  current FK reach. Apply pole movement as its signed projected angular delta
-  around the current root-to-target axis. Existing `poleAngle` is an additive
-  relative offset after calibration. A bound pole may choose a deterministic
-  bend side for an authored-straight chain, but it must not create bend
-  magnitude while all controller deltas are zero.
-- Tip rotation follows the same contract: compute controller
-  `current * inverse(bind)` in root-parent local space, conjugate it into world
-  space, and multiply it onto the current FK effector rotation. Never copy the
-  controller's absolute rotation on enable.
+- IK target and pole controls are current-frame solve inputs. Resolve their
+  current model-local positions every render, apply any film spatial override
+  and weight, and solve directly from those values. Never reinterpret them as
+  deltas from a renderer-owned first binding.
+- Production `ModelIKRuntime` is a static entry point. It may cache immutable
+  compiled topology, but it must not retain per-owner/per-model workspaces,
+  bind targets, bind poles, or bind rotations. Undo, redo, and history jumps
+  therefore need no IK-specific invalidation or rebind.
+- `poleAngle` remains an additive configured angle after resolving the current
+  pole point. Tip rotation follows the current target frame directly, matching
+  FS; it is not computed from a stored bind rotation.
 - Model viewport bone picking belongs to the visible property panel first.
   `UIModelForm` must offer ordinary and Ctrl-click bone selections to the
   active IK, physics, or constraint panel through `pickBoneInList(...)`; only
@@ -628,15 +621,15 @@ stubs, held-item forms, nested body parts, and list/UI previews.
 | Player/camera moves while unrelated models are visible | Each model responds only to its own host transform/history |
 | Same world entity is also rendered in an editor preview | Preview uses the preview renderer as `simulationOwner`; world uses the entity |
 | Two forms use the same model resource id | Their renderer-owned mutable histories remain independent |
-| IK is enabled on a pre-bent animated limb while controllers remain at bind | The enable frame and every later FK-only frame remain bitwise pose-preserving; no `orient` write occurs |
-| Target returns to its bind transform after FK animation advances | The chain returns to that frame's FK pose, not the original bind-frame snapshot |
-| Pole remains at bind and `poleAngle` is zero | Pole supplies no pose delta; a straight chain may only use it as a bend-side fallback |
-| Pole moves 10 degrees and `poleAngle` is 5 degrees | The requested bend-plane change is the signed relative pole delta plus the 5-degree authored offset |
-| IK is disabled or weight reaches zero, then becomes effective again | Discard the old calibration and bind against the newly evaluated FK/controller state |
+| IK is enabled on a pre-bent animated limb | Solve toward the target and pole transforms visible in the current frame, exactly as FS does |
+| Target/pole history goes A -> B -> C -> B | Both B evaluations produce the same solved pose; no first-binding state participates |
+| Pole is enabled and `poleAngle` is zero | The current pole point supplies the bend direction directly |
+| Pole changes and `poleAngle` is 5 degrees | Resolve the current pole point, then apply the authored 5-degree offset |
+| IK is disabled or weight reaches zero, then becomes effective again | Resume from current frame inputs; no calibration is created or restored |
 | Constraint affects an IK/physics bone | FK input is clamped first; procedural result remains active and is limited inside its solver |
 | Render type has no meaningful world host (inventory/UI/hand preview) | Use a stable local simulation space and a context-specific owner; never borrow the main camera/player transform |
 | Nested body part applies a local transform | Apply the same local transform to `stack` and `world` before the child solver runs |
-| Same compiled IK/physics config renders for many frames | Reuse topology, pivot frames, chain-frame containers, and solver scratch after warm-up |
+| Same compiled IK/physics config renders for many frames | Reuse immutable compiled topology and physics-owned state; never persist IK bind workspaces |
 | Physics performance is insufficient | Profile topology/allocation and solver work; do not reduce fixed substeps, configured iterations, collisions, or limits |
 | Film replay/channel order changes | The same frame resolves identical target maps and placement poses; target resolution does not advance world physics |
 | Replays have different loop periods and their list order changes | Each replay receives the same controller tick as input and keeps the same local playback time |
@@ -663,8 +656,8 @@ stubs, held-item forms, nested body parts, and list/UI previews.
 - Good: a relative replay and every relative bone consumer use the same
   resettable local owner while absolute cross-policy consumers return no
   target.
-- Good: `ModelIKCache.Compiled` owns sorted chains and wanted-bone sets, while a
-  renderer-owned runtime retains mutable frame maps and bend history per owner.
+- Good: `ModelIKCache.Compiled` owns immutable compiled chain data, while every
+  production IK solve reads current-frame targets/poles without an owner state.
 - Good: a pivot-frame collector calls `set(...)` on an existing frame's
   position/rotations after the first collection.
 - Base: an ordinary world morph uses its stable `IEntity` as simulation owner
@@ -679,8 +672,9 @@ stubs, held-item forms, nested body parts, and list/UI previews.
   or create a new frame map on every render.
 - Bad: change `SUBSTEPS_PER_TICK`, silently cap user iterations, or disable
   collision to claim an IK/physics optimization.
-- Bad: choose a straight-chain bend side from a camera axis or store the last
-  bend normal on a shared model resource.
+- Bad: choose a straight-chain bend side from a camera axis, store the last bend
+  normal on a shared model resource, or preserve target/pole bind data in a
+  renderer-owned IK workspace.
 - Bad: stabilize only `bendNormal` while leaving a nonzero analytic `sinA`; the
   center line can look straight while the local joint angle crosses below its
   authored zero/limit.
@@ -721,9 +715,9 @@ stubs, held-item forms, nested body parts, and list/UI previews.
 - Hysteresis: move a two-bone target through straight extension from both sides;
   assert bend-side recovery starts at 3 degrees, remains stable below 20
   degrees, and explicit pole control resumes outside the band without a flip.
-- Performance: compare the same multi-chain scene after warm-up and confirm the
-  render path no longer reconstructs chain ordering/wanted sets/frame maps/
-  chain-frame lists/stiffness arrays. Keep all solver quality settings equal.
+- Performance: compare the same multi-chain scene with all solver quality
+  settings equal. Immutable topology may be cached, but performance work must
+  not reintroduce per-owner IK bind state.
 - Film order: reorder replays and target channels while ordinary animated bones
   reference each other; assert target maps and final placement poses are equal
   and the target-resolution pass does not advance world physics history. Give
@@ -756,22 +750,19 @@ ModelIKRuntime.apply(model, targets, poles);
 physics.apply(entity, context.simulationOwner, model, transition, baseTransform);
 ```
 
-Wrong performance/state ownership:
-
-```java
-List<CompiledChain> ordered = new ArrayList<>(chains);
-Set<String> wanted = new HashSet<>();
-Map<String, PivotFrame> frames = new HashMap<>();
-model.lastBendNormal = solvedNormal;
-```
-
-Correct performance/state ownership:
+Wrong IK state ownership:
 
 ```java
 private final ModelIKRuntime ikRuntime = new ModelIKRuntime();
+ikRuntime.apply(context.simulationOwner, model, targets, poles);
+```
+
+Correct FS-compatible ownership:
+
+```java
 private final ModelPhysicsRuntime physicsRuntime = new ModelPhysicsRuntime();
 
-ikRuntime.apply(context.simulationOwner, model, targets, poles);
+ModelIKRuntime.apply(model, targets, poles);
 physicsRuntime.apply(entity, context.simulationOwner, model, transition, baseTransform);
 ```
 
@@ -792,6 +783,92 @@ for (Replay replay : replays) resolveTargetsWithLocalOwner(replay);
 
 collectMatrices(entity, placementOwner, absoluteSemanticBase,
     allowWorldTargetOverrides, allowWorldCollisions, transition);
+```
+
+## Scenario: Film history and stateless FS IK evaluation
+
+### 1. Scope / Trigger
+
+Apply this contract when changing Film undo/redo, history navigation, model IK
+runtime ownership, or target/pole interpretation.
+
+### 2. Signatures
+
+- `ModelIKRuntime.apply(ModelInstance, controllerTargets, poleTargets)` is a
+  static production entry point with no `simulationOwner` argument.
+- `ModelIKDlsApplier.apply(..., workspaces, boneLimits)` receives `null` for
+  `workspaces` from production and retains FSR bone constraints through
+  `boneLimits`.
+- Ordinary FS undo/history code restores keyframe/Form values; there is no
+  `UIFilmPanel.refreshAfterUndo`, history-jump batch, or IK rebind API.
+
+### 3. Contracts
+
+- The current frame's target position, target rotation, pole position, weights,
+  and IK control overrides are the complete production IK inputs.
+- `ModelIKRuntime` may cache immutable `ModelIKCache.Compiled` data only. It
+  must not keep `InstanceState`, a `WeakHashMap` keyed by `simulationOwner`, or
+  per-chain `ChainWorkspace` objects.
+- With a `null` workspace, DLS target and pole resolution follows FS: use the
+  current target frame, blend any current spatial override, use the current pole
+  point, and copy current target rotation when tip rotation is enabled.
+- Undo, redo, and history selection must remain ordinary value restoration.
+  Do not add entity-preservation rules, forced preview snapshot invalidation,
+  selected-editor reconstruction, gesture-specific undo commits, or post-undo
+  IK recalibration to compensate for solver state.
+- FSR-only bone constraints remain in the solve. They do not authorize changing
+  target/pole semantics or reintroducing persistent IK binding.
+- The optional workspace overload is compatibility/internal code only. Any new
+  production call site that passes workspaces is a contract violation.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Target/pole goes A -> B -> C, then Ctrl+Z | Control point, Gizmo, and solved limb reproduce B |
+| Ctrl+Y after that undo | Control point, Gizmo, and solved limb reproduce C |
+| History panel selects B directly | B is solved from B's restored current values, independent of which state was previously shown |
+| Preview entity is rebuilt or retained | The same restored frame produces the same IK pose because IK has no entity-owned bind state |
+| Bone limits are configured | Current-frame FS target/pole resolution runs, then FSR limits remain enforced |
+| Production code supplies a `ChainWorkspace` | Reject; history behavior again depends on transient first-binding state |
+
+### 5. Good / Base / Bad Cases
+
+- Good: A, B, and C are each pure current-frame evaluations; revisiting B
+  reproduces B without a refresh hook.
+- Base: IK is disabled or has no compiled chains; the runtime returns without
+  creating state.
+- Bad: preserve a renderer/entity so B can be interpreted relative to A's old
+  binding, or rebuild it so B becomes a new zero-delta binding. Both outcomes
+  make history depend on navigation order.
+- Bad: patch the history panel, undo merge flags, keyframe factory, and preview
+  snapshots while leaving a production `ChainWorkspace` alive.
+
+### 6. Tests Required
+
+- Run `testFilmEditorMigration`, `testIkPhysicsConsistency`,
+  `testReplayKeyframeConsistency`, `compileJava`, `compileClientJava`, full
+  `build`, and `git diff --check`.
+- Keep diagnostic logging disabled in ordinary builds and do not add a temporary
+  undo/workspace regression class to the delivered source tree.
+- In game, move both an IK target and pole through A -> B -> C, then verify
+  Ctrl+Z, Ctrl+Y, and direct history-panel selection of B. At each state compare
+  the control point, Gizmo, and solved limb.
+
+### 7. Wrong vs Correct
+
+Wrong:
+
+```java
+private final ModelIKRuntime ikRuntime = new ModelIKRuntime();
+ikRuntime.apply(simulationOwner, model, targets, poles);
+refreshAfterUndo(PRESERVE_ENTITIES);
+```
+
+Correct:
+
+```java
+ModelIKRuntime.apply(model, targets, poles);
 ```
 
 ### Morph renderer recursion and film preview hide-player order
