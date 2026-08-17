@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 31
-- **Last Active**: 2026-08-16
+- **Total Sessions**: 35
+- **Last Active**: 2026-08-17
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1253 | Active |
+| `journal-1.md` | ~1388 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,10 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 35 | 2026-08-17 | 同步剩余工作区改动 | `07a0e65` | `codex/bootstrap-trellis-workspace` |
+| 34 | 2026-08-16 | 手机手势修正 + 版面简约重排 | - | `codex/bootstrap-trellis-workspace` |
+| 33 | 2026-08-16 | webremote 前端重构总纲收尾 | - | `codex/bootstrap-trellis-workspace` |
+| 32 | 2026-08-16 | webremote UI 全量修复 + 手机端体验优化 | - | `codex/bootstrap-trellis-workspace` |
 | 31 | 2026-08-16 | 完成 FS 770c0e7c 到 FSR 迁移 | `89dc7d6c`, `fe01d69f`, `874d67e5`, `8e490d02`, `4a81674c`, `19d4d030`, `4d73e9f` | `codex/bootstrap-trellis-workspace` |
 | 30 | 2026-08-10 | 修复 WebRemote 影片入口网页卡死 | `5612d3c` | `codex/bootstrap-trellis-workspace` |
 | 29 | 2026-08-05 | FSR plugin Dashboard panel API | `75e51f0a`, `2a160f9` | `codex/bootstrap-trellis-workspace` |

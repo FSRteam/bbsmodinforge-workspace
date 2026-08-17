@@ -1353,3 +1353,40 @@ Added Addon API 2.0 and hot-plugin Dashboard panel registration, lifecycle-safe 
 
 - 真机验收手势手感：TRACKPAD_SENSITIVITY=1.7、TRACKPAD_HOLD_MS=320、TRACKPAD_DOUBLE_TAP_MS=300 均为可调常量
 - git 提交待用户确认（bbs-web-remote 前端 + .trellis 变更）
+
+
+## Session 35: 同步剩余工作区改动
+
+**Date**: 2026-08-17
+**Task**: 同步剩余工作区改动
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+核对并提交剩余规范、任务资料、归档记录、教程数据与 Web Remote Cloudflare 启动脚本；排除本机工作树和临时生成草稿。
+
+### Main Changes
+
+- 提交规范、任务资料、归档记录、教程结构数据与 Cloudflare 启动脚本。
+- 排除本机工作树、教程生成草稿与重复的 TBD 归档目录。
+- 补齐 workspace 索引中 Session 32-34 的历史记录。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `07a0e65` | (see git log) |
+
+### Testing
+
+- [OK] JSON / JSONL 共 636 条记录解析通过
+- [OK] PowerShell 启动脚本语法解析通过
+- [OK] Git 暂存差异格式检查通过
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
