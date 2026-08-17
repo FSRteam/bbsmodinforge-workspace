@@ -1,0 +1,94 @@
+{
+  "_meta": {
+    "purpose": "29 种剪辑的真实中文名与分类，供第四/五幕章节引用",
+    "labelSource": "assets/bbs/assets/strings/zh_cn.json → bbs.ui.camera.clips.bbs:*",
+    "registry": "Film.java:24 → new Clips(\"camera\", BBSMod.getFactoryCameraClips())",
+    "criticalFinding": "动作剪辑与摄像机剪辑注册在同一个工厂、同一条 camera 轨道上，不是两套独立系统。剧情目录把它们拆到第四幕(行为编辑器)与第五幕(摄像机剪辑)需要重新说明二者关系。",
+    "uiClassCount": 18,
+    "actionClassCount": 13
+  },
+  "cameraClips": {
+    "idle": {"zh": "静止", "ui": "UIIdleClip.java"},
+    "path": {"zh": "路径", "ui": "UIPathClip.java"},
+    "orbit": {"zh": "轨道", "ui": "UIOrbitClip.java"},
+    "dolly": {"zh": "滑轨", "ui": "UIDollyClip.java"},
+    "dolly_zoom": {"zh": "滑动变焦", "ui": "UIDollyZoomClip.java"},
+    "look": {"zh": "看", "ui": "UILookClip.java"},
+    "shake": {"zh": "摇晃", "ui": "UIShakeClip.java"},
+    "drag": {"zh": "阻力", "ui": "UIDragClip.java"},
+    "translate": {"zh": "平移", "ui": "UITranslateClip.java"},
+    "angle": {"zh": "角度", "ui": "UIAngleClip.java"},
+    "keyframe": {"zh": "关键帧", "ui": "UIKeyframeClip.java"},
+    "curve": {"zh": "曲线", "ui": "UICurveClip.java"},
+    "tracker": {"zh": "追踪器", "ui": "UITrackerClip.java"},
+    "remapper": {"zh": "重映射", "ui": "UIRemapperClip.java"},
+    "math": {"zh": "数学", "ui": "UIMathClip.java"},
+    "audio": {"zh": "音频", "ui": "UIAudioClip.java"},
+    "subtitle": {"zh": "字幕", "ui": "UISubtitleClip.java"}
+  },
+  "actionClips": {
+    "attack": {"zh": "攻击"},
+    "swipe": {"zh": "挥手"},
+    "damage": {"zh": "伤害"},
+    "chat": {"zh": "聊天信息"},
+    "command": {"zh": "命令"},
+    "place_block": {"zh": "放置方块"},
+    "break_block": {"zh": "方块破坏进度"},
+    "interact_block": {"zh": "与方块交互"},
+    "interact_entity": {"zh": "与实体交互"},
+    "use_item": {"zh": "使用物品"},
+    "use_block_item": {"zh": "对方块使用物品"},
+    "drop_item": {"zh": "掉落物品"}
+  },
+  "layerComposition": {
+    "answer": "管道式：按层升序在同一个 position 上依次施加；每个剪辑自行决定是「叠加分量」还是「重写分量」",
+    "officialLabel": "剪辑的层级，该数字决定了相机剪辑行为应用的顺序，数字越高，应用越晚（camera.panels.layer）",
+    "evidence": {
+      "sort": "Clips.java:179 — clipList.sort(Comparator.comparingInt(a -> a.layer.get())) 按图层升序",
+      "loop": "CameraWorkCameraController.java:54-56 — for (Clip clip : getClips(ticks)) { context.apply(clip, this.position); } 全部剪辑共享同一个 position 对象",
+      "seed": "CameraWorkCameraController.java:46-49 — position 先 set(camera) 作为初值",
+      "output": "CameraWorkCameraController.java:70-71 — 全部施加完毕后 position.apply(camera) 写回摄像机"
+    },
+    "twoKindsOfClips": {
+      "叠加型": {
+        "examples": ["平移（TranslateClip）", "角度（AngleClip）", "摇晃（ShakeClip）"],
+        "behavior": "在传入的 position 上对分量做 += ，保留下层结果",
+        "evidence": "TranslateClip.java:27-44 / ShakeClip.java:53-90"
+      },
+      "重写型": {
+        "examples": ["看（LookClip）", "轨道（OrbitClip）", "滑动变焦（DollyZoomClip）"],
+        "behavior": "读入下层结果后完全重写 angle 或 point 分量",
+        "evidence": "LookClip.java:59-62 —— 若 applyUnderneath 未改动则 this.position.copy(position)，随后重算并覆盖朝向"
+      }
+    },
+    "applyUnderneath": {
+      "whatItIs": "一个可选机制：剪辑可以在「另一个 tick」重新求值它下面所有层，而不是只读当前累积值",
+      "why": "看（Look）的「朝运动方向」需要知道上一刻相机在哪，才能算出速度矢量",
+      "evidence": "ClipContext.java:110-148 applyUnderneath(ticks, ...) 用 getClips(ticks, lastLayer) 只取更低层；LookClip.java:55 传入 context.ticks - 1（上一刻）",
+      "guard": "ClipContext.java:112 — 仅当 currentLayer > 0 才生效，图层 0 无下层可算"
+    },
+    "teachingImplication": "图层 0 放主运动（静止/路径/关键帧/滑轨），上层放修饰（摇晃/看/阻力/平移/角度）。**修饰型剪辑必须在主运动之上的层**，放低了或同层会「没效果」—— 这是新手最常踩的坑，第五幕开篇就要讲。",
+    "globalClips": "Clips.java:171 — clip.isGlobal() 且 maxLayer 为 MAX_VALUE 时，即使 tick 不在剪辑范围内也会被纳入（全局剪辑）",
+    "resolvedDisagreement": "我最初只读了主循环，得出「纯叠加」；audit-camera 只看了 Look/Orbit，得出「覆盖重算」。实际是管道 + 每剪辑自选叠加或重写，两者都不完整。"
+  },
+  "envelope": {
+    "labels": {"title": "包络", "start_d": "淡入", "end_d": "淡出", "pre": "前", "post": "后", "normal": "普通"},
+    "keys": {"fade_in": "逗号 ,", "fade_out": "句号 ."},
+    "scope": "作用于剪辑自身：按 0~1 权重把本剪辑效果与外部位姿做 lerp，不是图层间混合",
+    "evidence": "Envelope.java:74-104 / CameraClip.java:24-52（由 audit-camera 提供，待我复核）"
+  },
+  "addClipKeys": {
+    "add_at_cursor": {"key": "Shift + A", "where": "鼠标在时间线所指的刻与层"},
+    "add_at_tick": {"key": "Alt + A", "where": "播放头当前刻，层取鼠标所在层"},
+    "add_on_top": {"key": "Shift + Alt + A", "where": "复制选中剪辑的刻与时长，层 = 选中层 + 1（严格叠在正上方）"},
+    "note": "三者都经 checkSize 检查，目标位置被占用时自动右移腾位",
+    "evidence": "UIClips.java:319-342（由 audit-camera 提供，待我复核）",
+    "teachingValue": "add_on_top 正是给修饰型剪辑用的：选中主运动后一键把摇晃叠到它正上方，不会放错层"
+  },
+  "corrections": [
+    "drag 的中文是「阻力」，不是「拖拽」—— 它是摄像机运动的阻尼/延迟感，不是鼠标拖动",
+    "dolly 的中文是「滑轨」，dolly_zoom 是「滑动变焦」（希区柯克变焦）",
+    "look 的中文就是单字「看」",
+    "break_block 的中文是「方块破坏进度」，强调它记录的是挖掘进度而非瞬间破坏"
+  ]
+}

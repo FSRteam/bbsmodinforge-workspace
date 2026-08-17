@@ -20,6 +20,8 @@
 - 两个基线仓库均通过 `git fsck`，且本地分支、远端分支和工作区状态一致。
 - 上游仓库根 `LICENSE` 与 `irl-core/LICENSE` 均为 MIT；`fabric.mod.json` 中旧的 `CC-BY-ND-4.0` 字段与仓库许可证不一致，迁移元数据以仓库 MIT 许可证文件为准。
 - BBSFSR 目标版本为 `0.0.11`，NeoForge 为 `21.1.222`，Java 为 21；目标 Iris/Sodium 分别为 `1.8.8+1.21.1-neoforge` 和 `mc1.21.1-0.6.13-neoforge`。
+- 2026-08-11 复核 GitHub：`port/1.21.1` 仍为 `c76a73f0e209da12505d3e9bff56d8e5155f47e4`；默认 `master` 最新为 `2e1b7b3aaf25885a408501b24ff068848259a660`。1.21.1 线已包含 `master` 至 `b8a8fdc`，本次补入其后的三个 addon 提交。
+- 2026-08-11 复核 `irl-core`：`1.21.1` 分支仍为 `3624676e80833ac8f6c8beb961adea339d261ceb`，无需更新内嵌核心源码。
 
 ## Requirements
 

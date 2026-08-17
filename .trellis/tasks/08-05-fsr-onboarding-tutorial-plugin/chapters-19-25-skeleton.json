@@ -1,0 +1,488 @@
+{
+  "_meta": {
+    "purpose": "ch19-ch25 骨架（可动画属性、回放系统、录制组、演员控制、回放管理、运动路径洋葱皮、摄像机剪辑）",
+    "labelSource": "ui-domains.json",
+    "keybindSource": "keybinds-verified.json",
+    "chapterTarget": "每章 1000+ 字",
+    "criticalFinding": "KeyframeFactories.java 注册了 29 种可打关键帧的数据类型，包括 ik/physics/wind/pose/glint/shape_keys/particle_settings 与 5 组 sound —— 说明 ch10/ch12/ch14 讲的静态参数全都可以随时间变化，此前完全漏讲",
+    "status": "skeleton_in_progress"
+  },
+  "chapters": [
+    {
+      "id": "ch19_animatable_properties",
+      "order": 19,
+      "titleZh": "什么都能打关键帧：29 种可动画属性",
+      "labelDomains": [
+        "keyframes",
+        "forms_model"
+      ],
+      "steps": [
+        {
+          "id": "ch19_s1_concept_shift",
+          "order": 1,
+          "pose": "thinking_2",
+          "uiElements": {
+            "registry": "KeyframeFactories.FACTORIES 共 29 个注册类型",
+            "source": "new/src/main/java/mchorse/bbs_mod/utils/keyframes/factories/KeyframeFactories.java:53-81"
+          },
+          "instruction": "理解一个关键转变（无需操作）：前面章节里你调的 IK 权重、物理重力、风力、形态键、附魔速度，**全部都可以随时间变化**",
+          "userWillSee": "（认知铺垫步骤）",
+          "hint": "之前学的是「设一个固定值」，这一章学的是「让这个值在时间轴上动起来」。这是从摆静态姿势跨到做动画的分界线"
+        },
+        {
+          "id": "ch19_s2_basic_types",
+          "order": 2,
+          "pose": "crossed_arms",
+          "uiElements": {
+            "types": {
+              "double / float / integer / long": "数值类，最常见",
+              "boolean": "开关类，配合「是」显示",
+              "string": "文本类",
+              "color": "颜色类",
+              "vector3f / vector3f_scale / vector4f": "向量类（位移/缩放/四元）",
+              "transform / pose_transform": "变换类"
+            },
+            "source": "KeyframeFactories.java:53-70 + generic_keyframes.boolean.true"
+          },
+          "instruction": "在关键帧编辑器里找几条不同类型的轨道，观察它们的编辑控件长得不一样",
+          "userWillSee": "数值轨道显示曲线；布尔轨道显示阶梯状开关；颜色轨道显示色块渐变；向量轨道可展开为 X/Y/Z 三条子轨",
+          "hint": "轨道的类型决定了它能用哪些插值：布尔和字符串只能用常量/阶梯，数值类才能用缓动曲线"
+        },
+        {
+          "id": "ch19_s3_pose_and_ik",
+          "order": 3,
+          "pose": "praise_the_sun",
+          "uiElements": {
+            "types": {
+              "pose": "整套姿势",
+              "pose_transform": "单骨骼变换",
+              "ik": "IK 配置"
+            },
+            "tabKeys": {
+              "姿势标签": "3",
+              "IK 标签": "4"
+            },
+            "source": "KeyframeFactories.java:14-17 + film.replay.tab.3 / tab.4"
+          },
+          "instruction": "在回放编辑器里按 **3** 切到姿势标签、按 **4** 切到 IK 标签（replays_editor 分类默认）→ 在不同时刻给姿势和 IK 各插入关键帧",
+          "userWillSee": "姿势随时间过渡形成动画；IK 的权重/目标也能在时间轴上变化，做出「手慢慢抬起去扶墙」这类效果",
+          "hint": "回想 ch10 讲的 IK 权重：把它从 0 打到 1，就是 IK 的淡入 —— 角色的手自然地被「吸」向目标"
+        },
+        {
+          "id": "ch19_s4_physics_wind",
+          "order": 4,
+          "pose": "tada_1",
+          "uiElements": {
+            "types": {
+              "physics": "物理骨链参数",
+              "wind": "风力参数"
+            },
+            "tabKey": {
+              "物理标签": "5"
+            },
+            "source": "KeyframeFactories.java:18-19 + film.replay.tab.5"
+          },
+          "instruction": "按 **5** 切到物理标签（默认）→ 给 **重力强度** 或 **风力强度** 在不同时刻插入不同数值的关键帧",
+          "userWillSee": "物理参数随时间变化：可以做出「风突然刮起」「重力逐渐消失（角色头发飘起来）」这类动态效果",
+          "hint": "这是 ch11/ch12 的延伸：那时是设一个固定风力，现在可以让风在第 3 秒骤起、第 8 秒停下"
+        },
+        {
+          "id": "ch19_s5_glint_shapekeys",
+          "order": 5,
+          "pose": "huh",
+          "uiElements": {
+            "types": {
+              "glint": "附魔光效",
+              "shape_keys": "形态键"
+            },
+            "source": "KeyframeFactories.java:16 / 34"
+          },
+          "instruction": "给 **附魔** 的颜色与速度插关键帧；再给 **形态键** 滑块插关键帧",
+          "userWillSee": "附魔光效可以由暗转亮、变色、加速流动；形态键动画让表情随时间变化（如从平静到微笑）",
+          "hint": "表情动画就靠形态键关键帧。ch14 存的 smile / angry 条目，现在可以在时间轴上串起来"
+        },
+        {
+          "id": "ch19_s6_mc_and_particle",
+          "order": 6,
+          "pose": "thinking_2",
+          "uiElements": {
+            "types": {
+              "item_stack": "物品堆（换手中物品）",
+              "block_state": "方块状态",
+              "anchor": "锚点（附着到角色/附件）",
+              "link": "资源链接（换纹理）",
+              "particle_settings": "粒子设置",
+              "actions_config": "动作配置"
+            },
+            "pickers": [
+              "选择角色...",
+              "选择附件...",
+              "选择纹理..."
+            ],
+            "source": "KeyframeFactories.java:30-35 + generic_keyframes.anchor.pick_actor / pick_attachment + generic_keyframes.link.pick_texture"
+          },
+          "instruction": "试用 **anchor** 轨道的 **选择角色...** / **选择附件...**，以及 **link** 轨道的 **选择纹理...**",
+          "userWillSee": "锚点关键帧让物体在时间轴上切换附着目标（如剑从背上移到手中）；link 关键帧可在播放途中换纹理（做变色/换装）",
+          "hint": "锚点动画是拍打斗戏的关键：武器什么时候在手里、什么时候插在背上，全靠它切换"
+        },
+        {
+          "id": "ch19_s7_sound_groups",
+          "order": 7,
+          "pose": "bow",
+          "uiElements": {
+            "groups": {
+              "sound": "声音主参数",
+              "sound_shape": "发射形状",
+              "sound_visualization": "可视化",
+              "sound_falloff": "距离衰减",
+              "sound_reflections": "反射"
+            },
+            "playingTooltip": "为该项打关键帧,即可在时间轴上控制何时开始与停止播放。",
+            "source": "KeyframeFactories.java:36-40 + forms.editors.sound.playing_tooltip"
+          },
+          "instruction": "在声音形态的 **播放中** 一项上插入关键帧",
+          "userWillSee": "按文案说明：为该项打关键帧即可在时间轴上控制何时开始与停止播放；衰减、反射、形状各自是独立的关键帧分组",
+          "hint": "声音被拆成 5 个关键帧分组，可以只给音量做渐变而不动衰减设置，互不干扰"
+        }
+      ]
+    },
+    {
+      "id": "ch20_keyframe_views",
+      "order": 20,
+      "titleZh": "关键帧视图：摘要表、曲线图与形状标记",
+      "labelDomains": [
+        "keyframes",
+        "settings"
+      ],
+      "steps": [
+        {
+          "id": "ch20_s1_view_is_automatic",
+          "order": 1,
+          "pose": "thinking_2",
+          "uiElements": {
+            "mechanism": "视图不是手动切换的，而是「进入轨道」时自动决定",
+            "logic": {
+              "退出轨道（传 null）": "回到摘要表 dopeSheet",
+              "进入向量类轨道": "自动用三轴分色曲线图 UIVector3KeyframeGraph",
+              "进入其它类型轨道": "自动用单值曲线图 UIKeyframeGraph"
+            },
+            "source": "UIKeyframes.java:736-760 editSheet() —— 按 factory 是否 Vector3fKeyframeFactory 二选一"
+          },
+          "instruction": "理解机制（无需操作）：关键帧编辑器没有「切换视图」按钮，视图由你**进入哪条轨道**自动决定",
+          "userWillSee": "（认知铺垫步骤）",
+          "hint": "这一点很容易误解。你要做的是「进入/退出轨道」（ch17 学过的 编辑轨道 / 退出轨道），视图跟着自动变"
+        },
+        {
+          "id": "ch20_s2_dopesheet",
+          "order": 2,
+          "pose": "crossed_arms",
+          "uiElements": {
+            "view": "摘要表（总览所有轨道）",
+            "key": "Home 查看所有关键帧",
+            "source": "graphs/UIKeyframeDopeSheet.java + Keys.keyframes.maximize"
+          },
+          "instruction": "确保处于总览状态（若在单轨里先 **退出轨道**）→ 按 **Home**（默认）查看全部",
+          "userWillSee": "每条轨道一行，关键帧显示为小标记；很容易看出哪些轨道在同一刻有关键帧、哪些错位了",
+          "hint": "多个属性要同时变化时（比如位移和旋转同时开始），在摘要表里检查对齐最快"
+        },
+        {
+          "id": "ch20_s3_enter_track_graph",
+          "order": 3,
+          "pose": "praise_the_sun",
+          "uiElements": {
+            "action": "编辑轨道 %s",
+            "view": "单值曲线图（自动）",
+            "fields": [
+              "刻",
+              "数值"
+            ],
+            "source": "keyframes.context.edit_track + UIKeyframes.java:753 new UIKeyframeGraph + keyframes.tick / value"
+          },
+          "instruction": "右键一条数值轨道 → **编辑轨道** → 选中一个关键帧 → 在 **刻** 与 **数值** 输入框里输入精确值",
+          "userWillSee": "视图自动变成曲线图：横轴是时间（刻），纵轴是数值，曲线形状直观显示加减速",
+          "hint": "拖动适合找感觉，输入框适合定死数值（比如旋转必须正好 90 度）"
+        },
+        {
+          "id": "ch20_s4_vector3_graph",
+          "order": 4,
+          "pose": "huh",
+          "uiElements": {
+            "view": "三轴分色曲线图（自动）",
+            "colors": "X/Y/Z 分别用红/绿/蓝",
+            "trackHints": "轨道 id 尾部 .translate / .scale / .rotate 决定显示图标与角度单位",
+            "source": "UIKeyframes.java:747-749 + graphs/UIVector3KeyframeGraph.java + KeyframeFactories.VECTOR3F_SCALE"
+          },
+          "instruction": "右键一条向量类轨道（位移或缩放）→ **编辑轨道**",
+          "userWillSee": "视图自动变成三轴曲线图，X/Y/Z 三条曲线以红/绿/蓝区分，可看出哪个轴在哪段时间变化",
+          "hint": "缩放轨道的默认值是 (1,1,1) 而不是 (0,0,0) —— 源码里 VECTOR3F_SCALE 单独注册就是为这个。新建缩放关键帧时别以为 0 是原始大小"
+        },
+        {
+          "id": "ch20_s5_forced_duration",
+          "order": 5,
+          "pose": "thinking_2",
+          "uiElements": {
+            "field": "强制持续时间",
+            "source": "keyframes.forced_duration + UIKeyframeFactory.java:119-120 duration trackpad"
+          },
+          "instruction": "选中一个或多个关键帧 → 找到 **强制持续时间** 输入框 → 设一个值",
+          "userWillSee": "该关键帧无视轨道默认时长，按你指定的时长保持自己的值，到时才过渡到下一帧",
+          "hint": "用来做「保持不动一段时间再变化」（hold）。设给多选的关键帧会一次性全部应用"
+        },
+        {
+          "id": "ch20_s5_shapes",
+          "order": 6,
+          "pose": "tada_1",
+          "uiElements": {
+            "shapes": [
+              "圆形",
+              "钻形",
+              "正方形",
+              "三角形",
+              "三角星",
+              "四角星",
+              "五角星",
+              "六角形"
+            ],
+            "action": "更改关键帧形状",
+            "source": "keyframes.change_shape + keyframes.shapes.* + shapes/*KeyframeShapeRenderer.java"
+          },
+          "instruction": "选中若干关键帧 → **更改关键帧形状** → 依次试 **钻形** / **五角星** / **正方形**",
+          "userWillSee": "关键帧的图标样式改变；形状是纯视觉标记，不影响插值或数值",
+          "hint": "用形状给关键帧分类：比如五角星标记「重要节拍」，正方形标记「待调整」，一眼就能在密集轨道里找到"
+        },
+        {
+          "id": "ch20_s6_colors",
+          "order": 7,
+          "pose": "thinking_2",
+          "uiElements": {
+            "actions": [
+              "更改关键帧颜色...",
+              "重置颜色"
+            ],
+            "source": "keyframes.change_color / reset_color"
+          },
+          "instruction": "选中关键帧 → **更改关键帧颜色...** 设一个醒目颜色 → 再用 **重置颜色** 还原",
+          "userWillSee": "关键帧标记变为自定义颜色；重置后回到轨道默认配色",
+          "hint": "颜色配合形状做双重标记，长片里管理上百个关键帧时非常必要"
+        },
+        {
+          "id": "ch20_s7_defaults",
+          "order": 8,
+          "pose": "bow",
+          "uiElements": {
+            "settings": {
+              "默认关键帧形状": "该形状将应用于新创建的关键帧。现有关键帧不受影响。",
+              "默认插值": "在空白位置手动创建关键帧时使用的插值方式"
+            },
+            "source": "config.appearance.keyframe_default_shape + -comment + config.editor.keyframe_default_interpolation"
+          },
+          "instruction": "打开设置 → 找到 **默认关键帧形状** 与 **默认插值** → 各改一个值 → 回到编辑器新建关键帧验证",
+          "userWillSee": "新建的关键帧采用你设定的形状与插值；已存在的关键帧不受影响",
+          "hint": "两条设置的说明都明确写着「现有关键帧不受影响」。改默认值前先确认这不是你想要的批量修改 —— 批量改要用选中后右键"
+        }
+      ]
+    },
+    {
+      "id": "ch21_realtime_recording",
+      "order": 21,
+      "titleZh": "实时录制数值：把手感直接录成曲线",
+      "labelDomains": [
+        "keyframes"
+      ],
+      "steps": [
+        {
+          "id": "ch21r_s1_why",
+          "order": 1,
+          "pose": "thinking_2",
+          "uiElements": {
+            "problem": "逐帧输入数值调不出「手感」",
+            "solution": "边播边拖，实时录成关键帧"
+          },
+          "instruction": "理解用途（无需操作）：有些效果（镜头晃动的力度、灯光忽明忽暗的节奏）靠输入数字调不出来，需要边看边手动带",
+          "userWillSee": "（认知铺垫步骤）",
+          "hint": "这是「表演式」调参：你像弹琴一样把数值变化演出来，系统记成曲线"
+        },
+        {
+          "id": "ch21r_s2_record_value",
+          "order": 2,
+          "pose": "crossed_arms",
+          "uiElements": {
+            "action": "录制参数",
+            "requirement": "只对数值类轨道有效（float / double / integer）",
+            "source": "keyframes.record_value + TrackpadRecorder.java"
+          },
+          "instruction": "进入一条数值轨道 → 在数值输入框上 **点右键** → 选择 **录制参数**",
+          "userWillSee": "进入录制状态，并会自动开始播放影片",
+          "hint": "只有数值类轨道有这个菜单项。pose / IK 这类复杂类型走的是另一套录制机制（下一步讲）"
+        },
+        {
+          "id": "ch21r_s3_perform",
+          "order": 3,
+          "pose": "praise_the_sun",
+          "uiElements": {
+            "action": "播放中左右拖动鼠标",
+            "constraint": "Records values only when film playback is active",
+            "source": "TrackpadRecorder.java:8-11 类注释 + recordValue() 写入当前 tick"
+          },
+          "instruction": "在播放过程中**左右拖动鼠标**改变数值 → 松开左键结束录制",
+          "userWillSee": "拖动时数值实时变化，每一帧都在当前刻写入一个关键帧，形成一条跟着你手感走的曲线",
+          "hint": "源码里写死了「只在影片播放中才录制」。如果没在播放，拖动不会产生关键帧"
+        },
+        {
+          "id": "ch21r_s4_simplify_after",
+          "order": 4,
+          "pose": "huh",
+          "uiElements": {
+            "action": "简化",
+            "source": "keyframes.context.simplify"
+          },
+          "instruction": "录完后全选这条轨道的关键帧 → 右键 → **简化**",
+          "userWillSee": "密集的每帧关键帧被压缩成少量控制点，曲线形状基本保持",
+          "hint": "和录制回放一样，实时录制会产生每帧一个关键帧，必须简化才好后续编辑"
+        },
+        {
+          "id": "ch21r_s5_transform_recording",
+          "order": 5,
+          "pose": "thinking_2",
+          "uiElements": {
+            "mechanism": "变换录制（与数值录制是两套独立机制）",
+            "source": "factories/UIKeyframePropTransform.java applyDuringRecording"
+          },
+          "instruction": "理解区别（无需操作）：姿势 / 变换类属性走的是另一条录制路径，不是「录制参数」那个菜单",
+          "userWillSee": "（认知铺垫步骤）",
+          "hint": "别把两者混淆：数值轨道 = 右键「录制参数」+ 拖鼠标；姿势变换 = 录制回放时直接摆动作被记录"
+        },
+        {
+          "id": "ch21r_s6_combine",
+          "order": 6,
+          "pose": "bow",
+          "uiElements": {
+            "workflow": "手动关键帧定骨架 → 实时录制加细节 → 简化清理"
+          },
+          "instruction": "回顾推荐工作流（无需操作）",
+          "userWillSee": "（总结步骤）",
+          "hint": "先用手动关键帧把大的节拍定死（第 0 秒起、第 3 秒到位），再用实时录制往中间加抖动/呼吸感这类细节"
+        }
+      ]
+    },
+    {
+      "id": "ch22_replay_system",
+      "order": 22,
+      "titleZh": "回放系统：录下你的动作",
+      "labelDomains": [
+        "film_replays"
+      ],
+      "steps": [
+        {
+          "id": "ch22_s1_replay_vs_keyframe",
+          "order": 1,
+          "pose": "thinking_2",
+          "uiElements": {
+            "comparison": {
+              "关键帧": "手动摆，适合简单路径",
+              "回放": "真实录制，适合复杂动作"
+            }
+          },
+          "instruction": "理解两种做法的分工（无需操作）",
+          "userWillSee": "（认知铺垫步骤）",
+          "hint": "跑酷、打斗、自然走动用回放录；精确的机械运动、摄像机轨迹用关键帧摆"
+        },
+        {
+          "id": "ch22_s2_add_replay",
+          "order": 2,
+          "pose": "crossed_arms",
+          "uiElements": {
+            "actions": [
+              "添加回放",
+              "添加类别",
+              "根目录（无类别）"
+            ],
+            "source": "scene.replays.context.add / add_category / category.none"
+          },
+          "instruction": "在影片编辑器的回放列表空白处 **点右键** → **添加回放**",
+          "userWillSee": "列表出现新回放条目，带有对应的关键帧轨道；未分类的回放归在 **根目录（无类别）** 下",
+          "hint": "一个影片可以有多个回放，各自记录不同角色或不同动作片段"
+        },
+        {
+          "id": "ch22_s3_start_recording",
+          "order": 3,
+          "pose": "praise_the_sun",
+          "uiElements": {
+            "keys": {
+              "全局录制回放": "右 Alt",
+              "编辑器内开始录制": "Ctrl + R"
+            },
+            "labels": [
+              "开始录制",
+              "录制",
+              "选择要录制的关键帧组："
+            ],
+            "source": "BBSModClient.java:980 + Keys.film_controller.start_recording + film.controller.record-title / record-description + film.keys.start_recording"
+          },
+          "instruction": "选中一个回放 → 按 **Ctrl + R**（film_controller 分类默认）或在游戏内按 **右 Alt**（全局）",
+          "userWillSee": "弹出 **录制** 面板，提示「选择要录制的关键帧组：」，选定后开始倒计时并录制",
+          "hint": "两个键的区别：右 Alt 是全局键（面板关着也能按），Ctrl+R 是编辑器内的键"
+        },
+        {
+          "id": "ch22_s4_perform",
+          "order": 4,
+          "pose": "tada_1",
+          "uiElements": {
+            "note": "录制期间的移动、视角、跳跃、姿势变化都会被记录",
+            "setting": "录制时重置回放状态",
+            "source": "film.reset_replays"
+          },
+          "instruction": "在游戏中自由移动、跳跃、转视角，持续 5-10 秒",
+          "userWillSee": "录制指示持续显示；结束后回放轨道上出现密集的关键帧（每刻一个）",
+          "hint": "设置里有 **录制时重置回放状态**：开启后每次录制从初始状态开始，关闭则接着上次的状态录"
+        },
+        {
+          "id": "ch22_s5_stop_and_simplify",
+          "order": 5,
+          "pose": "huh",
+          "uiElements": {
+            "action": "简化",
+            "source": "keyframes.context.simplify"
+          },
+          "instruction": "再按一次 **右 Alt** 或 **Ctrl + R** 停止 → 选中录制产生的关键帧 → 右键 → **简化**",
+          "userWillSee": "录制产生每刻一个关键帧（非常密集）；简化后关键帧数量大幅减少，但动作曲线基本不变",
+          "hint": "录制后必做简化：既减小文件体积，又让曲线变得可编辑（几百个关键帧是没法手动调的）"
+        },
+        {
+          "id": "ch22_s6_playback",
+          "order": 6,
+          "pose": "praise_the_sun",
+          "uiElements": {
+            "keys": {
+              "播放影片": "右 Ctrl（全局）",
+              "暂停影片": "反斜杠（全局）",
+              "播放/暂停": "空格（editor 分类）"
+            },
+            "source": "BBSModClient.java:978-979 + Keys.editor.plause"
+          },
+          "instruction": "按 **右 Ctrl**（全局）播放，或在编辑器内按 **空格**（默认）播放/暂停",
+          "userWillSee": "摄像机开始播放，之前录制的动作精确重现",
+          "hint": "空格是编辑器内的播放/暂停，右 Ctrl 和反斜杠是全局的播放与暂停 —— 三个键都能用，看你手在哪"
+        },
+        {
+          "id": "ch22_s7_teleport",
+          "order": 7,
+          "pose": "bow",
+          "uiElements": {
+            "keys": {
+              "传送至当前回放": "Y（全局）",
+              "将回放移至光标处": "Ctrl + G"
+            },
+            "labels": [
+              "将回放移至光标处"
+            ],
+            "source": "BBSModClient.java:986 + Keys.film_controller.move_replay_to_cursor + film.keys.move_replay_to_cursor"
+          },
+          "instruction": "按 **Y**（全局）传送到当前回放的位置；再试 **Ctrl + G**（默认）**将回放移至光标处**",
+          "userWillSee": "Y 把你传送到回放角色所在位置；Ctrl+G 反过来把整段回放平移到你的光标位置",
+          "hint": "录错位置时不用重录：Ctrl+G 直接把整段动作搬到正确地点"
+        }
+      ]
+    }
+  ]
+}

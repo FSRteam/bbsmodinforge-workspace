@@ -1,0 +1,31 @@
+{
+  "id": "fsr-film-home-redesign",
+  "name": "fsr-film-home-redesign",
+  "title": "FSR 影片首页重设计（banner + 新闻 + 阿雪绘制单 + 影片网格）",
+  "description": "",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "snowstar_II",
+  "assignee": "snowstar_II",
+  "createdAt": "2026-08-16",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "codex/bootstrap-trellis-workspace",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "new/src/client/java/mchorse/bbs_mod/ui/film/UIFilmSelectionPanel.java",
+    "new/src/client/java/mchorse/bbs_mod/ui/dashboard/panels/UISelectionScreen.java",
+    "new/src/client/java/mchorse/bbs_mod/ui/film/UIFilmPanel.java",
+    "new/src/main/java/mchorse/bbs_mod/film/Film.java"
+  ],
+  "notes": "",
+  "meta": {}
+}

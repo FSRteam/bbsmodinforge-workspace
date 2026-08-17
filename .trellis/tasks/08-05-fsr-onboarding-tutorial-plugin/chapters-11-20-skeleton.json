@@ -1,0 +1,749 @@
+{
+  "_meta": {
+    "purpose": "ch11-ch20 骨架（物理骨链 2 章 + 骨骼约束 + 形态键附魔 + 动作状态机 + 影片总览 + 关键帧 3 章 + 回放）",
+    "labelSource": "ui-domains.json",
+    "keybindSource": "keybinds-verified.json",
+    "chapterTarget": "每章 1000+ 字",
+    "status": "skeleton_in_progress"
+  },
+  "chapters": [
+    {
+      "id": "ch11_physics_basics",
+      "order": 11,
+      "titleZh": "物理骨链：让头发和裙摆自己动起来",
+      "labelDomains": ["forms_model"],
+      "steps": [
+        {
+          "id": "ch11_s1_why_physics",
+          "order": 1,
+          "pose": "thinking_2",
+          "uiElements": {
+            "problem": "手动给每一帧摆头发 = 地狱",
+            "solution": "物理骨链自动计算摆动"
+          },
+          "instruction": "理解痛点（无需操作）：如果角色有长发或披风，手动给每一帧摆动是不可能完成的工作量",
+          "userWillSee": "（认知铺垫步骤）",
+          "hint": "物理骨链让骨骼受重力和惯性影响，自动产生跟随、摆动、回弹"
+        },
+        {
+          "id": "ch11_s2_open_physics_tab",
+          "order": 2,
+          "pose": "crossed_arms",
+          "uiElements": {
+            "tab": "物理骨链",
+            "sections": ["链根骨骼", "骨链设置"],
+            "source": "forms.editors.model.physics.title / chains / settings"
+          },
+          "instruction": "变成 **player/steve_bends** → 切换到 **物理骨链** 标签 → 观察 **链根骨骼** 列表和 **骨链设置** 区域",
+          "userWillSee": "左侧列出可作为骨链起点的骨骼，右侧是该骨链的物理参数（未启用时为灰）",
+          "hint": "物理骨链需要有连续的骨骼链条，_bends 模型效果最好"
+        },
+        {
+          "id": "ch11_s3_enable_chain",
+          "order": 3,
+          "pose": "praise_the_sun",
+          "uiElements": {
+            "checkbox": "启用骨链",
+            "field": "骨链末端: %s",
+            "source": "forms.editors.model.physics.enabled / end"
+          },
+          "instruction": "选中一根骨骼作为链根 → 勾选 **启用骨链** → 在 **骨链末端** 指定链条的终点骨骼",
+          "userWillSee": "从链根到末端的骨骼进入物理模拟；关闭 Dashboard 后移动角色，这段骨骼会自然摆动",
+          "hint": "如果提示「无效骨链」，说明你选的两根骨骼不在同一条父子链上"
+        },
+        {
+          "id": "ch11_s4_gravity",
+          "order": 4,
+          "pose": "huh",
+          "uiElements": {
+            "field": "重力强度",
+            "related": ["使用父级方向", "重力方向偏移"],
+            "source": "forms.editors.model.physics.gravity / relative_gravity / relative_gravity_rotation"
+          },
+          "instruction": "调整 **重力强度** 从 0 到较大值 → 再勾选 **使用父级方向** 观察差异 → 调整 **重力方向偏移**",
+          "userWillSee": "重力强度越大骨链下坠越明显；勾选使用父级方向后，重力方向会跟随模型旋转而不是固定朝世界下方",
+          "hint": "做飘带、旗帜时关掉使用父级方向（重力朝世界下）；做角色头发时可以开启（跟随身体朝向）"
+        },
+        {
+          "id": "ch11_s5_damping_stiffness",
+          "order": 5,
+          "pose": "thinking_2",
+          "uiElements": {
+            "fields": ["稳定度（阻尼）", "刚度"],
+            "source": "forms.editors.model.physics.damping / stiffness"
+          },
+          "instruction": "分别调整 **稳定度（阻尼）** 和 **刚度**，每次改完都跑动一下观察差异",
+          "userWillSee": "阻尼越大摆动越快停止；刚度越大骨链越硬、越倾向于回到原始姿势，越小越软塌",
+          "hint": "长发：低刚度 + 中阻尼；硬质披风：高刚度 + 高阻尼；果冻感：低刚度 + 低阻尼"
+        },
+        {
+          "id": "ch11_s6_iterations",
+          "order": 6,
+          "pose": "crossed_arms",
+          "uiElements": {
+            "field": "解算质量",
+            "source": "forms.editors.model.physics.iterations"
+          },
+          "instruction": "调整 **解算质量** 数值，观察骨链在快速移动时的表现",
+          "userWillSee": "数值越高解算越精确、不易穿模或抖动，但计算量也越大",
+          "hint": "编辑时可以调高看效果，如果帧率下降明显就适当降低；导出视频时可以调高（导出不实时）"
+        },
+        {
+          "id": "ch11_s7_debug_and_save",
+          "order": 7,
+          "pose": "bow",
+          "uiElements": {
+            "checkbox": "显示调试叠加层",
+            "buttons": ["保存物理", "拷贝物理", "粘贴物理", "重置物理配置"],
+            "notifications": ["物理配置已保存", "保存物理配置失败"],
+            "source": "forms.editors.model.physics.debug / context.*"
+          },
+          "instruction": "勾选 **显示调试叠加层** 查看骨链结构 → 调好后右键 → **保存物理**（命名）",
+          "userWillSee": "调试层画出骨链的连线与碰撞球；保存成功会提示「物理配置已保存」",
+          "hint": "和 IK 一样，常用的物理配置存成条目可以跨模型复用"
+        }
+      ]
+    },
+    {
+      "id": "ch12_physics_wind_collision",
+      "order": 12,
+      "titleZh": "物理进阶：风力、阵风与世界碰撞",
+      "labelDomains": ["forms_model"],
+      "steps": [
+        {
+          "id": "ch12_s1_wind_enable",
+          "order": 1,
+          "pose": "tada_1",
+          "uiElements": {
+            "section": "风",
+            "fields": ["风力强度", "风向"],
+            "source": "forms.editors.model.physics.wind / wind_strength / wind_direction"
+          },
+          "instruction": "在 **物理骨链** 标签找到 **风** 区域 → 调整 **风力强度** → 设置 **风向**",
+          "userWillSee": "骨链被持续朝风向吹动，即使角色站着不动也会飘",
+          "hint": "风是持续力，和重力叠加。做户外场景、飞行镜头时很有用"
+        },
+        {
+          "id": "ch12_s2_wind_local",
+          "order": 2,
+          "pose": "huh",
+          "uiElements": {
+            "checkbox": "局部方向",
+            "tooltip": "使风向相对于模型，并随模型旋转，而不是固定在世界坐标中。",
+            "source": "forms.editors.model.physics.wind_local / wind_local_tooltip"
+          },
+          "instruction": "开关 **局部方向**，每次都把角色转个身观察差异",
+          "userWillSee": "关闭时风向固定在世界坐标（转身后头发从另一侧被吹）；开启时风向跟随模型旋转（永远从同一侧吹）",
+          "hint": "想模拟真实环境风就关闭；想让角色永远「迎风而立」（比如奔跑时头发向后）就开启"
+        },
+        {
+          "id": "ch12_s3_turbulence",
+          "order": 3,
+          "pose": "praise_the_sun",
+          "uiElements": {
+            "fields": ["阵风强度", "阵风尺度", "阵风速度"],
+            "source": "forms.editors.model.physics.wind_turbulence / wind_turbulence_scale / wind_turbulence_speed"
+          },
+          "instruction": "依次调整 **阵风强度** / **阵风尺度** / **阵风速度**",
+          "userWillSee": "阵风强度决定风的忽大忽小程度；尺度决定气流团的大小；速度决定阵风变化的快慢",
+          "hint": "纯稳定风看起来很假。加一点阵风（强度不用大）立刻自然很多"
+        },
+        {
+          "id": "ch12_s4_collisions",
+          "order": 4,
+          "pose": "crossed_arms",
+          "uiElements": {
+            "checkbox": "世界碰撞",
+            "field": "碰撞半径",
+            "source": "forms.editors.model.physics.collisions / radius"
+          },
+          "instruction": "勾选 **世界碰撞** → 设置 **碰撞半径** → 走到墙边或蹲下",
+          "userWillSee": "骨链不再穿过方块，会被墙面和地面挡住；碰撞半径决定骨骼的粗细判定",
+          "hint": "碰撞半径太小会穿模，太大会看起来悬空。从小往大调到刚好不穿为止"
+        },
+        {
+          "id": "ch12_s5_attach_target",
+          "order": 5,
+          "pose": "thinking_2",
+          "uiElements": {
+            "field": "附加末端：%s",
+            "source": "forms.editors.model.physics.target"
+          },
+          "instruction": "在 **附加末端** 一栏指定一个目标",
+          "userWillSee": "骨链末端被固定到指定目标上，形成两端受约束的链条（如挂在两点之间的绳索）",
+          "hint": "做锁链、吊桥、连接两个物体的绳子用它；不指定时末端是自由摆动的"
+        },
+        {
+          "id": "ch12_s6_debug_overlay",
+          "order": 6,
+          "pose": "huh",
+          "uiElements": {
+            "checkbox": "显示调试叠加层",
+            "key": "F5（Dashboard 内默认，同时开关 IK 与物理调试）",
+            "source": "forms.editors.model.physics.debug + Keys.dashboard.toggle_debug"
+          },
+          "instruction": "勾选 **显示调试叠加层**，或在 Dashboard 内按 **F5**（默认）",
+          "userWillSee": "画出骨链的碰撞球体、力的方向箭头、约束连线",
+          "hint": "调参数时开着，正式录制前务必关掉，否则调试图形会被录进视频"
+        }
+      ]
+    },
+    {
+      "id": "ch13_bone_constraints",
+      "order": 13,
+      "titleZh": "骨骼约束：给关节上一道保险",
+      "labelDomains": ["forms_model"],
+      "steps": [
+        {
+          "id": "ch13_s1_why_constraints",
+          "order": 1,
+          "pose": "thinking_2",
+          "uiElements": {
+            "problem": "IK 或物理可能把关节掰到不可能的角度",
+            "solution": "角度限制"
+          },
+          "instruction": "理解用途（无需操作）：骨骼约束不是「跟随某个目标」，而是**限制关节能转到的角度范围**",
+          "userWillSee": "（认知铺垫步骤）",
+          "hint": "这是本章最容易误解的地方：约束 = 角度上下限，不是 Look At 那种跟随"
+        },
+        {
+          "id": "ch13_s2_open_tab",
+          "order": 2,
+          "pose": "crossed_arms",
+          "uiElements": {
+            "tab": "骨骼约束",
+            "sections": ["骨骼", "限制设置"],
+            "source": "forms.editors.model.constraints.title / bones / settings"
+          },
+          "instruction": "切换到 **骨骼约束** 标签 → 观察 **骨骼** 列表与 **限制设置** 区域",
+          "userWillSee": "左侧骨骼列表，右侧是所选骨骼的角度限制参数",
+          "hint": "约束是按骨骼单独设置的，不是全局开关"
+        },
+        {
+          "id": "ch13_s3_enable_limit",
+          "order": 3,
+          "pose": "praise_the_sun",
+          "uiElements": {
+            "checkbox": "启用角度限制",
+            "fields": ["最小角度", "最大角度"],
+            "source": "forms.editors.model.constraints.enabled / min / max"
+          },
+          "instruction": "选中肘部或膝部骨骼 → 勾选 **启用角度限制** → 设置 **最小角度** 与 **最大角度**",
+          "userWillSee": "该骨骼只能在设定的角度区间内旋转，超出范围会被钳制住",
+          "hint": "人类肘部大约 0° 到 150°：设成这个范围，IK 就不会把胳膊反折了"
+        },
+        {
+          "id": "ch13_s4_apply_to_children",
+          "order": 4,
+          "pose": "huh",
+          "uiElements": {
+            "checkbox": "应用于子骨骼",
+            "source": "forms.editors.model.constraints.apply_to_children"
+          },
+          "instruction": "勾选 **应用于子骨骼**",
+          "userWillSee": "该角度限制同时作用到所有下级骨骼，不用逐个设置",
+          "hint": "给整条手指链设同样的弯曲上限时很省事"
+        },
+        {
+          "id": "ch13_s5_with_ik",
+          "order": 5,
+          "pose": "tada_1",
+          "uiElements": {
+            "combo": "约束 + IK 配合使用"
+          },
+          "instruction": "在已启用 IK 的手臂上，给肘部加角度限制 → 再把 IK 目标拖到极端位置",
+          "userWillSee": "IK 仍然努力让手到达目标，但肘部不会再反折成不可能的角度",
+          "hint": "这是约束最大的价值：给 IK 兜底。IK 只管末端到位，约束保证中间关节合理"
+        },
+        {
+          "id": "ch13_s6_save",
+          "order": 6,
+          "pose": "bow",
+          "uiElements": {
+            "buttons": ["保存约束", "拷贝约束", "粘贴约束", "重置约束"],
+            "source": "forms.editors.model.constraints.context.*"
+          },
+          "instruction": "右键 → **保存约束**（命名）；再试 **拷贝约束** / **粘贴约束** / **重置约束**",
+          "userWillSee": "约束配置存为可复用条目，可粘到其他形态",
+          "hint": "人形骨架的关节限制是通用的，存一份「人类关节」配置反复用"
+        }
+      ]
+    },
+    {
+      "id": "ch14_shape_keys_glint",
+      "order": 14,
+      "titleZh": "形态键与附魔光效",
+      "labelDomains": ["forms_pose"],
+      "steps": [
+        {
+          "id": "ch14_s1_shape_keys_concept",
+          "order": 1,
+          "pose": "thinking_2",
+          "uiElements": {
+            "title": "形态键",
+            "source": "shape_keys.title"
+          },
+          "instruction": "切到 **姿势** 标签，找到 **形态键** 区域（若模型支持）",
+          "userWillSee": "显示该模型定义的形态键滑块列表，每个滑块从 0 到 1",
+          "hint": "形态键（shape key）是模型作者预先做好的变形，比如表情、肌肉膨胀；不是靠旋转骨骼实现的"
+        },
+        {
+          "id": "ch14_s2_drive_shape_key",
+          "order": 2,
+          "pose": "praise_the_sun",
+          "uiElements": {
+            "action": "拖动形态键滑块"
+          },
+          "instruction": "拖动任意 **形态键** 滑块从 0 到 1",
+          "userWillSee": "模型按该形态键定义的方向变形（如嘴张开、眉毛上扬），与骨骼旋转互不干扰",
+          "hint": "形态键可以打关键帧（见后面关键帧章节），做表情动画就靠它"
+        },
+        {
+          "id": "ch14_s3_shape_key_presets",
+          "order": 3,
+          "pose": "crossed_arms",
+          "uiElements": {
+            "buttons": ["保存形态键", "拷贝形态键", "粘贴形态键", "重置形态键"],
+            "source": "shape_keys.context.*"
+          },
+          "instruction": "调好一组形态键 → 右键 → **保存形态键**（命名，如 smile）",
+          "userWillSee": "这组数值存为条目，之后可 **粘贴形态键** 一键复原",
+          "hint": "把常用表情各存一个条目：smile / angry / surprised，拍片时直接调"
+        },
+        {
+          "id": "ch14_s4_glint_modes",
+          "order": 4,
+          "pose": "huh",
+          "uiElements": {
+            "field": "附魔",
+            "modes": ["无", "整体", "边缘", "原版"],
+            "tooltip": "该骨骼的附魔光效：整体覆膜、边缘光或 Minecraft 原版附魔",
+            "source": "pose.context.glint-transform / glint-off / glint-full / glint-edge / glint-vanilla"
+          },
+          "instruction": "右键某根骨骼 → 找到 **附魔** → 依次切换 **无** / **整体** / **边缘** / **原版** 四种模式",
+          "userWillSee": "无=无光效；整体=整根骨骼覆一层流动光膜；边缘=只在轮廓发光；原版=Minecraft 附魔闪光效果",
+          "hint": "边缘光很适合做角色高亮、被选中提示；整体适合做魔法/能量态"
+        },
+        {
+          "id": "ch14_s5_glint_color_speed",
+          "order": 5,
+          "pose": "tada_1",
+          "uiElements": {
+            "fields": ["附魔层", "速度"],
+            "tooltips": {
+              "color": "附魔光效的颜色，其中不透明度控制光效的强弱",
+              "speed": "附魔光效在骨骼上流动的速度。负值反向流动，为零则静止"
+            },
+            "source": "pose.context.glint-layer / glint-speed / glint-color-tooltip / glint-speed-tooltip"
+          },
+          "instruction": "设置附魔的颜色（注意**不透明度控制光效强弱**）→ 调整 **速度**，试试负值和 0",
+          "userWillSee": "颜色决定光效色调，不透明度决定亮度；速度为正向前流动，负值反向流动，0 则完全静止",
+          "hint": "速度设 0 + 边缘模式 = 静态描边；速度设负 = 能量倒流的诡异感"
+        },
+        {
+          "id": "ch14_s6_form_level_glint",
+          "order": 6,
+          "pose": "bow",
+          "uiElements": {
+            "field": "附魔（形态级）",
+            "tooltip": "该形态的附魔光效：整体覆膜、边缘光或 Minecraft 原版附魔",
+            "source": "forms.editors.general.glint-tooltip"
+          },
+          "instruction": "切到 **常规** 标签，找到形态级别的 **附魔** 设置，与刚才的骨骼级设置对比",
+          "userWillSee": "形态级附魔一次作用于整个形态；骨骼级附魔只作用于单根骨骼，可以做局部发光",
+          "hint": "整体发光用形态级；只让武器或眼睛发光用骨骼级"
+        }
+      ]
+    },
+    {
+      "id": "ch15_actions_states",
+      "order": 15,
+      "titleZh": "动作与动画状态：按键触发的动作",
+      "labelDomains": ["forms_actions"],
+      "steps": [
+        {
+          "id": "ch15_s1_open_actions",
+          "order": 1,
+          "pose": "wave_1",
+          "uiElements": {
+            "tab": "动作",
+            "source": "forms.editors.actions.title / forms.editors.model.actions"
+          },
+          "instruction": "变成一个带动画的模型 → 切换到 **动作** 标签",
+          "userWillSee": "显示该模型可用的动画列表与播放参数",
+          "hint": "「动作」这个标签只对含有动画数据的模型有意义"
+        },
+        {
+          "id": "ch15_s2_animations_list",
+          "order": 2,
+          "pose": "thinking_2",
+          "uiElements": {
+            "field": "动画",
+            "source": "forms.editors.actions.animations"
+          },
+          "instruction": "查看 **动画** 列表，选择其中一个",
+          "userWillSee": "列出模型内定义的所有动画名称，选中后可配置其播放方式",
+          "hint": "动画由模型文件自带，不是在 BBS 里画的；BBS 负责决定什么时候播、怎么播"
+        },
+        {
+          "id": "ch15_s3_speed_loops",
+          "order": 3,
+          "pose": "praise_the_sun",
+          "uiElements": {
+            "fields": ["速度", "循环", "刻"],
+            "source": "forms.editors.actions.speed / loops / tick"
+          },
+          "instruction": "调整 **速度** → 开关 **循环** → 观察 **刻** 数值",
+          "userWillSee": "速度改变播放快慢；开启循环后动画反复播放，关闭则播一次停住；刻显示当前播放进度",
+          "hint": "1 秒 = 20 刻。速度 0.5 = 慢放一半，2.0 = 两倍速"
+        },
+        {
+          "id": "ch15_s4_fade",
+          "order": 4,
+          "pose": "huh",
+          "uiElements": {
+            "field": "淡入淡出",
+            "source": "forms.editors.actions.fade"
+          },
+          "instruction": "调整 **淡入淡出** 数值，然后切换动画观察过渡",
+          "userWillSee": "数值越大，两个动画之间的切换越平滑；为 0 时是硬切",
+          "hint": "硬切在动作片里有冲击力，但日常动作切换建议留一点淡入淡出，否则会「跳帧」"
+        },
+        {
+          "id": "ch15_s5_states_editor",
+          "order": 5,
+          "pose": "crossed_arms",
+          "uiElements": {
+            "key": "反斜杠（forms 分类默认，open_states_editor）",
+            "source": "Keys.forms.open_states_editor"
+          },
+          "instruction": "在形态编辑器里按 **反斜杠** 键（默认）打开动画状态编辑器",
+          "userWillSee": "打开状态编辑器面板，可以管理多个动画状态及其触发条件",
+          "hint": "这个键属于 forms 分类，只在形态编辑器里有效；按 F9 可以确认你的实际绑定"
+        },
+        {
+          "id": "ch15_s6_trigger_test",
+          "order": 6,
+          "pose": "tada_1",
+          "uiElements": {
+            "flow": "设置状态热键 → 关闭 Dashboard → 游戏内按键触发"
+          },
+          "instruction": "给某个状态绑定一个热键 → 按 **数字键 0** 关闭 Dashboard → 在游戏里按那个键",
+          "userWillSee": "角色立即播放该状态的动画，播完按设定回到默认状态",
+          "hint": "别绑已占用的键：0 / B / 句号 / 右Ctrl / 右Alt / 右Shift / F4 / F6 / Y / Home"
+        }
+      ]
+    },
+    {
+      "id": "ch16_film_overview",
+      "order": 16,
+      "titleZh": "影片编辑器总览：界面、布局与第一个影片",
+      "labelDomains": ["film_core"],
+      "steps": [
+        {
+          "id": "ch16_s1_open_film",
+          "order": 1,
+          "pose": "wave_1",
+          "uiElements": {
+            "panel": "影片",
+            "source": "UIDashboard.java:312 registerPanel(UIFilmPanel, FILM_TITLE, Icons.FILM)"
+          },
+          "instruction": "按 **数字键 0** 打开 Dashboard → 点击左侧 **影片**（胶片图标）",
+          "userWillSee": "影片编辑器：上方是摄像机剪辑轨道，下方是回放与关键帧区域，四周有若干小面板",
+          "hint": "影片面板是 Dashboard 的默认面板，打开 Dashboard 时通常已经在这里"
+        },
+        {
+          "id": "ch16_s2_cycle_editors",
+          "order": 2,
+          "pose": "thinking_2",
+          "uiElements": {
+            "key": "反引号 `（film_controller 分类默认，cycle_editors）",
+            "label": "循环切换编辑器",
+            "source": "Keys.film_controller.cycle_editors + film.keys.cycle_editors"
+          },
+          "instruction": "在影片面板内反复按 **反引号 `**（默认）",
+          "userWillSee": "在摄像机剪辑编辑器与回放编辑器之间循环切换，当前激活的编辑器会占据主区域",
+          "hint": "影片面板里其实装了多个编辑器，这个键是它们之间的快速通道"
+        },
+        {
+          "id": "ch16_s3_layout",
+          "order": 3,
+          "pose": "crossed_arms",
+          "uiElements": {
+            "items": ["布局预设", "锁定布局", "解锁布局", "重置布局", "将布局与编辑器绑定", "交换小面板"],
+            "source": "film.layout_presets / layout_lock / layout_unlock / layout_reset / layout_bind_to_editor / swap_small_panels"
+          },
+          "instruction": "找到布局相关菜单 → 试用 **布局预设** → 拖动面板边界改变大小 → 再点 **重置布局**",
+          "userWillSee": "布局预设一键切换常用面板排布；锁定布局后面板不能被误拖；重置布局恢复默认",
+          "hint": "「将布局与编辑器绑定」很实用：不同编辑器记住各自的布局，切过去自动套用"
+        },
+        {
+          "id": "ch16_s4_new_tab",
+          "order": 4,
+          "pose": "praise_the_sun",
+          "uiElements": {
+            "key": "Ctrl + N（dashboard 分类默认，new_tab）",
+            "tabKeys": ["Ctrl + Tab 下一个标签", "Shift + Ctrl + Tab 上一个标签"],
+            "source": "Keys.dashboard.new_tab + Keys.film_controller.next_dock_tab / prev_dock_tab"
+          },
+          "instruction": "按 **Ctrl + N**（默认）新建影片 → 命名 → 再按一次新建第二个 → 用 **Ctrl + Tab** 在标签间切换",
+          "userWillSee": "顶部出现多个影片标签，可以同时打开多个影片来回切换",
+          "hint": "同时开两个影片很有用：一个当参考，一个在做"
+        },
+        {
+          "id": "ch16_s5_film_details",
+          "order": 5,
+          "pose": "huh",
+          "uiElements": {
+            "button": "详情",
+            "fields": ["影片详情", "名称：%s", "描述：", "时长：%s", "创建时间：%s", "用时：%s", "回放：%d | 剪辑：%d"],
+            "source": "film.details.*"
+          },
+          "instruction": "点击 **详情** 按钮",
+          "userWillSee": "弹出 **影片详情**：名称、描述、时长、创建时间、累计用时、以及「回放 N | 剪辑 M」的统计",
+          "hint": "「用时」会累计你在这个影片上花的时间，做长片时可以看到真实投入"
+        },
+        {
+          "id": "ch16_s6_player_settings",
+          "order": 6,
+          "pose": "thinking_2",
+          "uiElements": {
+            "panel": "配置玩家",
+            "button": "应用至玩家",
+            "source": "film.player_settings-title / film.apply_player_settings_to_player"
+          },
+          "instruction": "打开 **配置玩家** 面板 → 查看可配置项 → 点击 **应用至玩家**",
+          "userWillSee": "影片级别的玩家设置被应用到你当前的角色上",
+          "hint": "拍片时常用：让自己的角色状态和影片里设定的一致，方便对位"
+        },
+        {
+          "id": "ch16_s7_save_undo",
+          "order": 7,
+          "pose": "bow",
+          "uiElements": {
+            "keys": {"save": "Ctrl + S（editor 分类默认）", "undo": "Ctrl + Z", "redo": "Ctrl + Y"},
+            "history": "撤回历史",
+            "source": "Keys.editor.save / undo / redo + film.history-title"
+          },
+          "instruction": "做一个改动 → 按 **Ctrl + Z** 撤销 → 按 **Ctrl + Y** 重做 → 按 **Ctrl + S** 保存 → 打开 **撤回历史** 查看记录",
+          "userWillSee": "撤销/重做逐步回退与前进；撤回历史面板列出所有可回溯的操作节点",
+          "hint": "注意 Ctrl+S 在 dashboard 分类里是「切换任务栏自动隐藏」，在 editor 分类里才是保存 —— 具体生效哪个取决于当前焦点面板，按 F9 可查"
+        }
+      ]
+    },
+    {
+      "id": "ch17_keyframe_basics",
+      "order": 17,
+      "titleZh": "关键帧基础：插入、选择与移动",
+      "labelDomains": ["keyframes"],
+      "steps": [
+        {
+          "id": "ch17_s1_insert_frame",
+          "order": 1,
+          "pose": "wave_1",
+          "uiElements": {
+            "key": "I（film_controller 分类默认，insert_frame）",
+            "labels": ["插入关键帧", "选择要插入的关键帧组："],
+            "source": "Keys.film_controller.insert_frame + film.controller.insert_frame-title / insert_frame-description"
+          },
+          "instruction": "在影片编辑器里把时间光标停在某个位置 → 按 **I** 键（默认）",
+          "userWillSee": "弹出 **插入关键帧** 面板，提示「选择要插入的关键帧组：」，选定后在当前刻插入关键帧",
+          "hint": "注意：不是 K 键。插入关键帧的默认键是 I，而且会先问你要插入哪一组"
+        },
+        {
+          "id": "ch17_s2_recording_groups",
+          "order": 2,
+          "pose": "thinking_2",
+          "uiElements": {
+            "groups": {
+              "所有组": "1",
+              "左摇杆": "2",
+              "右摇杆": "3",
+              "触发键": "4",
+              "附加 1": "5",
+              "附加 2": "6",
+              "仅位置": "7",
+              "仅旋转": "8",
+              "位置 + 旋转": "9",
+              "变换": "0",
+              "外部录制": "R"
+            },
+            "source": "film.groups.* + Keys.recording_groups.*"
+          },
+          "instruction": "在插入关键帧的弹窗里，用数字键 **1**-**9**、**0**、**R** 快速选择关键帧组",
+          "userWillSee": "每个数字对应一个组：1=所有组、7=仅位置、8=仅旋转、9=位置+旋转、0=变换、R=外部录制",
+          "hint": "只想改位置不动旋转时选「仅位置」，避免把已调好的朝向覆盖掉"
+        },
+        {
+          "id": "ch17_s3_select_keyframes",
+          "order": 3,
+          "pose": "crossed_arms",
+          "uiElements": {
+            "keys": {
+              "全选": "Ctrl + A",
+              "选择所有轨道": "Ctrl + Shift + A",
+              "选择左侧": "Ctrl + 逗号",
+              "选择右侧": "Ctrl + 句号",
+              "选择此前的关键帧": "左方括号 [",
+              "选择此后的关键帧": "右方括号 ]",
+              "选择相同的值": "L"
+            },
+            "source": "Keys.keyframes.select_* + keyframes.keys.select_*"
+          },
+          "instruction": "在关键帧编辑器里依次试用：**Ctrl + A** 全选 → **Ctrl + 逗号** 选择左侧 → **右方括号** 选择此后的关键帧 → **L** 选择相同的值",
+          "userWillSee": "被选中的关键帧高亮显示；不同快捷键按不同规则批量选取",
+          "hint": "「选择相同的值」（L）在清理重复关键帧时特别好用"
+        },
+        {
+          "id": "ch17_s4_track_scope",
+          "order": 4,
+          "pose": "huh",
+          "uiElements": {
+            "items": ["编辑轨道 %s", "退出轨道", "关键帧轨道", "肢体轨道"],
+            "keys": {"选择当前轨道靠左侧的内容": "Ctrl + Shift + 逗号", "选择当前轨道靠右侧的内容": "Ctrl + Shift + 句号"},
+            "source": "keyframes.context.edit_track / exit_track + film.replay.filter_sheets-title + forms.editors.general.bone_tracks"
+          },
+          "instruction": "右键某条轨道 → **编辑轨道** 进入单轨模式 → 操作后再选 **退出轨道**",
+          "userWillSee": "进入单轨模式后只显示该轨道的关键帧，避免误选其他轨道；退出后恢复全部轨道",
+          "hint": "轨道太多时先进单轨模式再编辑，能大幅减少误操作"
+        },
+        {
+          "id": "ch17_s5_move_and_round",
+          "order": 5,
+          "pose": "praise_the_sun",
+          "uiElements": {
+            "items": ["关键帧刻数取整", "均匀分布关键帧", "刻", "数值"],
+            "keys": {"堆叠关键帧": "B", "均匀分布关键帧": "Alt + B", "缩放时间": "V"},
+            "source": "keyframes.context.round / spread + keyframes.tick / value + Keys.keyframes.stack_keyframes / spread / scale_time"
+          },
+          "instruction": "选中多个关键帧 → 右键 → **关键帧刻数取整** → 再试 **均匀分布关键帧**（默认 Alt + B）→ 按 **V** 缩放时间",
+          "userWillSee": "取整把关键帧对齐到整数刻；均匀分布让选中的关键帧等间距排列；缩放时间整体拉伸或压缩时间跨度",
+          "hint": "手动拖出来的关键帧常落在小数刻上，取整后时间轴更整齐、便于对齐音频"
+        },
+        {
+          "id": "ch17_s6_copy_paste_remove",
+          "order": 6,
+          "pose": "thinking_2",
+          "uiElements": {
+            "items": ["拷贝关键帧", "粘贴拷贝的关键帧", "移除关键帧", "简化", "翻转关键帧"],
+            "keys": {"翻转": "Ctrl + F", "删除": "Delete"},
+            "source": "keyframes.context.copy / paste / remove / simplify / flip + Keys.keyframes.flip"
+          },
+          "instruction": "选中若干关键帧 → 右键 **拷贝关键帧** → 移动光标 → **粘贴拷贝的关键帧**；再试 **简化** 与 **翻转关键帧**（Ctrl + F）",
+          "userWillSee": "拷贝粘贴可复用一段动作；简化会删掉冗余关键帧但保持曲线形状；翻转让动作时间顺序倒转",
+          "hint": "「简化」在录制后清理密集关键帧时非常有用：录制会产生每刻一个关键帧，简化后文件小、曲线好调"
+        },
+        {
+          "id": "ch17_s7_maximize",
+          "order": 7,
+          "pose": "bow",
+          "uiElements": {
+            "item": "查看所有关键帧",
+            "key": "Home（keyframes 分类默认，maximize）",
+            "source": "keyframes.context.maximize + Keys.keyframes.maximize"
+          },
+          "instruction": "按 **Home** 键（默认）或右键 → **查看所有关键帧**",
+          "userWillSee": "视图自动缩放到刚好容纳全部关键帧，一眼看到整体分布",
+          "hint": "编辑时经常缩放到局部，迷路了就按 Home 回到全局视图"
+        }
+      ]
+    },
+    {
+      "id": "ch18_keyframe_interpolation",
+      "order": 18,
+      "titleZh": "关键帧插值：42 种曲线怎么选",
+      "labelDomains": ["keyframes", "interpolations"],
+      "steps": [
+        {
+          "id": "ch18_s1_what_is_interp",
+          "order": 1,
+          "pose": "thinking_2",
+          "uiElements": {
+            "concept": "两个关键帧之间的过渡方式",
+            "setting": "默认插值",
+            "comment": "在空白位置手动创建关键帧时使用的插值方式（此前固定为线性）。在已有关键帧旁创建的关键帧仍会继承相邻关键帧的插值方式；录制和烘焙生成的关键帧不受影响。",
+            "source": "config.editor.keyframe_default_interpolation + -comment"
+          },
+          "instruction": "理解概念（无需操作）：插值决定两个关键帧之间的值怎么变化 —— 匀速、由慢到快、还是带回弹",
+          "userWillSee": "（认知铺垫步骤）",
+          "hint": "设置里有 **默认插值** 项。注意它的说明：在已有关键帧旁新建的关键帧会**继承邻居的插值**，录制和烘焙产生的关键帧不受这个默认值影响"
+        },
+        {
+          "id": "ch18_s2_toggle_interp",
+          "order": 2,
+          "pose": "crossed_arms",
+          "uiElements": {
+            "key": "Shift + T（keyframes 分类默认，interp）",
+            "label": "切换插值选择",
+            "source": "Keys.keyframes.interp + keyframes.keys.toggle_interp"
+          },
+          "instruction": "选中一个关键帧 → 按 **Shift + T**（默认）",
+          "userWillSee": "弹出插值选择器，列出全部可用插值类型",
+          "hint": "这是最快的改插值方式，比右键找菜单快"
+        },
+        {
+          "id": "ch18_s3_basic_group",
+          "order": 3,
+          "pose": "praise_the_sun",
+          "uiElements": {
+            "types": {"线性": "interpolations.linear", "常量": "interpolations.constant", "阶梯": "interpolations.step"},
+            "source": "interpolations.*"
+          },
+          "instruction": "给同一段动作依次套用 **线性** / **常量** / **阶梯** 三种插值，每次都播放看效果",
+          "userWillSee": "线性=匀速直线变化；常量=保持前一个值直到下一帧突变；阶梯=分段跳变",
+          "hint": "常量和阶梯适合做机械感、定格、闪现；线性是最基础的匀速运动"
+        },
+        {
+          "id": "ch18_s4_smooth_group",
+          "order": 4,
+          "pose": "huh",
+          "uiElements": {
+            "types": {"三次曲线": "cubic", "埃尔米特": "hermite", "贝塞尔": "bezier", "B-样条": "bspline", "自动": "auto", "自动钳制": "auto_clamped"},
+            "source": "interpolations.cubic / hermite / bezier / bspline / auto / auto_clamped"
+          },
+          "instruction": "依次试用 **三次曲线** / **埃尔米特** / **贝塞尔** / **B-样条** / **自动** / **自动钳制**",
+          "userWillSee": "这一族都产生平滑曲线：自动会替你推算合理的曲线形状；自动钳制在极值处不过冲；贝塞尔可以手动拉手柄精细控制",
+          "hint": "日常动作首选 **自动**；不想让数值冲出设定范围（如不希望缩放变成负数）用 **自动钳制**；要精雕细琢用 **贝塞尔**"
+        },
+        {
+          "id": "ch18_s5_easing_family",
+          "order": 5,
+          "pose": "thinking_2",
+          "uiElements": {
+            "families": ["正弦", "二次", "三次", "四次", "五次", "指数", "圆曲线"],
+            "variants": ["淡入", "淡出", "淡入/淡出"],
+            "examples": {"三次淡入": "cubic_in", "三次淡出": "cubic_out", "三次淡入/淡出": "cubic_inout", "指数淡出": "exp_out", "圆曲线淡入": "circle_in"},
+            "source": "interpolations.{sine,quad,cubic,quart,quint,exp,circle}_{in,out,inout}"
+          },
+          "instruction": "对同一段位移分别套用 **三次淡入** / **三次淡出** / **三次淡入/淡出**，再换成 **指数淡出** 对比",
+          "userWillSee": "淡入=起步慢后加速；淡出=起步快后减速；淡入/淡出=两头慢中间快。次数越高（二次→五次→指数）加减速越剧烈",
+          "hint": "摄像机推进用**淡入/淡出**最自然（起步和停止都不突兀）；物体落地用**淡出**；启动用**淡入**"
+        },
+        {
+          "id": "ch18_s6_special_family",
+          "order": 6,
+          "pose": "tada_1",
+          "uiElements": {
+            "types": {"回弹": "back_in / back_out / back_inout", "弹跳": "bounce_in / bounce_out / bounce_inout", "弹性": "elastic_in / elastic_out / elastic_inout"},
+            "source": "interpolations.back_* / bounce_* / elastic_*"
+          },
+          "instruction": "依次试用 **回弹淡出** / **弹跳淡出** / **弹性淡出**",
+          "userWillSee": "回弹=到位前先反向一点再冲过去；弹跳=像球落地反复弹几下；弹性=到位后来回震荡衰减",
+          "hint": "这三种很抓眼但容易滥用。UI 弹出用回弹，物体掉落用弹跳，果冻/橡皮效果用弹性"
+        },
+        {
+          "id": "ch18_s7_bezier_handles",
+          "order": 7,
+          "pose": "bow",
+          "uiElements": {
+            "handles": ["左手柄", "右手柄"],
+            "source": "keyframes.left_handle / right_handle"
+          },
+          "instruction": "把某个关键帧设为 **贝塞尔** 插值 → 在图表视图里拖动它的 **左手柄** 与 **右手柄**",
+          "userWillSee": "手柄改变曲线进出该关键帧的斜率，可以做出任意自定义的加减速曲线",
+          "hint": "左手柄管「进入这一帧」的曲线，右手柄管「离开这一帧」的曲线；两边独立调可做出不对称的加减速"
+        }
+      ]
+    }
+  ]
+}

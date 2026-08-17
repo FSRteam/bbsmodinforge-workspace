@@ -2845,6 +2845,69 @@ finally
 }
 ```
 
+## Scenario: Windows executable publication and cleanup
+
+### 1. Scope / Trigger
+
+Apply when a worker downloads, validates, replaces, moves, or deletes an executable that it has
+just launched, especially when publishing through a staging directory on Windows.
+
+### 2. Signatures
+
+- Validation owns the spawned `Process` until it has exited or a bounded forced-termination wait
+  has completed.
+- Managed publication uses `<target>.installing` followed by a same-filesystem directory move.
+- Retry only transient `AccessDeniedException`; other I/O failures propagate immediately.
+
+### 3. Contracts
+
+- A timed-out validation process is destroyed, forcibly destroyed when necessary, and waited for
+  before its executable is moved or removed.
+- Directory move and managed cleanup may retry a small bounded number of times because Windows or
+  a scanner can retain a short-lived executable handle after process exit.
+- Cleanup failure is secondary. It is logged or attached to the primary validation/publication
+  failure and must never replace that primary failure classification.
+- Retry stays on the worker thread and does not block the Minecraft client thread.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Executable handle clears during the retry window | Complete publication without redownloading. |
+| Access remains denied after all attempts | Preserve the exact denied path/message and leave resumable state. |
+| Validation fails and staging cleanup is also denied | Report validation as primary; record cleanup separately. |
+| Non-access I/O failure occurs | Fail immediately without treating it as a transient lock. |
+
+### 5. Good / Base / Bad Cases
+
+- Good: a child process holds the candidate briefly; publication retries and succeeds after exit.
+- Base: no handle remains; the first atomic move succeeds with no added delay.
+- Bad: immediately move or delete a just-launched executable, then report cleanup's
+  `AccessDeniedException` instead of the original validation result.
+
+### 6. Tests Required
+
+- Launch a real child process that holds the candidate file open, then assert managed publication
+  succeeds after the handle is released.
+- Time out a real child process and assert the validation helper leaves it no longer alive.
+- Run the owning focused regression plus common/client compilation.
+
+### 7. Wrong vs Correct
+
+Wrong:
+
+```java
+validate(candidate);
+Files.move(staging, target, StandardCopyOption.ATOMIC_MOVE);
+```
+
+Correct:
+
+```java
+validateAndStopProcess(candidate);
+moveWithBoundedAccessDeniedRetry(staging, target);
+```
+
 ## Code Review Checklist
 
 <!-- What reviewers should check -->

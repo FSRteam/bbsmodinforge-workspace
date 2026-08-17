@@ -1,0 +1,384 @@
+{
+  "_meta": {
+    "purpose": "ch28-ch31 骨架（第五幕：摄像机剪辑 —— 从手动到电影）",
+    "labelSource": "ui-domains.json",
+    "keybindSource": "keybinds-verified.json",
+    "clipsSource": "clips-verified.json",
+    "chapterTarget": "每章 1000+ 字",
+    "criticalFinding": "图层合成是管道式：按层升序在同一个 position 上依次施加；每个剪辑自行决定是「叠加分量」还是「重写分量」。修饰型剪辑（摇晃/看/阻力）必须放在主运动（静止/路径/关键帧）之上的层，否则会「没效果」—— 这是新手最常踩的坑。",
+    "status": "skeleton_in_progress"
+  },
+  "chapters": [
+    {
+      "id": "ch28_camera_clips_intro",
+      "order": 28,
+      "titleZh": "摄像机剪辑入门：从静止到路径",
+      "labelDomains": [
+        "film_clips",
+        "camera"
+      ],
+      "steps": [
+        {
+          "id": "ch28_s1_switch_to_camera",
+          "order": 1,
+          "pose": "thinking_2",
+          "dialogueMale": "Film 面板顶部有三个编辑器切换按钮。点击摄像机图标，打开摄像机编辑器。",
+          "dialogueFemale": "Film 面板顶部有三个小图标喵～点最左边的 **摄像机图标**，切换到摄像机编辑器～",
+          "instruction": "在 Film 面板顶部工具栏，点击最左侧的 **摄像机图标**（CAMERA）",
+          "userWillSee": "右侧显示摄像机剪辑时间线，顶部标签栏消失（摄像机编辑器没有标签分页），左上角 **+ 添加剪辑**",
+          "hint": "三个编辑器：摄像机编辑器（控制镜头）、回放编辑器（控制角色）、行为编辑器（控制游戏动作）",
+          "uiElements": {
+            "button": "摄像机图标（顶部工具栏最左）",
+            "icon": "CAMERA",
+            "source": "UIFilmPanel.java:240 openCameraEditor"
+          }
+        },
+        {
+          "id": "ch28_s2_add_idle_clip",
+          "order": 2,
+          "pose": "crossed_arms",
+          "dialogueMale": "点击添加剪辑，选择静止。这是最简单的摄像机剪辑，相机固定不动。",
+          "dialogueFemale": "点 **+ 添加剪辑** 喵！选 **静止**，这是最基础的镜头，相机就定在一个地方不动～",
+          "instruction": "点击左上角 **+ 添加剪辑** → 在类型选择器里选择 **静止** → 点击时间线把剪辑放到 0 刻位置",
+          "userWillSee": "时间线上新增一个静止剪辑块，默认长度 10 刻；右侧面板显示配置：**位置**（X/Y/Z）、**旋转**（偏航/俯仰）、**FOV**（视野）",
+          "hint": "静止剪辑的位置/旋转可以手动输入坐标，也可以用右键菜单的「从当前相机复制」",
+          "uiElements": {
+            "clipType": "静止",
+            "fields": [
+              "X",
+              "Y",
+              "Z",
+              "偏航",
+              "俯仰",
+              "FOV"
+            ],
+            "source": "UIIdleClip.java + clips-verified.json"
+          }
+        },
+        {
+          "id": "ch28_s3_copy_from_camera",
+          "order": 3,
+          "pose": "huh",
+          "dialogueMale": "右键 X 输入框，选择从当前相机复制。相机的位置和朝向会填入剪辑。",
+          "dialogueFemale": "右键 **X** 那个输入框喵，选 **从当前相机复制**，你现在看的位置和角度就会自动填进去～",
+          "instruction": "在游戏里调整到一个好的观察视角 → 在静止剪辑的配置面板里，右键 **X** 输入框 → 选择 **从当前相机复制**",
+          "userWillSee": "X/Y/Z/偏航/俯仰/FOV 六个字段自动填入当前摄像机的值",
+          "hint": "这个右键菜单在所有位置/旋转字段都有，是最快速的取景方式"
+        },
+        {
+          "id": "ch28_s4_play_camera",
+          "order": 4,
+          "pose": "praise_the_sun",
+          "dialogueMale": "按右 Ctrl 播放影片。摄像机会跳到剪辑设定的位置。",
+          "dialogueFemale": "按 **右 Ctrl** 播放喵！你的视角会跳到刚才设定的那个位置～",
+          "instruction": "按 **右 Ctrl** 播放影片",
+          "userWillSee": "摄像机立即移动到静止剪辑设定的位置和朝向，视野设为 FOV 值；播放期间相机保持静止",
+          "hint": "摄像机剪辑在播放影片时生效，编辑时不影响你的视角"
+        },
+        {
+          "id": "ch28_s5_path_clip",
+          "order": 5,
+          "pose": "crossed_arms",
+          "dialogueMale": "静止太单调。添加路径剪辑，让相机沿多个点移动。",
+          "dialogueFemale": "只静止太无聊了喵～试试 **路径** 剪辑，可以让相机沿着好几个点移动～",
+          "instruction": "删除静止剪辑（右键 → **移除**）→ 添加 **路径** 剪辑到时间线 0 刻",
+          "userWillSee": "右侧面板显示路径剪辑配置：**路径点** 列表（初始为空）、底部 **+ 添加路径点** 按钮",
+          "hint": "路径剪辑是最常用的摄像机运动方式，比关键帧简单、比静止灵活"
+        },
+        {
+          "id": "ch28_s6_add_path_points",
+          "order": 6,
+          "pose": "tada_1",
+          "dialogueMale": "点击添加路径点，从当前相机复制。移动视角，再添加第二个点。",
+          "dialogueFemale": "点 **+ 添加路径点** 喵！它会记下你现在的位置～然后换个地方再点一次，添加第二个点～",
+          "instruction": "在游戏里调整视角到起点位置 → 点击 **+ 添加路径点** → 移动到另一个位置 → 再点击 **+ 添加路径点** 添加第二个点",
+          "userWillSee": "路径点列表显示两个点，每个点展开后可以看到 X/Y/Z/偏航/俯仰/FOV/插值 等字段",
+          "hint": "路径点越多，路径越复杂；每个点之间的过渡方式由「插值」字段控制"
+        },
+        {
+          "id": "ch28_s7_play_path",
+          "order": 7,
+          "pose": "bow",
+          "dialogueMale": "播放影片，相机会从第一个点移动到第二个点。调整剪辑长度控制速度。",
+          "dialogueFemale": "按 **右 Ctrl** 播放喵！相机会从起点滑到终点～想慢一点的话，把剪辑拖长一些～",
+          "instruction": "按 **右 Ctrl** 播放观察 → 停止播放 → 在时间线上拖动路径剪辑的右边缘，把长度从 10 刻拉长到 60 刻 → 再次播放",
+          "userWillSee": "第一次播放：相机快速从起点移到终点（10 刻 = 0.5 秒）；第二次播放：相机缓慢移动（60 刻 = 3 秒）",
+          "hint": "剪辑长度决定运动时间；路径点数量和位置决定路径形状"
+        }
+      ]
+    },
+    {
+      "id": "ch29_camera_layers",
+      "order": 29,
+      "titleZh": "图层叠加：修饰你的镜头",
+      "labelDomains": [
+        "film_clips",
+        "camera"
+      ],
+      "steps": [
+        {
+          "id": "ch29_s1_layer_concept",
+          "order": 1,
+          "pose": "thinking_2",
+          "dialogueMale": "摄像机剪辑可以叠加在多个图层上。高层的剪辑会修改低层的结果。",
+          "dialogueFemale": "摄像机剪辑可以叠好几层喵～图层数字越大，越晚应用，可以修改下面图层的效果～",
+          "instruction": "理解机制（无需操作）：摄像机剪辑按**图层升序**执行，每个剪辑在同一个 position 对象上依次施加效果；高层剪辑可以「叠加分量」（如平移/摇晃）或「重写分量」（如看/轨道）",
+          "userWillSee": "（认知铺垫步骤）",
+          "hint": "官方文案：「剪辑的层级，该数字决定了相机剪辑行为应用的顺序，数字越高，应用越晚」",
+          "uiElements": {
+            "officialLabel": "剪辑的层级，该数字决定了相机剪辑行为应用的顺序，数字越高，应用越晚",
+            "source": "clips-verified.json layerComposition"
+          }
+        },
+        {
+          "id": "ch29_s2_add_shake_same_layer",
+          "order": 2,
+          "pose": "crossed_arms",
+          "dialogueMale": "在路径剪辑同一层添加摇晃剪辑。播放，发现摇晃没效果。",
+          "dialogueFemale": "试着给路径加摇晃喵～在时间线同一行（图层 0）添加 **摇晃** 剪辑，然后播放～咦，怎么没抖？",
+          "instruction": "确保路径剪辑在图层 0 → 按 **Shift + A**（在光标位置添加剪辑）→ 选择 **摇晃** → 把摇晃剪辑放到路径剪辑的时间范围内、同一图层 → 播放",
+          "userWillSee": "摄像机按路径移动，但**没有抖动效果** —— 摇晃剪辑在同一图层时不起作用",
+          "hint": "这是新手最常踩的坑：修饰型剪辑必须在主运动**之上的层**，否则会「没效果」"
+        },
+        {
+          "id": "ch29_s3_move_shake_up",
+          "order": 3,
+          "pose": "huh",
+          "dialogueMale": "选中摇晃剪辑，按 Alt + 上箭头，把它移到图层 1。再播放，摇晃生效了。",
+          "dialogueFemale": "选中 **摇晃** 剪辑喵，按 **Alt + ↑**（上箭头键），把它移到上面一层～再播放试试！",
+          "instruction": "选中摇晃剪辑 → 按 **Alt + ↑**（上箭头）把图层从 0 改为 1 → 按右 Ctrl 播放",
+          "userWillSee": "摄像机沿路径移动**同时有抖动效果** —— 摇晃成功叠加在路径运动之上",
+          "hint": "Alt + ↑/↓ 可以快速调整剪辑图层；也可以右键剪辑 → 编辑 → 手动改 **图层** 数字"
+        },
+        {
+          "id": "ch29_s4_why_layers_matter",
+          "order": 4,
+          "pose": "praise_the_sun",
+          "dialogueMale": "摇晃/平移/角度是叠加型剪辑，在传入位置上做 += 。必须放在上层才能修改下层结果。",
+          "dialogueFemale": "明白了吗喵？**摇晃** 这类修饰剪辑是在下面图层的结果上「加一点抖动」，所以必须放上层！",
+          "instruction": "理解两类剪辑（无需操作）：**叠加型**（摇晃/平移/角度/阻力）在传入 position 上 += 分量，保留下层结果；**重写型**（看/轨道/滑动变焦）读入下层后完全重写 angle 或 point",
+          "userWillSee": "（认知总结步骤）",
+          "hint": "实战经验：图层 0 放主运动（静止/路径/关键帧），图层 1+ 放修饰（摇晃/看/阻力/平移）"
+        },
+        {
+          "id": "ch29_s5_add_on_top_shortcut",
+          "order": 5,
+          "pose": "crossed_arms",
+          "dialogueMale": "有快捷方式：选中一个剪辑，按 Shift + Alt + A，新剪辑会自动叠在它正上方。",
+          "dialogueFemale": "还有更快的办法喵！选中路径剪辑，按 **Shift + Alt + A**，新剪辑会**自动叠在它上面一层**、同样的时间和长度～",
+          "instruction": "删除摇晃剪辑 → 选中路径剪辑 → 按 **Shift + Alt + A** → 选择 **摇晃** → 观察",
+          "userWillSee": "摇晃剪辑出现在图层 1，时间和长度与路径剪辑完全一致 —— 严格叠在路径剪辑正上方",
+          "hint": "Shift + Alt + A 是为修饰型剪辑设计的快捷键；三个添加键：Shift+A（光标位置）、Alt+A（播放头）、Shift+Alt+A（叠在选中剪辑上）",
+          "uiElements": {
+            "key": "Shift + Alt + A",
+            "label": "在选中剪辑的正上方添加",
+            "source": "clips-verified.json addClipKeys + UIClips.java:319-342"
+          }
+        },
+        {
+          "id": "ch29_s6_shake_parameters",
+          "order": 6,
+          "pose": "tada_1",
+          "dialogueMale": "调整摇晃参数。摇晃强度控制振幅，摇晃频率控制速度。",
+          "dialogueFemale": "看摇晃剪辑的配置喵～**摇晃** 控制抖多少，**摇晃强度** 控制抖多快～",
+          "instruction": "选中摇晃剪辑 → 在右侧配置面板找到 **摇晃** 和 **摇晃强度** 滑块 → 把 **摇晃** 从 0.1 拉到 1.0，**摇晃强度** 从 1.0 拉到 5.0 → 播放观察",
+          "userWillSee": "摄像机抖动幅度变大（摇晃 1.0）、频率变快（摇晃强度 5.0），模拟剧烈震动效果",
+          "hint": "摇晃还可以分别控制 X/Y/Z 位置和偏航/俯仰/翻滚的抖动量"
+        },
+        {
+          "id": "ch29_s7_layer_summary",
+          "order": 7,
+          "pose": "bow",
+          "dialogueMale": "记住：主运动放图层 0，修饰放图层 1+。忘记这条，修饰剪辑会「没效果」。",
+          "dialogueFemale": "重要的事情再说一遍喵：**主运动在下层，修饰在上层**！记住这条，就不会踩「摇晃不起作用」的坑了～",
+          "instruction": "理解规则（无需操作）：修饰型剪辑（摇晃/看/阻力/平移/角度）必须在主运动（静止/路径/关键帧）**之上的图层**，否则会「没效果」—— 这是新手最常踩的坑",
+          "userWillSee": "（总结步骤）",
+          "hint": "如果某个修饰剪辑「没效果」，第一件事：检查它的图层是不是比主运动剪辑高"
+        }
+      ]
+    },
+    {
+      "id": "ch30_look_orbit_tracker",
+      "order": 30,
+      "titleZh": "注视与跟随：让镜头追着目标",
+      "labelDomains": [
+        "film_clips",
+        "camera"
+      ],
+      "steps": [
+        {
+          "id": "ch30_s1_look_concept",
+          "order": 1,
+          "pose": "thinking_2",
+          "dialogueMale": "看剪辑强制相机朝向目标实体或方块。可以配合路径做「移动中注视」。",
+          "dialogueFemale": "想让相机一直盯着某个角色或方块？用 **看** 剪辑喵！",
+          "instruction": "理解用途（无需操作）：**看**（Look）剪辑强制相机朝向指定目标（实体/方块/运动矢量），常叠加在路径/轨道之上，实现「移动中始终注视目标」效果",
+          "userWillSee": "（认知铺垫步骤）",
+          "hint": "看剪辑是重写型：读入下层位置后完全重写角度（偏航/俯仰）"
+        },
+        {
+          "id": "ch30_s2_add_look_on_path",
+          "order": 2,
+          "pose": "crossed_arms",
+          "dialogueMale": "在路径剪辑上层添加看剪辑。选择目标：实体选择器或方块坐标。",
+          "dialogueFemale": "在路径上叠加 **看** 剪辑喵～选中路径，按 **Shift+Alt+A** 添加 **看**～",
+          "instruction": "确保有一个路径剪辑在图层 0 → 选中它 → 按 **Shift + Alt + A** → 选择 **看** → 观察配置面板",
+          "userWillSee": "看剪辑出现在图层 1；右侧配置面板显示：**选择器**（下拉：实体选择器/方块）、**选择实体...** 按钮（或方块坐标 X/Y/Z）、**朝运动矢量** 开关",
+          "hint": "看剪辑必须在图层 1+，因为它需要读取下层的相机位置才能计算朝向"
+        },
+        {
+          "id": "ch30_s3_pick_entity",
+          "order": 3,
+          "pose": "huh",
+          "dialogueMale": "点击选择实体按钮，会打开实体选择器。选择一个回放或生物。",
+          "dialogueFemale": "点 **选择实体...** 喵！会弹出一个列表，里面有所有回放和附近的生物～",
+          "instruction": "点击 **选择实体...** → 在弹出的实体选择器里选择一个回放（或附近的生物）→ 按右 Ctrl 播放",
+          "userWillSee": "相机沿路径移动时，**始终朝向选中的实体** —— 即使实体在移动，相机角度也会实时跟随",
+          "hint": "如果实体离得太远或不在视野内，相机会扭头追过去 —— 看剪辑不管距离",
+          "uiElements": {
+            "button": "选择实体...",
+            "selector": "实体选择器（列出回放+附近生物）",
+            "tracking": "实时角度跟随",
+            "source": "UILookClip.java + LookClip.java:39-116"
+          }
+        },
+        {
+          "id": "ch30_s3b_look_at_motion",
+          "order": 4,
+          "pose": "crossed_arms",
+          "dialogueMale": "看剪辑还可以朝向运动矢量。适合过山车视角，相机朝前进方向。",
+          "dialogueFemale": "还有个酷功能喵～打开 **朝运动矢量** 开关，相机会朝着移动方向看，像过山车一样！",
+          "instruction": "在看剪辑配置面板找到 **朝运动矢量** 开关（勾选框）→ 打开 → 播放",
+          "userWillSee": "相机朝向由路径的切线方向决定：沿路径前进时自动朝前，拐弯时角度平滑转向，模拟第一人称过山车视角",
+          "hint": "朝运动矢量模式不需要选择实体；它通过 applyUnderneath(context.ticks - 1) 读上一刻位置来计算速度矢量",
+          "uiElements": {
+            "toggle": "朝运动矢量",
+            "mechanism": "读取上一刻位置计算速度方向",
+            "source": "LookClip.java:55-62 applyUnderneath(ticks-1)"
+          }
+        },
+        {
+          "id": "ch30_s4_orbit_concept",
+          "order": 5,
+          "pose": "praise_the_sun",
+          "dialogueMale": "轨道剪辑更进一步。它不仅朝向目标，还绕着目标旋转。",
+          "dialogueFemale": "**轨道** 剪辑更酷喵！它会让相机绕着目标转圈～",
+          "instruction": "理解区别（无需操作）：**看** = 只改朝向，位置由下层决定；**轨道** = 完全接管位置和朝向，绕目标以指定距离/偏航/俯仰环绕",
+          "userWillSee": "（认知对比步骤）",
+          "hint": "轨道是重写型：读入下层后完全重写 point 和 angle"
+        },
+        {
+          "id": "ch30_s5_replace_with_orbit",
+          "order": 6,
+          "pose": "crossed_arms",
+          "dialogueMale": "删除路径和看剪辑。添加轨道剪辑到图层 0。选择目标，设置距离和角度。",
+          "dialogueFemale": "删掉之前的喵，试试 **轨道**～添加到图层 0，选个目标，调 **距离** 和 **偏航** ～",
+          "instruction": "删除路径和看剪辑 → 添加 **轨道** 剪辑到图层 0 → 点击 **选择实体...** 选择一个回放 → 调整 **距离** 为 5.0、**偏航** 滑块从 0 拖到 360 → 把剪辑长度拉到 100 刻 → 播放",
+          "userWillSee": "相机以 5 格距离绕目标实体旋转一整圈（360 度），始终朝向目标",
+          "hint": "轨道剪辑的偏航/俯仰是关键帧轨道：可以打关键帧做渐变环绕"
+        },
+        {
+          "id": "ch30_s6_tracker_concept",
+          "order": 7,
+          "pose": "tada_1",
+          "dialogueMale": "追踪器剪辑绑定实体骨骼挂点。相机跟随骨骼移动，可以做第一人称视角。",
+          "dialogueFemale": "**追踪器** 更厉害喵！可以把相机绑到角色的头上、手上、任何骨骼上，做真第一人称镜头～",
+          "instruction": "理解用途（无需操作）：**追踪器**（Tracker）剪辑把相机附着到实体的指定骨骼挂点，跟随骨骼位置和旋转；可选锁定角度或看向目标；可选锁定 FOV",
+          "userWillSee": "（认知扩展步骤）",
+          "hint": "追踪器常用场景：第一人称视角、武器瞄准镜、骑乘视角、跟随手部的特写镜头"
+        },
+        {
+          "id": "ch30_s7_three_clips_comparison",
+          "order": 8,
+          "pose": "bow",
+          "dialogueMale": "看、轨道、追踪器的区别：看只改朝向，轨道改位置和朝向，追踪器绑骨骼。",
+          "dialogueFemale": "总结一下喵：**看** = 只盯着看；**轨道** = 绕圈环绕；**追踪器** = 贴身跟随～",
+          "instruction": "理解三者关系（无需操作）：看（Look）= 叠加型，只重写角度；轨道（Orbit）= 重写型，重写位置+角度；追踪器（Tracker）= 重写型+骨骼绑定，完全跟随目标",
+          "userWillSee": "（总结步骤）",
+          "hint": "选择依据：需要自定义路径 → 路径+看；需要环绕旋转 → 轨道；需要贴身跟随 → 追踪器"
+        }
+      ]
+    },
+    {
+      "id": "ch31_advanced_clips",
+      "order": 31,
+      "titleZh": "程序化镜头：关键帧、数学与重映射",
+      "labelDomains": [
+        "film_clips",
+        "keyframes"
+      ],
+      "steps": [
+        {
+          "id": "ch31_s1_keyframe_clip_concept",
+          "order": 1,
+          "pose": "thinking_2",
+          "dialogueMale": "关键帧剪辑是最精确的控制方式。X/Y/Z/偏航/俯仰/翻滚/FOV/距离八通道独立曲线。",
+          "dialogueFemale": "想完全精确控制每一刻的相机位置和角度？用 **关键帧** 剪辑喵！",
+          "instruction": "理解用途（无需操作）：**关键帧**（Keyframe）剪辑用八条独立的关键帧曲线控制相机的所有通道（X/Y/Z/偏航/俯仰/翻滚/FOV/距离），可以做出路径剪辑做不到的复杂运动（如翻滚、FOV 变焦、非线性加减速）",
+          "userWillSee": "（认知铺垫步骤）",
+          "hint": "关键帧剪辑是重写型：完全接管相机位姿；通常单独放在图层 0，不与路径/轨道混用"
+        },
+        {
+          "id": "ch31_s2_add_keyframe_clip",
+          "order": 2,
+          "pose": "crossed_arms",
+          "dialogueMale": "添加关键帧剪辑到图层 0。右侧显示八条轨道。",
+          "dialogueFemale": "添加 **关键帧** 剪辑喵～右边会出现好多条轨道，每条控制一个通道～",
+          "instruction": "删除之前的剪辑 → 添加 **关键帧** 剪辑到图层 0 → 观察右侧配置面板",
+          "userWillSee": "右侧显示关键帧编辑器：八条轨道（X/Y/Z/偏航/俯仰/翻滚/FOV/距离），每条轨道可以右键 → **编辑轨道** 进入曲线图",
+          "hint": "关键帧剪辑的操作和 ch17-20 学的关键帧编辑完全一样：插入关键帧、编辑曲线、调整插值"
+        },
+        {
+          "id": "ch31_s3_add_keyframes",
+          "order": 3,
+          "pose": "huh",
+          "dialogueMale": "在 X 和 Y 轨道插入关键帧，做一段上升运动。",
+          "dialogueFemale": "在 **Y** 轨道上打几个关键帧喵～让相机从低到高慢慢升起～",
+          "instruction": "右键 **Y** 轨道 → **编辑轨道** → 在 0 刻插入关键帧值 70.0 → 在 60 刻插入关键帧值 80.0 → 退出轨道编辑 → 播放",
+          "userWillSee": "相机从 Y=70 的高度缓慢上升到 Y=80，其他通道保持默认值（X/Z=0, 偏航/俯仰=0）",
+          "hint": "可以同时给多条轨道打关键帧，做出复杂的螺旋上升、环绕俯冲等运动"
+        },
+        {
+          "id": "ch31_s4_math_clip_concept",
+          "order": 4,
+          "pose": "praise_the_sun",
+          "dialogueMale": "数学剪辑用表达式驱动相机。可以写公式做周期运动、随机抖动。",
+          "dialogueFemale": "**数学** 剪辑更神奇喵！可以写数学公式，比如 `sin(t*0.1)*5` 让相机做正弦波运动～",
+          "instruction": "理解用途（无需操作）：**数学**（Math）剪辑用数学表达式逐通道覆盖当前值；可用变量：t（时间刻）、o（原值）、p（上一刻值）、yaw/fov/velocity 等；常用于周期运动、程序化动画",
+          "userWillSee": "（认知扩展步骤）",
+          "hint": "数学剪辑是重写型：填了表达式的通道会完全覆盖下层值；留空的通道保持下层值"
+        },
+        {
+          "id": "ch31_s5_add_math_sine",
+          "order": 5,
+          "pose": "crossed_arms",
+          "dialogueMale": "删除关键帧剪辑。添加数学剪辑，在 Y 通道写正弦表达式。",
+          "dialogueFemale": "试试数学剪辑喵～在 **Y** 通道写 `70 + sin(t * 0.1) * 5`，让相机上下浮动～",
+          "instruction": "删除关键帧剪辑 → 添加 **数学** 剪辑到图层 0 → 在 **Y** 通道输入框填写 `70 + sin(t * 0.1) * 5` → 把剪辑长度拉到 120 刻 → 播放",
+          "userWillSee": "相机在 Y=65~75 之间做正弦波上下浮动（周期约 62 刻），其他通道保持默认值",
+          "hint": "常用表达式：`sin(t*频率)*振幅 + 中心值`（正弦波）、`t*速度`（匀速）、`t*t*加速度`（加速）"
+        },
+        {
+          "id": "ch31_s6_remapper_concept",
+          "order": 6,
+          "pose": "tada_1",
+          "dialogueMale": "重映射剪辑用一条曲线重映射下层时间轴。可以做慢放、快进、倒放。",
+          "dialogueFemale": "**重映射** 超有用喵！可以让下层的时间变慢、变快、甚至倒着走～",
+          "instruction": "理解用途（无需操作）：**重映射**（Remapper）剪辑用一条关键帧曲线把当前 tick 映射到另一个 tick，然后把映射后的 tick 传给下层重新求值；可以做时间缩放、暂停、倒放效果",
+          "userWillSee": "（认知扩展步骤）",
+          "hint": "重映射必须在图层 1+，因为它需要「重新求值下层」—— 这是 applyUnderneath 机制的典型用途"
+        },
+        {
+          "id": "ch31_s7_use_remapper",
+          "order": 7,
+          "pose": "bow",
+          "dialogueMale": "在数学剪辑上层添加重映射。曲线斜率 < 1 是慢放，> 1 是快进，负斜率是倒放。",
+          "dialogueFemale": "在数学剪辑上叠加 **重映射** 喵～曲线画平一点就是慢放，陡一点就是快进～",
+          "instruction": "选中数学剪辑 → 按 **Shift + Alt + A** 添加 **重映射** 到图层 1 → 右键重映射的 **重映射** 轨道 → **编辑轨道** → 在 0 刻插入值 0、在 60 刻插入值 120 → 退出 → 播放",
+          "userWillSee": "数学剪辑的正弦浮动以 **2 倍速**播放（60 刻内走完原本 120 刻的运动）",
+          "hint": "重映射曲线的纵轴是「下层时间」，横轴是「当前时间」；斜率 = 下层速度/当前速度"
+        }
+      ]
+    }
+  ]
+}

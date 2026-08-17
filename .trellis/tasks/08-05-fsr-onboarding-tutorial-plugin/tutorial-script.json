@@ -1,0 +1,766 @@
+{
+  "_meta": {
+    "version": "2.0.0",
+    "pedagogy": "已知→类比→操作→验证→扩展；痛点先行，工具后置；早期成就感优先；每章只引入一个新概念。",
+    "keybinds_verified": true,
+    "keybind_source": "new/src/client/java/mchorse/bbs_mod/BBSModClient.java:976-988",
+    "panel_source": "new/src/client/java/mchorse/bbs_mod/ui/dashboard/UIDashboard.java:311-319",
+    "verified_keybinds": {
+      "dashboard": "数字键 0",
+      "open_morphing": "B",
+      "demorph": "句号键 .",
+      "play_film": "右 Ctrl",
+      "pause_film": "反斜杠键",
+      "record_replay": "右 Alt",
+      "open_replays": "右 Shift",
+      "record_video_manual": "F4",
+      "play_film_and_record": "F6",
+      "teleport_to_replay": "Y",
+      "item_editor": "Home"
+    },
+    "dashboard_panels": [
+      "Morphing",
+      "Film",
+      "Model Blocks",
+      "Particles",
+      "Model Editor",
+      "Textures",
+      "Audio",
+      "Graph",
+      "Plugins"
+    ],
+    "corrections": [
+      "Export 不是独立 Dashboard 面板；视频导出通过 F4/F6 与设置面板完成。",
+      "Replay 不是独立面板；它是 Film 面板内的编辑器（右 Shift 直达）。"
+    ],
+    "styles": {
+      "male": "高冷：短句、陈述、无语气词、不安慰",
+      "female": "猫娘：活泼、鼓励、每句 1-2 个语气词（喵/呐/～）"
+    },
+    "step_fields": [
+      "pose",
+      "dialogueMale",
+      "dialogueFemale",
+      "instruction 按键/点击级操作",
+      "userWillSee 预期画面",
+      "hint 可选提示",
+      "needsUiVerification 该步 UI 文案需真机核对"
+    ]
+  },
+  "chapters": [
+    {
+      "id": "ch01_dashboard",
+      "order": 1,
+      "titleKey": "tutorial.ch01.title",
+      "titleZh": "认识 Dashboard —— 你的工作台",
+      "pedagogyNote": "第一章目标：消除陌生感。类比成已知事物（工作台），快速让用户找到入口并看到一些东西。不讲功能细节。",
+      "steps": [
+        {
+          "id": "ch01_s1_open",
+          "order": 1,
+          "pose": "wave_1",
+          "dialogueMale": "按下数字键 0。",
+          "dialogueFemale": "按键盘最上面那排数字键里的 **0** 喵！就是它，来试试～",
+          "instruction": "按键盘主键盘区的数字键 **0**（最上排，不是小键盘的 0）",
+          "userWillSee": "屏幕中央弹出一个深色大面板，这就是 Dashboard（仪表盘）",
+          "hint": "没反应？确认你没有打开暂停菜单（Esc），要在游戏内操作"
+        },
+        {
+          "id": "ch01_s2_layout",
+          "order": 2,
+          "pose": "thinking_2",
+          "dialogueMale": "左边是面板列表。右边是内容区。顶部是工具栏。",
+          "dialogueFemale": "看这个大面板喵～左边一排图标按钮，右边是内容，就像浏览器的标签页一样！",
+          "instruction": "用眼睛扫一眼整个 Dashboard，不用点任何东西",
+          "userWillSee": "左侧竖排 8-9 个图标按钮；右侧显示 Film 编辑器（默认面板）；顶部有工具栏图标",
+          "hint": "左侧每个图标对应一个功能面板，鼠标悬停会显示名称"
+        },
+        {
+          "id": "ch01_s3_hover",
+          "order": 3,
+          "pose": "crossed_arms",
+          "dialogueMale": "把鼠标悬停在左侧图标上，查看名称。依次认识它们。",
+          "dialogueFemale": "把鼠标放到左边每个小图标上，看看弹出的名字喵！先认识它们，不用点～",
+          "instruction": "把鼠标移到左侧每个图标上，停留 1 秒，读出弹出的工具提示",
+          "userWillSee": "弹出文字标签：Morphing（形态）、Film（影片）、Model Blocks（模型方块）、Particles（粒子）、Model Editor（模型编辑器）、Textures（纹理）、Audio（音频）、Graph（图表）、Plugins（插件）",
+          "hint": "这 9 个面板就是 FSR 的全部功能模块，今天先认识，以后逐个学"
+        },
+        {
+          "id": "ch01_s4_switch",
+          "order": 4,
+          "pose": "tada_1",
+          "dialogueMale": "点击 Morphing 图标，右侧内容切换。点击 Film 图标，切回来。",
+          "dialogueFemale": "点击左边的 **Morphing** 图标试试～右边内容会变！再点 **Film** 切回来喵！",
+          "instruction": "鼠标点击左侧 **Morphing**（人形图标）→ 观察右侧变化 → 再点击 **Film**（胶片图标）切回",
+          "userWillSee": "右侧内容在 Morphing 面板和 Film 面板之间切换，左侧当前选中的图标会高亮",
+          "hint": "切换面板不会丢失任何数据"
+        },
+        {
+          "id": "ch01_s5_close",
+          "order": 5,
+          "pose": "bow",
+          "dialogueMale": "再按一次数字键 0 关闭。需要时随时打开。",
+          "dialogueFemale": "记住了吗？数字键 0 = 开/关 Dashboard 喵！再按一次关掉它试试～",
+          "instruction": "再次按键盘数字键 **0**",
+          "userWillSee": "Dashboard 面板消失，回到正常游戏画面",
+          "hint": "这是你最常用的快捷键，比什么都重要"
+        }
+      ]
+    },
+    {
+      "id": "ch02_morphing_basic",
+      "order": 2,
+      "titleKey": "tutorial.ch02.title",
+      "titleZh": "第一次变身 —— Morphing 基础",
+      "pedagogyNote": "第二章目标：立即给成就感。变身是视觉反馈最强的操作，用户按下 B 就能看到变化。先做再理解。FK 姿势在这里用最简单的方式介绍。",
+      "steps": [
+        {
+          "id": "ch02_s1_open_b",
+          "order": 1,
+          "pose": "wave_1",
+          "dialogueMale": "按 B 键。Dashboard 会打开并切换到 Morphing 面板。",
+          "dialogueFemale": "按键盘上的字母 **B** 键喵！B = Body，记住了～",
+          "instruction": "按键盘字母键 **B**",
+          "userWillSee": "Dashboard 自动打开，并自动切换到 Morphing 面板（如果 Dashboard 已打开，只切换面板）",
+          "hint": "B 是 Morphing 的专属快捷键，不需要先按 0 打开 Dashboard"
+        },
+        {
+          "id": "ch02_s2_browse_category",
+          "order": 2,
+          "pose": "thinking_2",
+          "dialogueMale": "左侧是模型分类。点击 player 文件夹，展开查看玩家模型。",
+          "dialogueFemale": "左边是模型库喵！找到 **player** 文件夹，点击它展开～",
+          "instruction": "在 Morphing 面板左侧模型列表中，找到并点击 **player** 文件夹",
+          "userWillSee": "player 文件夹展开，显示子项：steve、steve_bends、alex、alex_bends 等",
+          "hint": "player = 玩家模型，mobs = 生物模型，其他为特殊模型"
+        },
+        {
+          "id": "ch02_s3_apply_morph",
+          "order": 3,
+          "pose": "praise_the_sun",
+          "dialogueMale": "双击 steve 应用。",
+          "dialogueFemale": "双击 **steve** 喵！你马上就会变身！",
+          "instruction": "在展开的列表里 **双击 steve**",
+          "userWillSee": "你的角色外观切换为 Steve 3D 模型（按 F5 切换第三人称视角可以看到效果）",
+          "hint": "按 F5 切换到第三人称视角，可以清楚看到变身效果"
+        },
+        {
+          "id": "ch02_s4_basic_pose",
+          "order": 4,
+          "pose": "crossed_arms",
+          "dialogueMale": "右侧面板有姿势调节。这是 FK，正向动力学，直接旋转每个关节。",
+          "dialogueFemale": "看右边喵！这是姿势编辑器，可以转动每个骨头～这叫 FK，就是直接拨关节的意思！",
+          "instruction": "在右侧找到 **Head**（头部），拖动 **Rotation Y** 滑块左右移动",
+          "userWillSee": "角色头部实时左右转动，第三人称视角下清晰可见",
+          "hint": "FK（正向动力学）= 直接旋转关节。X/Y/Z 分别对应前后、左右、翻转旋转"
+        },
+        {
+          "id": "ch02_s5_demorph",
+          "order": 5,
+          "pose": "huh",
+          "dialogueMale": "按句号键（.）取消伪装。回到原来的样子。",
+          "dialogueFemale": "按键盘上的 **句号键（.）** 取消变身，回到你原来的样子喵～",
+          "instruction": "按键盘上的 **句号键（.）**（在 / 旁边）",
+          "userWillSee": "角色恢复默认皮肤外观",
+          "hint": "句号键是「取消伪装」的快捷键，随时可以用"
+        }
+      ]
+    },
+    {
+      "id": "ch03_ik_vs_fk",
+      "order": 3,
+      "titleKey": "tutorial.ch03.title",
+      "titleZh": "姿势进阶 —— 从 FK 到 IK",
+      "pedagogyNote": "认知锚点：第2章已亲手拨过关节(FK)，此时才引入IK。先让用户体验FK的痛点(想让手摸到头要转3个关节)，再给IK作为解法。痛点先行，工具后置。",
+      "steps": [
+        {
+          "id": "ch03_s1_fk_pain",
+          "order": 1,
+          "pose": "thinking_2",
+          "dialogueMale": "试着让手举到头顶。你需要转肩、转肘、转腕。三个关节。",
+          "dialogueFemale": "试试让角色的手摸到头顶喵～你会发现要转肩膀、转胳膊肘、还要转手腕，好麻烦对不对！",
+          "instruction": "在姿势编辑器里依次调整 **Arm**（大臂）→ **Forearm**（小臂）滑块，试着把手抬到头顶位置",
+          "userWillSee": "需要反复来回调整多个滑块，手的位置很难精确到你想要的点",
+          "hint": "这就是 FK 的局限：你控制的是「关节角度」，不是「手的位置」",
+          "needsUiVerification": true
+        },
+        {
+          "id": "ch03_s2_ik_concept",
+          "order": 2,
+          "pose": "huh",
+          "dialogueMale": "IK 反过来。你指定手的位置，程序算出关节角度。",
+          "dialogueFemale": "IK 就是反过来的魔法喵！你只要说「手放这里」，电脑自己算出关节该怎么弯～",
+          "instruction": "先理解概念，不用操作：FK = 你转关节，手跟着动；IK = 你拖手，关节自动跟",
+          "userWillSee": "（这一步只是理解，没有操作）",
+          "hint": "现实类比：FK 像摆木偶，一节节掰；IK 像牵着手走，胳膊自己顺着来"
+        },
+        {
+          "id": "ch03_s3_open_ik",
+          "order": 3,
+          "pose": "crossed_arms",
+          "dialogueMale": "在伪装编辑器的标签里找到 IK。打开它。",
+          "dialogueFemale": "在编辑器上面的标签栏里找 **IK** 那一项，点开它喵～",
+          "instruction": "在伪装(Morphing)编辑器顶部/侧边的标签栏中，点击 **IK** 标签",
+          "userWillSee": "切换到 IK 配置面板，显示可用的 IK 链条列表（如手臂、腿）",
+          "hint": "IK 只对有骨骼的模型有效（如 steve_bends 这类带弯曲支持的模型效果最好）",
+          "needsUiVerification": true
+        },
+        {
+          "id": "ch03_s4_enable_chain",
+          "order": 4,
+          "pose": "praise_the_sun",
+          "dialogueMale": "启用一条 IK 链。然后拖动末端。关节会自己跟随。",
+          "dialogueFemale": "启用一条 IK 链，然后拖动手的位置～看关节自动跟上来，超神奇的喵！",
+          "instruction": "勾选启用一条 IK 链（如右手），然后在预览窗口拖动该链的末端控制点",
+          "userWillSee": "拖动手的位置时，大臂和小臂的角度自动计算并跟随，姿势自然",
+          "hint": "IK 适合「手要碰到某个东西」的场景：扶墙、握剑、抓栏杆",
+          "needsUiVerification": true
+        },
+        {
+          "id": "ch03_s5_when_which",
+          "order": 5,
+          "pose": "bow",
+          "dialogueMale": "记住：整体动作用 FK。末端要精确定位用 IK。",
+          "dialogueFemale": "总结一下喵～摆大致动作用 FK，要让手脚精确碰到东西就用 IK！",
+          "instruction": "无需操作，记住这个判断标准",
+          "userWillSee": "（总结步骤）",
+          "hint": "多数时候两者混用：FK 摆身体大姿态，IK 收尾定位手脚"
+        }
+      ]
+    },
+    {
+      "id": "ch04_form_types",
+      "order": 4,
+      "titleKey": "tutorial.ch04.title",
+      "titleZh": "伪装类型全解 —— 不只是模型",
+      "pedagogyNote": "第2-3章用户只见过 Model 一种类型，容易以为伪装=换模型。这里展开完整类型表，建立「选对工具」的心智模型。按使用频率排序，不按代码结构排序。",
+      "steps": [
+        {
+          "id": "ch04_s1_categories",
+          "order": 1,
+          "pose": "thinking_2",
+          "dialogueMale": "伪装不止 3D 模型。方块、物品、文字、贴图都能当形态。",
+          "dialogueFemale": "伪装可不只有 3D 模型喵！方块、物品、文字、图片都可以变成你的样子～",
+          "instruction": "在伪装面板中，查看模型库顶部的类型切换区域，浏览可选的形态类型",
+          "userWillSee": "可选类型包括：Model（3D模型）、Mob（生物）、Block（方块）、Item（物品）、Label（文字）、Billboard（贴图面板）等",
+          "hint": "选对类型能省下大量工作量",
+          "needsUiVerification": true
+        },
+        {
+          "id": "ch04_s2_model_mob",
+          "order": 2,
+          "pose": "crossed_arms",
+          "dialogueMale": "Model 用于自定义 3D 模型，可摆姿势。Mob 用于原版生物，也能摆姿势。",
+          "dialogueFemale": "**Model** 是自定义 3D 模型，**Mob** 是原版生物～这两种都能摆姿势喵！",
+          "instruction": "试用一次 Mob 类型：选择 Mob → 挑一个生物（如 zombie）→ 应用",
+          "userWillSee": "你变成该生物外观，并且右侧仍然有姿势编辑器可用",
+          "hint": "Model 和 Mob 都支持姿势(Pose)和 IK，是最常用的两种",
+          "needsUiVerification": true
+        },
+        {
+          "id": "ch04_s3_block_item",
+          "order": 3,
+          "pose": "huh",
+          "dialogueMale": "Block 和 Item 没有骨骼。只有位置、旋转、缩放。",
+          "dialogueFemale": "**Block** 和 **Item** 是方块和物品，它们没有骨头喵～只能整体移动、旋转、缩放！",
+          "instruction": "试用一次 Item 类型：选择 Item → 挑一个物品（如钻石剑）→ 应用",
+          "userWillSee": "你变成一把悬浮的钻石剑，右侧只有位移/旋转/缩放选项，没有姿势编辑器",
+          "hint": "适合做道具、装饰、悬浮物件",
+          "needsUiVerification": true
+        },
+        {
+          "id": "ch04_s4_label_billboard",
+          "order": 4,
+          "pose": "tada_1",
+          "dialogueMale": "Label 显示文字。Billboard 显示贴图，始终面向镜头。",
+          "dialogueFemale": "**Label** 是文字，**Billboard** 是贴图，而且它永远正对镜头喵～做特效很好用！",
+          "instruction": "试用一次 Label 类型：选择 Label → 在文本框输入任意文字 → 应用",
+          "userWillSee": "你的位置显示为一段浮空文字",
+          "hint": "Label 适合做标题、名牌；Billboard 适合做光晕、闪光等平面特效",
+          "needsUiVerification": true
+        },
+        {
+          "id": "ch04_s5_advanced_types",
+          "order": 5,
+          "pose": "bow",
+          "dialogueMale": "还有 Trail 拖尾、Extruded 挤压、Sound 声音、Particle 粒子。以后再学。",
+          "dialogueFemale": "还有拖尾、挤压造型、3D 声音、粒子这些高级类型喵～等你熟练了再来玩它们！",
+          "instruction": "无需操作，知道它们存在即可",
+          "userWillSee": "（认知铺垫步骤）",
+          "hint": "现在只需记住：先想清楚要什么效果，再选类型"
+        }
+      ]
+    },
+    {
+      "id": "ch05_presets",
+      "order": 5,
+      "titleKey": "tutorial.ch05.title",
+      "titleZh": "保存与复用 —— 别做重复劳动",
+      "pedagogyNote": "在用户第一次感到「刚才那套调好的姿势没了」之后立刻教保存。痛点驱动的记忆最牢。同时引入热键绑定，为后续拍片提速。",
+      "steps": [
+        {
+          "id": "ch05_s1_why_save",
+          "order": 1,
+          "pose": "thinking_2",
+          "dialogueMale": "刚才调的姿势，取消伪装后就没了。所以要保存。",
+          "dialogueFemale": "刚才辛苦调的姿势，一取消伪装就消失了喵……所以要学会保存！",
+          "instruction": "无需操作，理解为什么需要保存",
+          "userWillSee": "（认知铺垫步骤）",
+          "hint": "保存的内容包含：模型 + 当前姿势 + 各项设置"
+        },
+        {
+          "id": "ch05_s2_save_preset",
+          "order": 2,
+          "pose": "praise_the_sun",
+          "dialogueMale": "调好一个姿势，找到预设(Presets)，保存并命名。",
+          "dialogueFemale": "先调一个喜欢的姿势，然后打开 **预设(Presets)**，保存起来并起个名字喵～",
+          "instruction": "调好姿势 → 打开预设(Presets)面板 → 点击保存 → 输入名称（如 my_pose）→ 确认",
+          "userWillSee": "预设列表中出现你命名的新条目",
+          "hint": "命名建议用英文或拼音，避免特殊符号",
+          "needsUiVerification": true
+        },
+        {
+          "id": "ch05_s3_load_preset",
+          "order": 3,
+          "pose": "tada_1",
+          "dialogueMale": "取消伪装。然后从预设里点回来。一秒恢复。",
+          "dialogueFemale": "先按句号键取消伪装，再从预设里点一下刚保存的～一秒就回来了喵！",
+          "instruction": "按 **句号键（.）** 取消伪装 → 打开预设列表 → 点击刚保存的 my_pose",
+          "userWillSee": "角色瞬间恢复到你保存时的模型和姿势",
+          "hint": "这是拍片时最省时间的功能"
+        },
+        {
+          "id": "ch05_s4_recent",
+          "order": 4,
+          "pose": "crossed_arms",
+          "dialogueMale": "最近使用列表会自动记录你用过的形态。",
+          "dialogueFemale": "还有「最近使用」列表喵～你用过的形态它会自己记住，不用翻文件夹！",
+          "instruction": "查看伪装面板中的最近使用(Recent)区域",
+          "userWillSee": "显示你最近应用过的几个形态，点击即可快速切回",
+          "hint": "不需要手动保存，系统自动记录",
+          "needsUiVerification": true
+        },
+        {
+          "id": "ch05_s5_hotkey",
+          "order": 5,
+          "pose": "awww",
+          "dialogueMale": "还能给形态绑定热键。按一下键直接切换。",
+          "dialogueFemale": "最厉害的是还能绑热键喵～按一个键直接变身，拍片超快！",
+          "instruction": "在形态的设置中找到热键(Hotkey)选项，绑定一个未使用的按键",
+          "userWillSee": "绑定后，在游戏中直接按该键即可切换到这个形态（无需打开面板）",
+          "hint": "别绑 0、B、句号这些已占用的键；建议用 F7-F12 或小键盘",
+          "needsUiVerification": true
+        }
+      ]
+    },
+    {
+      "id": "ch06_film_basics",
+      "order": 6,
+      "titleKey": "tutorial.ch06.title",
+      "titleZh": "拍第一部电影 —— Film 编辑器",
+      "pedagogyNote": "前5章都在摆姿势，此时引入时间轴概念。从单帧静态过渡到多帧动画。先让用户看到「时间流动」，再教关键帧原理。",
+      "steps": [
+        {
+          "id": "ch06_s1_open_film",
+          "order": 1,
+          "pose": "wave_1",
+          "dialogueMale": "按 0 打开 Dashboard，切到 Film 面板。",
+          "dialogueFemale": "按 **0** 打开 Dashboard，点左边的 **Film**（胶片图标）喵～",
+          "instruction": "按 **0** → 点击左侧 **Film** 图标",
+          "userWillSee": "右侧显示 Film 编辑器：顶部工具栏、中间时间轴、底部属性面板",
+          "hint": "Film = 电影，FSR 的核心功能"
+        },
+        {
+          "id": "ch06_s2_create_film",
+          "order": 2,
+          "pose": "thinking_2",
+          "dialogueMale": "点击 New 创建新影片，命名。",
+          "dialogueFemale": "点工具栏的 **New** 按钮，给你的第一部电影起个名字喵～",
+          "instruction": "点击顶部 **New** 按钮 → 输入名称（如 test_film）→ 确认",
+          "userWillSee": "时间轴区域激活，显示 0-10 秒刻度尺和空白演员列表",
+          "hint": "名称只能包含字母、数字、下划线"
+        },
+        {
+          "id": "ch06_s3_add_actor",
+          "order": 3,
+          "pose": "crossed_arms",
+          "dialogueMale": "右键演员列表空白处，Add Actor，选择 @s（你自己）。",
+          "dialogueFemale": "在左边演员列表空白处**点右键** → **Add Actor** → 选 **@s**（就是你自己）喵！",
+          "instruction": "在左侧演员列表空白处**点右键** → 选择 **Add Actor** → 选择 **@s**",
+          "userWillSee": "演员列表出现一行新条目，显示你的名字和对应的时间轴轨道",
+          "hint": "@s = 你自己，@p = 最近的玩家，@e = 所有实体"
+        },
+        {
+          "id": "ch06_s4_keyframe_concept",
+          "order": 4,
+          "pose": "huh",
+          "dialogueMale": "时间轴记录关键帧。你在不同时刻记录位置，中间自动插值。",
+          "dialogueFemale": "关键帧就像书签喵～你在 0 秒和 3 秒各记一个位置，中间的动作电脑自己算！",
+          "instruction": "理解概念：关键帧 = 时间点 + 状态快照；两个关键帧之间自动过渡",
+          "userWillSee": "（认知铺垫步骤）",
+          "hint": "类比：关键帧像 PPT 幻灯片，播放时自动产生切换动画"
+        },
+        {
+          "id": "ch06_s5_first_keyframe",
+          "order": 5,
+          "pose": "praise_the_sun",
+          "dialogueMale": "在 0 秒位置点击演员轨道，按 K 添加关键帧。记录当前位置。",
+          "dialogueFemale": "把时间标记拖到 **0 秒**，点一下演员轨道，按键盘 **K** 键添加关键帧喵～",
+          "instruction": "拖动时间标记到 0 秒 → 点击演员轨道 → 按 **K** 键（或工具栏的添加关键帧按钮）",
+          "userWillSee": "演员轨道上 0 秒位置出现一个菱形图标（关键帧标记）",
+          "hint": "K = Keyframe，这是最常用的快捷键之一",
+          "needsUiVerification": true
+        },
+        {
+          "id": "ch06_s6_move_and_keyframe",
+          "order": 6,
+          "pose": "tada_1",
+          "dialogueMale": "关闭面板，在游戏里走到另一个位置。回到 Film，拖到 3 秒，再按 K。",
+          "dialogueFemale": "按 **0** 关掉面板，在游戏里走几步～然后按 **0** 回来，拖时间标记到 **3 秒**，再按 **K** 喵！",
+          "instruction": "按 **0** 关闭 Dashboard → 在游戏中移动 5-10 米 → 按 **0** 打开 → 拖时间标记到 3s → 按 **K**",
+          "userWillSee": "3 秒位置也出现关键帧标记，两个关键帧之间有连线",
+          "hint": "关键帧记录的是演员的位置、旋转、姿势等所有状态"
+        },
+        {
+          "id": "ch06_s7_play",
+          "order": 7,
+          "pose": "praise_the_sun",
+          "dialogueMale": "按右 Ctrl 播放。",
+          "dialogueFemale": "按键盘**右边的 Ctrl 键**播放电影喵～看你的角色自己走起来！",
+          "instruction": "按键盘**右侧 Ctrl 键**",
+          "userWillSee": "视角切换为电影模式，时间从 0 秒播放到 3 秒，演员从第一个位置平滑移动到第二个位置",
+          "hint": "播放时按 **反斜杠键 **（反斜杠）暂停"
+        }
+      ]
+    },
+    {
+      "id": "ch07_replay_recording",
+      "order": 7,
+      "titleKey": "tutorial.ch07.title",
+      "titleZh": "录制动作 —— Replay 系统",
+      "pedagogyNote": "第6章是「摆拍」（手动设关键帧），这章是「实录」（动作捕捉）。对比两种方法，让用户知道什么时候该用哪个。",
+      "steps": [
+        {
+          "id": "ch07_s1_replay_vs_keyframe",
+          "order": 1,
+          "pose": "thinking_2",
+          "dialogueMale": "关键帧适合简单路径。复杂动作用 Replay 录制，捕捉真实操作。",
+          "dialogueFemale": "刚才那种方法适合简单路线喵～复杂的跑酷、打斗就要用 **Replay** 录下真实动作！",
+          "instruction": "理解差异：关键帧 = 手动摆；Replay = 真实录制",
+          "userWillSee": "（认知铺垫步骤）",
+          "hint": "类比：关键帧像动画师逐帧画，Replay 像拿摄像机跟拍"
+        },
+        {
+          "id": "ch07_s2_add_replay",
+          "order": 2,
+          "pose": "crossed_arms",
+          "dialogueMale": "打开 Film 面板，右键演员列表，Add Replay。",
+          "dialogueFemale": "回到 Film 面板，在演员列表**右键** → 选 **Add Replay** 喵～",
+          "instruction": "Dashboard → Film 面板 → 右键演员列表空白处 → **Add Replay** → 输入名称",
+          "userWillSee": "演员列表出现新的 Replay 条目，带有录制相关控件",
+          "hint": "一个 Film 可以有多个 Replay，记录不同的动作片段",
+          "needsUiVerification": true
+        },
+        {
+          "id": "ch07_s3_start_recording",
+          "order": 3,
+          "pose": "praise_the_sun",
+          "dialogueMale": "按右 Alt 开始录制。",
+          "dialogueFemale": "按键盘**右边的 Alt 键**开始录制喵～屏幕会出现红色 REC 标志！",
+          "instruction": "按键盘**右侧 Alt 键**",
+          "userWillSee": "屏幕左上角出现红色 **REC** 标志，开始录制",
+          "hint": "录制期间所有移动、视角、跳跃、姿势变化都会被记录"
+        },
+        {
+          "id": "ch07_s4_perform",
+          "order": 4,
+          "pose": "tada_1",
+          "dialogueMale": "自由移动、跳跃、转身。至少持续 5 秒。",
+          "dialogueFemale": "现在随便动吧～走路、跳跃、转圈、挥手～做点有趣的动作，至少录 5 秒喵！",
+          "instruction": "在游戏中自由移动、跳跃、转动视角（持续 5-10 秒）",
+          "userWillSee": "**REC** 标志持续显示，右侧显示录制时长",
+          "hint": "建议录 10-30 秒，太长会占用存储"
+        },
+        {
+          "id": "ch07_s5_stop_recording",
+          "order": 5,
+          "pose": "bow",
+          "dialogueMale": "再按右 Alt 停止。",
+          "dialogueFemale": "录好了～再按一次**右 Alt** 停止录制喵！",
+          "instruction": "再次按键盘**右侧 Alt 键**",
+          "userWillSee": "**REC** 标志消失，Film 编辑器的 Replay 轨道显示录制的时间范围（蓝色条）",
+          "hint": "录制的数据自动保存，可以随时播放回放"
+        },
+        {
+          "id": "ch07_s6_playback",
+          "order": 6,
+          "pose": "praise_the_sun",
+          "dialogueMale": "按右 Ctrl 播放，看录制的动作回放。",
+          "dialogueFemale": "按**右 Ctrl**播放～看刚才录的回放，就像看电影一样喵！",
+          "instruction": "按键盘**右侧 Ctrl 键**",
+          "userWillSee": "摄像机播放，之前录制的角色动作精确重现",
+          "hint": "可以从不同角度观看回放，自由调整摄像机"
+        }
+      ]
+    },
+    {
+      "id": "ch08_export",
+      "order": 8,
+      "titleKey": "tutorial.ch08.title",
+      "titleZh": "导出视频 —— 从游戏到文件",
+      "pedagogyNote": "有了内容后才教导出。先验证 ffmpeg，再讲两种导出方式（F4/F6），最后讲参数配置。失败案例（未安装 ffmpeg）也要讲清楚。",
+      "steps": [
+        {
+          "id": "ch08_s1_ffmpeg_check",
+          "order": 1,
+          "pose": "thinking_2",
+          "dialogueMale": "导出需要 ffmpeg。打开设置检查状态。",
+          "dialogueFemale": "导出视频要先安装 **ffmpeg** 喵～打开设置看看有没有装好！",
+          "instruction": "Dashboard → 点击右上角**齿轮图标**（设置）→ 找到 Video Export 或 ffmpeg 配置项",
+          "userWillSee": "显示 ffmpeg 路径配置和状态指示灯（绿色 = 已配置；红色 = 未安装）",
+          "hint": "如果是红色，点击 Help 按钮查看安装教程",
+          "needsUiVerification": true
+        },
+        {
+          "id": "ch08_s2_f4_manual",
+          "order": 2,
+          "pose": "crossed_arms",
+          "dialogueMale": "F4 是手动录制。你按 F4 开始，自己操作，再按 F4 停止。",
+          "dialogueFemale": "**F4** 键是手动录制喵～你按 F4 开始，然后自己玩，想停就再按一次 F4！",
+          "instruction": "按 **F4** → 在游戏中随意移动 5 秒 → 再按 **F4** 停止",
+          "userWillSee": "屏幕右上角出现录制进度条，停止后开始编码，最后生成 .mp4 文件",
+          "hint": "F4 适合自由发挥的内容，不依赖 Film"
+        },
+        {
+          "id": "ch08_s3_f6_film",
+          "order": 3,
+          "pose": "praise_the_sun",
+          "dialogueMale": "F6 是 Film 自动录制。播放 Film 的同时录制，播完自动停止。",
+          "dialogueFemale": "**F6** 键是 Film 自动录制喵～它会自动播放你的 Film 并录制，播完自己停，超方便！",
+          "instruction": "打开 Film 编辑器，确保有内容 → 按 **F6**",
+          "userWillSee": "Film 开始播放，屏幕右上角显示录制进度，播放完成后自动停止并编码",
+          "hint": "F6 是拍片主力，Film 长度 = 视频长度"
+        },
+        {
+          "id": "ch08_s4_resolution",
+          "order": 4,
+          "pose": "huh",
+          "dialogueMale": "设置里可以改分辨率和帧率。1920×1080、60 FPS 是标准。",
+          "dialogueFemale": "在设置里可以改分辨率和帧率喵～推荐 **1920×1080** 和 **60 FPS**，视频会很流畅！",
+          "instruction": "设置 → Video Export → Resolution 改为 **1920×1080**，Frame Rate 改为 **60**",
+          "userWillSee": "下拉框显示选中值，预计文件大小自动更新",
+          "hint": "分辨率越高文件越大，帧率越高越流畅（但编码也越慢）",
+          "needsUiVerification": true
+        },
+        {
+          "id": "ch08_s5_output_path",
+          "order": 5,
+          "pose": "awww",
+          "dialogueMale": "输出路径决定视频保存位置。默认在 screenshots 文件夹。",
+          "dialogueFemale": "还可以改保存位置喵～默认在 **.minecraft/screenshots/** 文件夹里！",
+          "instruction": "设置 → Output Path → 点击文件夹图标选择保存目录",
+          "userWillSee": "弹出文件选择器，选择后路径显示在文本框中",
+          "hint": "导出时间取决于 Film 长度和分辨率，1 分钟 Film 大约需要 2-5 分钟",
+          "needsUiVerification": true
+        }
+      ]
+    },
+    {
+      "id": "ch09_constraints",
+      "order": 9,
+      "titleKey": "tutorial.ch09.title",
+      "titleZh": "约束系统 —— 让骨骼听话",
+      "pedagogyNote": "用户现在会摆姿势、录动作了，但遇到「双手握剑」「头始终看向某点」这类需求就卡住了。此时引入约束作为解决方案。",
+      "steps": [
+        {
+          "id": "ch09_s1_constraint_concept",
+          "order": 1,
+          "pose": "thinking_2",
+          "dialogueMale": "约束让一个骨骼跟随另一个对象。位置、旋转、缩放都能约束。",
+          "dialogueFemale": "约束就是让一个骨头「盯着」另一个东西喵～比如让眼睛一直看向镜头！",
+          "instruction": "理解概念：约束 = 骨骼的「自动跟随」规则",
+          "userWillSee": "（认知铺垫步骤）",
+          "hint": "现实类比：约束像牵绳，一端动另一端自动跟"
+        },
+        {
+          "id": "ch09_s2_open_constraints",
+          "order": 2,
+          "pose": "crossed_arms",
+          "dialogueMale": "在伪装编辑器的标签里找到 Constraints。打开它。",
+          "dialogueFemale": "打开伪装编辑器，找到 **Constraints**（约束）标签，点进去喵～",
+          "instruction": "按 **B** 打开伪装 → 切换到 **Constraints** 标签",
+          "userWillSee": "显示骨骼列表和约束配置区域",
+          "hint": "约束只对有骨骼的模型有效",
+          "needsUiVerification": true
+        },
+        {
+          "id": "ch09_s3_look_at",
+          "order": 3,
+          "pose": "praise_the_sun",
+          "dialogueMale": "常用约束：Look At。让头部始终朝向目标。",
+          "dialogueFemale": "最常用的是 **Look At** 约束喵～让头一直看着某个东西，超自然！",
+          "instruction": "选择 **Head** 骨骼 → 添加 **Look At** 约束 → 选择目标（如摄像机或某个实体）",
+          "userWillSee": "头部自动转向目标，即使你移动，头也会持续跟随目标转动",
+          "hint": "适合做「眼神交流」「警觉转头」等效果",
+          "needsUiVerification": true
+        },
+        {
+          "id": "ch09_s4_copy_transform",
+          "order": 4,
+          "pose": "huh",
+          "dialogueMale": "Copy Transform 让骨骼完全跟随目标。位置和旋转都同步。",
+          "dialogueFemale": "**Copy Transform** 是完全跟随喵～让一个骨头和目标完全同步移动和旋转！",
+          "instruction": "选择一个骨骼 → 添加 **Copy Transform** 约束 → 选择目标",
+          "userWillSee": "该骨骼的位置和旋转完全跟随目标",
+          "hint": "适合做「附着物」「寄生」效果",
+          "needsUiVerification": true
+        },
+        {
+          "id": "ch09_s5_use_case",
+          "order": 5,
+          "pose": "bow",
+          "dialogueMale": "约束适合需要持续关系的场景：握剑、骑马、注视、跟随。",
+          "dialogueFemale": "总结一下喵～约束适合「一直要保持某种关系」的动作：握武器、骑坐骑、盯着看！",
+          "instruction": "无需操作，记住使用场景",
+          "userWillSee": "（总结步骤）",
+          "hint": "不需要约束的场景：临时接触、瞬间动作，用关键帧更简单"
+        }
+      ]
+    },
+    {
+      "id": "ch10_physics",
+      "order": 10,
+      "titleKey": "tutorial.ch10.title",
+      "titleZh": "物理模拟 —— 让动作更真实",
+      "pedagogyNote": "前面都是刚性动画，这里引入柔性。用户看到「裙摆飘动」「头发摆动」的那一刻会有「活了」的感觉。",
+      "steps": [
+        {
+          "id": "ch10_s1_physics_concept",
+          "order": 1,
+          "pose": "thinking_2",
+          "dialogueMale": "物理模拟让骨骼受重力、惯性影响。适合布料、头发、尾巴。",
+          "dialogueFemale": "物理模拟让东西会「飘」喵～裙子、头发、尾巴会随着动作自然摆动，不用手动调！",
+          "instruction": "理解概念：物理模拟 = 骨骼的「自动摆动」",
+          "userWillSee": "（认知铺垫步骤）",
+          "hint": "现实类比：像真实的头发、布料一样随风摆动"
+        },
+        {
+          "id": "ch10_s2_open_physics",
+          "order": 2,
+          "pose": "crossed_arms",
+          "dialogueMale": "在伪装编辑器标签里找到 Physics。",
+          "dialogueFemale": "打开伪装编辑器，找到 **Physics**（物理）标签喵～",
+          "instruction": "按 **B** 打开伪装 → 切换到 **Physics** 标签",
+          "userWillSee": "显示骨骼列表和物理参数配置区域",
+          "hint": "物理模拟会增加计算量，谨慎启用过多骨骼",
+          "needsUiVerification": true
+        },
+        {
+          "id": "ch10_s3_enable_chain",
+          "order": 3,
+          "pose": "praise_the_sun",
+          "dialogueMale": "启用一条骨骼链的物理。调整重力、阻尼、弹性参数。",
+          "dialogueFemale": "选一条骨骼链（比如头发或尾巴），启用物理模拟，调整参数看效果喵～",
+          "instruction": "选择一条骨骼链 → 勾选启用物理 → 调整 Gravity（重力）和 Damping（阻尼）滑块",
+          "userWillSee": "移动角色时，该骨骼链会自然摆动，停下后逐渐静止",
+          "hint": "Gravity 越大下坠越明显，Damping 越大摆动越快停止",
+          "needsUiVerification": true
+        },
+        {
+          "id": "ch10_s4_test_motion",
+          "order": 4,
+          "pose": "tada_1",
+          "dialogueMale": "关闭面板，在游戏里快速移动、跳跃。观察物理效果。",
+          "dialogueFemale": "按 **0** 关掉面板，去跑跑跳跳试试～看那些骨头会自己飘起来喵！",
+          "instruction": "按 **0** 关闭 Dashboard → 在游戏中快速奔跑、急转、跳跃",
+          "userWillSee": "启用物理的骨骼会随着移动自然摆动，有延迟和惯性",
+          "hint": "按 F5 切换到第三人称视角观察效果最明显"
+        },
+        {
+          "id": "ch10_s5_debug_view",
+          "order": 5,
+          "pose": "huh",
+          "dialogueMale": "可以开启物理调试视图，看到碰撞体和力的方向。",
+          "dialogueFemale": "还可以开调试视图喵～能看到看不见的「力」和碰撞范围，方便调参数！",
+          "instruction": "Dashboard → 设置 → 找到 Physics Debug 选项 → 勾选启用",
+          "userWillSee": "游戏中显示物理骨骼的绿色线框和力向量箭头",
+          "hint": "调试视图只在开发时用，正式拍片要关掉",
+          "needsUiVerification": true
+        }
+      ]
+    },
+    {
+      "id": "ch11_animation_states",
+      "order": 11,
+      "titleKey": "tutorial.ch11.title",
+      "titleZh": "动画状态机 —— 按键触发动作",
+      "pedagogyNote": "最后一章，从静态姿势升级到交互动画。引入状态机概念，让用户理解「按键→触发→播放」的完整链路。",
+      "steps": [
+        {
+          "id": "ch11_s1_state_concept",
+          "order": 1,
+          "pose": "thinking_2",
+          "dialogueMale": "动画状态是一段可播放的动作。绑定热键后，按键触发播放。",
+          "dialogueFemale": "动画状态就是一段会播放的动作喵～你按一个键，角色自动做这段动作！",
+          "instruction": "理解概念：状态 = 动画片段 + 触发条件",
+          "userWillSee": "（认知铺垫步骤）",
+          "hint": "现实类比：像游戏角色按空格跳、按 Q 释放技能"
+        },
+        {
+          "id": "ch11_s2_open_states",
+          "order": 2,
+          "pose": "crossed_arms",
+          "dialogueMale": "在伪装编辑器标签里找到 Actions 或 States。",
+          "dialogueFemale": "打开伪装编辑器，找到 **Actions**（动作）或 **States**（状态）标签喵～",
+          "instruction": "按 **B** 打开伪装 → 切换到 **Actions** 或 **States** 标签",
+          "userWillSee": "显示状态列表和动画编辑区域",
+          "hint": "不同版本可能叫 Actions 或 States，都是同一个功能",
+          "needsUiVerification": true
+        },
+        {
+          "id": "ch11_s3_create_state",
+          "order": 3,
+          "pose": "praise_the_sun",
+          "dialogueMale": "新建一个状态，命名（如 wave）。添加关键帧动画。",
+          "dialogueFemale": "点 **新建状态**，起个名字（比如 wave 挥手），然后添加挥手的关键帧动画喵～",
+          "instruction": "点击新建状态 → 命名 wave → 在时间轴上添加挥手动作的关键帧",
+          "userWillSee": "状态列表出现 wave 条目，时间轴显示该状态的动画内容",
+          "hint": "状态的动画通常 1-3 秒，循环播放或播放一次",
+          "needsUiVerification": true
+        },
+        {
+          "id": "ch11_s4_bind_hotkey",
+          "order": 4,
+          "pose": "tada_1",
+          "dialogueMale": "给状态绑定热键。选一个未占用的键。",
+          "dialogueFemale": "给这个状态绑定一个热键喵～比如 **G** 键，这样以后按 G 就会挥手！",
+          "instruction": "选中 wave 状态 → 在 Hotkey 选项中绑定 **G** 键",
+          "userWillSee": "状态条目显示绑定的热键（G）",
+          "hint": "别绑 0、B、句号、F4-F6 这些已占用的键",
+          "needsUiVerification": true
+        },
+        {
+          "id": "ch11_s5_trigger_test",
+          "order": 5,
+          "pose": "awww",
+          "dialogueMale": "关闭面板，在游戏里按 G 键。角色会播放挥手动画。",
+          "dialogueFemale": "按 **0** 关掉面板，然后在游戏里按 **G** 键试试～你的角色会自己挥手喵！",
+          "instruction": "按 **0** 关闭 Dashboard → 在游戏中按 **G** 键",
+          "userWillSee": "角色立即播放 wave 状态的动画，播放完毕后恢复默认姿势",
+          "hint": "可以给不同状态绑定不同按键，实现技能释放、表情动作等效果"
+        },
+        {
+          "id": "ch11_s6_loop_oneshot",
+          "order": 6,
+          "pose": "bow",
+          "dialogueMale": "状态有两种模式：循环播放和单次播放。根据需求选择。",
+          "dialogueFemale": "状态有两种模式喵～**循环**（一直重复）和**单次**（放一遍就停）！",
+          "instruction": "在状态设置中切换 Loop（循环）和 One-shot（单次）模式",
+          "userWillSee": "循环模式：动画持续重复直到取消；单次模式：播放一次后自动停止",
+          "hint": "挥手、鞠躬用单次；跑步、飞行用循环",
+          "needsUiVerification": true
+        }
+      ]
+    }
+  ]
+}
