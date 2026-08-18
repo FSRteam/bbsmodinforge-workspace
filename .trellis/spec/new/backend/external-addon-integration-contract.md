@@ -618,3 +618,78 @@ private static boolean send(ResourceLocation id, FriendlyByteBuf payload)
     return BBSClientApi.sendNetworkToServer(DESCRIPTOR, id, payload);
 }
 ```
+
+## 10. Version-port target verification and semantic-boundary migration
+
+### 10.1 Scope / Trigger
+
+Apply when porting a Mixin-bearing external addon across BBSFSR versions where
+host methods, package paths, or the ownership of a behavior have changed.
+
+### 10.2 Signatures
+
+- A changed transform hotkey entry point may be `UIPropTransform.enableMode(TransformOp)`;
+  do not assume the old integer overload still exists.
+- `ValueChangeUndo` is currently
+  `mchorse.bbs_mod.ui.film.utils.undo.ValueChangeUndo`.
+- Every BBS target uses `@Mixin(value = Target.class, remap = false)` and every
+  accessor/invoker uses an explicit `remap = false`.
+- The addon verifier must load every unique BBS target class and emit one final
+  `runtime verification passed` marker.
+
+### 10.3 Contracts
+
+- Treat a missing old method as an API-boundary change, not as an optional injection:
+  find the new method that owns the same behavior and keep strict injection requirements.
+- Remove an old injection only when the current host owns the same behavior at a
+  documented boundary; record that evidence in the migration design.
+- A verifier target string must match the runtime class's fully qualified name. A
+  wrong package is a failed fixture and must not be hidden by a caught exception.
+- Runtime verification must run after BBS client startup and stop the client in a
+  `finally` block when automatic exit is enabled.
+
+### 10.4 Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Old target method is absent | Adapt to the current semantic boundary or fail startup; never lower `require`. |
+| Host behavior moved into a strategy/helper | Inject at the public entry point only when that preserves the old addon behavior; otherwise document native coverage and remove the obsolete hook. |
+| Verifier target package is stale | Correct the target string and require the class to load; do not catch `ClassNotFoundException` as success. |
+| Compile succeeds but no client run occurs | Treat verification as incomplete because Mixin target resolution has not executed. |
+| Runtime verifier reports a handler failure | Fix the target/configuration and require the final pass marker before completion. |
+
+### 10.5 Good / Base / Bad Cases
+
+- Good: port `enableMode(I)V` to `enableMode(TransformOp)` after checking the
+  current source, and verify the transformed class at runtime.
+- Base: a removed `useRayDrag()` hook is covered by the new drag-strategy ray
+  gate, while PoseCurve's translation hotkey remains intercepted explicitly.
+- Bad: keep a stale `useRayDrag` injection, change `require` to zero, or list a
+  non-existent `mchorse.bbs_mod.utils.undo.ValueChangeUndo` verifier target.
+
+### 10.6 Tests Required
+
+- Run `testPoseCurveLogic` and a full `build` against the fresh local BBSFSR jar.
+- Run `runClient -Pverify=1` and assert the final pass marker, no addon
+  `client-started handler failed`, and no critical injection failure.
+- Audit the addon jar for `neoforge.mods.toml`, every declared Mixin config,
+  no `fabric.mod.json`, and no bundled `mchorse/bbs_mod/**` classes.
+- Search sources for Fabric/intermediary names and stale target descriptors.
+
+### 10.7 Wrong vs Correct
+
+Wrong:
+
+```java
+@Inject(method = "useRayDrag", require = 0, at = @At("HEAD"))
+```
+
+Correct:
+
+```java
+@Inject(
+    method = "enableMode(Lmchorse/bbs_mod/ui/framework/elements/input/drag/TransformOp;)V",
+    at = @At("HEAD"),
+    cancellable = true
+)
+```
