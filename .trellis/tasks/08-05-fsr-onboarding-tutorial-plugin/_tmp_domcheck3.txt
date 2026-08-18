@@ -1,0 +1,5 @@
+bbs.ui.presets -> [('presets', '查看预设...')]
+bbs.ui.search -> [('unassigned', '搜索...')]
+bbs.ui.warning -> [('unassigned', '警告')]
+bbs.ui.error -> [('unassigned', '错误')]
+bbs.ui.success -> [('unassigned', '成功')]

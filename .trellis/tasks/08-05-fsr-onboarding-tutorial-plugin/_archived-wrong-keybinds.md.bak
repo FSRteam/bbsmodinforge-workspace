@@ -1,0 +1,716 @@
+# 教程剧本 · 已废弃，见 tutorial-script.json
+
+> **本文件的剧本内容已作废。**
+> 权威剧本是同目录的 `tutorial-script.json`（5 章 25 步，男女双版）。
+> key 归一化方案见 `design.md` §2.3。
+>
+> 早期草稿的按键描述存在多处错误，已整体移除。
+> 保留下方按键对照表（从源码核实），供其他文档修正参考。
+
+---
+
+## 按键默认值（已核实）
+
+来源：`new/src/client/java/mchorse/bbs_mod/BBSModClient.java:976-987`
+
+| 功能 | 绑定 key | 默认按键 |
+|---|---|---|
+| 仪表盘 | `key.bbs.dashboard` | **0**（主键盘区，非小键盘） |
+| 物品编辑器 | `key.bbs.item_editor` | **Home** |
+| 播放影片 | `key.bbs.play_film` | **右 Ctrl** |
+| 暂停影片 | `key.bbs.pause_film` | **\\** 反斜杠 |
+| 录制当前回放 | `key.bbs.record_replay` | **右 Alt** |
+| 录制视频 | `key.bbs.record_video` | **F4** |
+| 播放影片并录制 | `key.bbs.play_film_and_record` | **F6** |
+| 打开当前回放列表 | `key.bbs.open_replays` | **右 Shift** |
+| 打开伪装菜单 | `key.bbs.open_morphing` | **B** |
+| 取消伪装 | `key.bbs.demorph` | **.** 句点 |
+| 传送至当前回放 | `key.bbs.teleport` | **Y** |
+| 瞄准（BBS 枪） | `key.bbs.zoom` | 鼠标中键 |
+
+### 已确认的文档错误（其他文件需同步修正）
+
+| 文件 | 错误内容 | 正确值 |
+|---|---|---|
+| `prd.md` 第 27 行 | 「按 M 打开 Morphing」 | **按 B**，`GLFW_KEY_M` 未绑定任何 BBS 功能 |
+| 早期草稿 | 「Dashboard 按 B 打开」 | **按 0** |
+| 早期草稿 | 「demorph 默认未绑定」 | 默认 **.**（句点） |
+| 早期草稿 | 「record_replay 默认未绑定」 | 默认 **右 Alt** |
+
+`tutorial-script.json` 的按键描述与本表**完全一致**，无需修改。
+
+## 仍未核实的项（实现前请对照界面确认）
+
+1. **UI 按钮文案** — `New Film`、`Add Actor`、`Add Keyframe`、`Save Preset`、
+   `Add Replay`、`Output Path`、`ffmpeg Status` 等，中文客户端需用实际显示文本。
+2. **Export 面板** — Resolution / Frame Rate 控件形式，ffmpeg 状态三色语义（绿/红/黄）。
+3. **姿势 ID** — 9 个 ID 来自 PRD/design 描述，实现时先 `PoseManager.list()` 核实全部存在。
+4. **Actor 选择器语法** — JSON 写 `@s` / `@p`，未核实 Film 编辑器实际支持的格式。
+
+---
+
+*原草稿由 tutorial-script-writer agent 生成，2026-08-07*
+
+## 0. 实现须知
+
+### 0.1 数据结构增补建议
+
+design.md 的 `TutorialStep` 只有 `description` + `hint`，本剧本每步还产出「操作指引」，
+建议补一个与角色无关的 `action` 字段：
+
+```java
+public record TutorialStep(
+    String id,
+    IKey description,    // 角色台词，按性别拼后缀
+    IKey action,         // 操作指引（男女共用）
+    String poseId,
+    @Nullable IKey hint  // 提示（男女共用）
+) {}
+```
+
+台词按 `BBSSettings.tutorialCharacter` 拼后缀解析：
+`tutorial.step.morphing.open` + `.male` / `.female`
+
+### 0.2 姿势取值范围
+
+只使用 PRD/design 已确认存在的 9 个姿势 ID（`poses.json` 完整 30 个列表未核实，
+实现时若发现更贴切的姿势可替换，但需先确认 ID 真实存在）：
+
+| 姿势 ID | 情绪定位 | 主要用于 |
+|---|---|---|
+| `wave_1` | 打招呼 | 章节开场（男版首选） |
+| `crossed_arms` | 克制、专业 | 男版讲解常态 |
+| `bow` | 收束、致意 | 男版章节收尾 |
+| `thinking_2` | 思考、提醒 | 重要提示、注意事项 |
+| `huh` | 疑问、困惑 | 排错类步骤 |
+| `shy` | 害羞、亲切 | 女版讲解常态 |
+| `awww` | 撒娇、共情 | 女版安抚/鼓励 |
+| `tada_1` | 庆祝 | 单步完成、成果展示 |
+| `praise_the_sun` | 高潮庆祝 | 全教程通关 |
+
+### 0.3 翻译 key 命名规范
+
+```
+tutorial.title                                  面板标题
+tutorial.chapter.<chapterId>.title              章节标题
+tutorial.chapter.<chapterId>.intro.male         章节开场白（男）
+tutorial.chapter.<chapterId>.intro.female       章节开场白（女）
+tutorial.step.<chapterId>.<stepId>.male         步骤台词（男）
+tutorial.step.<chapterId>.<stepId>.female       步骤台词（女）
+tutorial.step.<chapterId>.<stepId>.action       操作指引（共用）
+tutorial.step.<chapterId>.<stepId>.hint         可选提示（共用）
+tutorial.ui.next / prev / skip / done           按钮文本
+```
+
+`chapterId` ∈ `dashboard_overview` / `morphing` / `film` / `replay` / `export`
+
+多行操作指引在 JSON 里用 `\n` 分隔，渲染时按行拆开加 `▶` 前缀。
+
+### 0.4 按键说明的正确写法
+
+按键绑定可被用户改键，剧本里写默认键 + 兜底路径。全文按此惯例：
+先给默认键，再补一句「若没反应，去 设置 → 按键绑定 里查 <绑定名>」。
+
+已核实的默认绑定名（`assets/bbs/lang/zh_cn.json`）：
+仪表盘 `key.bbs.dashboard`、打开伪装菜单 `key.bbs.open_morphing`、
+取消伪装 `key.bbs.demorph`、录制当前回放 `key.bbs.record_replay`、
+播放影片 `key.bbs.play_film`、录制视频 `key.bbs.record_video`。
+
+> 未核实项：各绑定的**默认按键值**（B / M 等）我没有在代码里确认到，
+> 剧本按 PRD 原文的 M（Morphing）书写，其余按 UI 路径描述。
+> 实现前请核对 `BBSKeybinds` 或按键绑定界面的实际默认值，如有差异只改 `.action` 文本。
+
+---
+
+## 第 1 章 · Dashboard 总览
+
+`chapterId: dashboard_overview` · 4 步
+
+**开场白（男版·高冷）**:
+> 先认路。这里是 FSR 的全部入口，记住位置，后面都从这里开始。
+
+**开场白（女版·猫娘）**:
+> 欢迎来到 FSR 喵～！这里就是我们的大本营。先带你转一圈，认个门牌就好，不难的！
+
+#### Step 1.1: `open`
+
+**姿势**: `wave_1`
+
+**台词（男版·高冷）**:
+> 这是 Dashboard，FSR 的总控台。记住怎么打开它，其它都是次要的。
+
+**台词（女版·猫娘）**:
+> first，先学会开门喵～ 这个叫 Dashboard，是总控台。所有功能都藏在这里面，记住这一步就够啦！
+
+**操作指引**:
+▶ 回到游戏画面，确认鼠标没有被其他界面占用
+▶ 按键盘上的 **B** 键打开 Dashboard
+▶ 想关掉的话，按 **Esc** 键
+
+**提示**:
+💡 按 B 没反应？打开 **设置 → 按键绑定**，找到 **仪表盘** 那一行，看它现在绑的是哪个键。
+
+---
+
+#### Step 1.2: `panels`
+
+**姿势**: `crossed_arms`
+
+**台词（男版·高冷）**:
+> 左边一列是面板按钮。点一下切一个，互不干扰。
+
+**台词（女版·猫娘）**:
+> 看到左边那一排小按钮了吗喵？每一个都是一个工作间～ 点一下就进去，不喜欢再点别的就好！
+
+**操作指引**:
+▶ 看 Dashboard **左侧边缘**的竖排图标按钮
+▶ 用鼠标**依次点击**每个图标，观察右侧区域跟着换内容
+▶ 鼠标**悬停**在图标上不点，会显示这个面板的名字
+
+**提示**:
+💡 切面板不会丢工作进度，随便点，点坏不了。
+
+---
+
+#### Step 1.3: `four_panels`
+
+**姿势**: `thinking_2`
+
+**台词（男版·高冷）**:
+> 四个面板要认清：Morphing 换形态，Film 排镜头，Replay 录动作，Export 出片。顺序也是这个。
+
+**台词（女版·猫娘）**:
+> 重点来了喵～ 记四个名字就行！Morphing 是换装间，Film 是片场，Replay 是录制棚，Export 是出片口。做视频就按这个顺序走～
+
+**操作指引**:
+▶ 在左侧图标里找到 **Morphing**（形态）面板，点开看一眼
+▶ 再点 **Film**（电影编辑器）面板
+▶ 再点 **Replay**（回放）面板
+▶ 最后点 **Export**（导出）面板
+▶ 只看不动手，认清位置就切回来
+
+**提示**:
+💡 这四个就是完整流程：先决定「演员长什么样」，再决定「怎么演」，录下来，最后出片。
+
+---
+
+#### Step 1.4: `theme_and_done`
+
+**姿势**: `bow` / 女版 `tada_1`
+
+**台词（男版·高冷）**:
+> 认路结束。教程面板一直在这儿，不用记笔记。
+
+**台词（女版·猫娘）**:
+> 第一章通关啦喵～！教程面板会一直待在这里，忘了随时回来看，我不会跑掉的！
+
+**操作指引**:
+▶ 在左侧图标里找到 **★教程** 面板（就是你现在看的这个）
+▶ 记住它的位置，任何时候迷路都可以点回来
+▶ 点右下角 **[下一步]** 进入第 2 章
+
+**提示**:
+💡 右下角有 **[跳过教程]**，老玩家可以直接跳。跳了之后不会再来打扰你。
+
+---
+
+## 第 2 章 · 形态 Morphing
+
+`chapterId: morphing` · 5 步
+
+**开场白（男版·高冷）**:
+> 换形态。你在镜头里是什么样子，取决于这一步。
+
+**开场白（女版·猫娘）**:
+> 到换装环节了喵～！这一章决定你在镜头里长什么样，是最好玩的部分哦！
+
+#### Step 2.1: `open`
+
+**姿势**: `wave_1`
+
+**台词（男版·高冷）**:
+> 按 M，进形态编辑器。没反应就自己去按键绑定里查。
+
+**台词（女版·猫娘）**:
+> 按键盘 **M** 键打开喵～ 如果没开出来，去设置里找「打开伪装菜单」那一栏，看它绑的是哪个键！
+
+**操作指引**:
+▶ 关闭 Dashboard（按 **Esc**）回到游戏画面
+▶ 按键盘上的 **M** 键打开 Morphing 编辑器
+▶ 若没反应，打开 **设置 → 按键绑定**，找到 **打开伪装菜单** 一栏确认按键
+
+---
+
+#### Step 2.2: `select_model`
+
+**姿势**: `thinking_2`
+
+**台词（男版·高冷）**:
+> 左边是模型分类，中间是列表。点一个，套上去。
+
+**台词（女版·猫娘）**:
+> 左边那一排是大类，比如动物啊、方块啊～ 点开一个大类，中间就显示该类所有模型，选一个点上去就变身啦！
+
+**操作指引**:
+▶ 看 Morphing 界面**左侧的分类树**（Model 分类）
+▶ 点开任意分类（如 **Animals** 或 **Blocks**）
+▶ 在**中间的列表**里点击一个模型名字
+▶ 右侧预览区会立即显示你变成那个样子
+
+**提示**:
+💡 预览是实时的，看着不对立刻换下一个，不用保存。
+
+---
+
+#### Step 2.3: `adjust_pose`
+
+**姿势**: `shy` / 男版 `crossed_arms`
+
+**台词（男版·高冷）**:
+> 下面有姿势栏。点 Poses 按钮，选一个姿势。站 T 字太僵。
+
+**台词（女版·猫娘）**:
+> 模型选好了，但站得好僵对不对喵？点下面的 **Poses** 按钮，里面有好多姿势，挥手、思考、庆祝，随便挑一个让角色生动起来～
+
+**操作指引**:
+▶ 在 Morphing 界面底部找到 **Poses** 按钮并点击
+▶ 弹出姿势列表（如 wave、thinking、tada 等）
+▶ 点击任意姿势，右侧预览立即切换动作
+▶ 多试几个，找到满意的
+
+**提示**:
+💡 姿势可以随时换，不会影响模型本身。
+
+---
+
+#### Step 2.4: `save_preset`
+
+**姿势**: `tada_1`
+
+**台词（男版·高冷）**:
+> 满意了就保存成 preset。下次一键加载，省时间。
+
+**台词（女版·猫娘）**:
+> 模型+姿势都调好了喵？那就保存成预设吧！下次用的时候一键搞定，不用重新找～
+
+**操作指引**:
+▶ 点击 Morphing 界面顶部的 **Save Preset** 按钮
+▶ 在弹出的对话框中**输入名字**（如"我的形态"）
+▶ 点 **确认** 保存
+▶ 以后打开 Morphing，在 Presets 分类里就能找到它
+
+**提示**:
+💡 Preset 保存的是：模型 + 姿势 + 皮肤贴图（如果你改过）。一整套配置。
+
+---
+
+#### Step 2.5: `apply_and_exit`
+
+**姿势**: `bow` / 女版 `awww`
+
+**台词（男版·高冷）**:
+> 点 Apply 应用，Esc 退出。你已经换形态了，镜头里是新样子。
+
+**台词（女版·猫娘）**:
+> 最后一步喵～ 点右下角 **Apply** 应用形态，再按 **Esc** 退出。回到游戏你就已经变身成功啦，去镜子前看看？
+
+**操作指引**:
+▶ 点击 Morphing 界面右下角的 **Apply** 按钮
+▶ 按 **Esc** 键关闭 Morphing 编辑器
+▶ 按 **F5** 切第三人称视角，看看自己是不是已经变身了
+
+**提示**:
+💡 想恢复原样？打开 Dashboard → 按快捷键（默认未绑定，需自己去按键绑定里设置 **取消伪装**）。
+
+---
+
+## 第 3 章 · 电影编辑器 Film
+
+`chapterId: film` · 5 步
+
+**开场白（男版·高冷）**:
+> 拍片用的。新建 Film，加演员，打关键帧，按时间线排镜头。
+
+**开场白（女版·猫娘）**:
+> 到导演环节了喵～！这一章教你怎么拍一段小电影，演员、镜头、时间线，听起来复杂其实超简单！
+
+#### Step 3.1: `create_film`
+
+**姿势**: `wave_1`
+
+**台词（男版·高冷）**:
+> 打开 Dashboard，进 Film 面板。点 New Film，起个名字，开工。
+
+**台词（女版·猫娘）**:
+> 先开片场喵～ 按 **B** 打开 Dashboard，点左边 **Film** 面板，然后点 **New Film** 按钮，给你的电影起个名字就能开始啦！
+
+**操作指引**:
+▶ 按 **B** 键打开 Dashboard
+▶ 点击左侧的 **Film**（电影编辑器）面板图标
+▶ 点击右上角的 **New Film** 按钮
+▶ 在弹出的对话框中**输入电影名字**（如"我的第一部片"）
+▶ 点 **确认** 创建
+
+---
+
+#### Step 3.2: `add_actor`
+
+**姿势**: `thinking_2`
+
+**台词（男版·高冷）**:
+> 电影需要演员。点 Add Actor，选一个形态，加进来。
+
+**台词（女版·猫娘）**:
+> 有片场了，但没演员怎么拍喵？点 **Add Actor** 按钮，选一个形态（可以是你自己，也可以是别的模型），加到演员列表里！
+
+**操作指引**:
+▶ 在 Film 编辑器界面找到 **Add Actor** 按钮并点击
+▶ 弹出形态选择界面（和 Morphing 界面类似）
+▶ 选择一个模型和姿势（或者直接用你刚才保存的 Preset）
+▶ 点 **确认** 添加演员
+▶ 演员会出现在左侧的演员列表里
+
+**提示**:
+💡 一部 Film 可以加多个演员，每个演员独立控制。
+
+---
+
+#### Step 3.3: `timeline_and_keyframe`
+
+**姿势**: `crossed_arms` / 女版 `shy`
+
+**台词（男版·高冷）**:
+> 底部是时间线。拖动播放头到某个时刻，调整演员位置或姿势，点 Add Keyframe。两个关键帧之间自动补间。
+
+**台词（女版·猫娘）**:
+> 看到下面那条时间轴了吗喵？把播放头（那条竖线）拖到某个时刻，然后移动演员或换姿势，再点 **Add Keyframe**，FSR 就会自动帮你做平滑过渡～
+
+**操作指引**:
+▶ 看 Film 编辑器底部的**时间线轨道**
+▶ 用鼠标**拖动播放头**（红色竖线）到 0 秒位置
+▶ 在游戏场景中**移动演员**（用鼠标拖拽或调整坐标）
+▶ 点击 **Add Keyframe** 按钮记录第一个关键帧
+▶ 拖动播放头到 3 秒位置，再移动演员到新位置，再点 **Add Keyframe**
+
+**提示**:
+💡 关键帧就是"里程碑"，FSR 会自动算中间的动画。只管打关键点，不用管中间。
+
+---
+
+#### Step 3.4: `preview`
+
+**姿势**: `tada_1`
+
+**台词（男版·高冷）**:
+> 点播放按钮预览。不满意就拖关键帧，或者删掉重打。
+
+**台词（女版·猫娘）**:
+> 打完关键帧记得试播一下喵～ 点下面的**播放按钮**（▶），看演员动起来顺不顺。不满意就拖动或删除关键帧重来，随便试！
+
+**操作指引**:
+▶ 点击时间线左下角的 **▶ 播放** 按钮
+▶ 观察游戏场景中的演员按照关键帧动起来
+▶ 想调整就**拖动时间线上的关键帧**（小方块）改时间点
+▶ 想删除就**右键点击关键帧 → Delete**
+
+**提示**:
+💡 播放时按 **空格** 可以暂停，方便观察细节。
+
+---
+
+#### Step 3.5: `save_film`
+
+**姿势**: `bow` / 女版 `awww`
+
+**台词（男版·高冷）**:
+> 满意了点 Save Film。文件存在配置目录，下次进 Film 面板直接加载。
+
+**台词（女版·猫娘）**:
+> 第一部电影完成喵～！点右上角 **Save Film** 保存，以后随时能打开继续编辑或者播放给朋友看！
+
+**操作指引**:
+▶ 点击 Film 编辑器右上角的 **Save Film** 按钮
+▶ 文件自动保存到 `config/bbs/films/` 目录
+▶ 关闭 Dashboard 再重新打开，进 Film 面板就能在列表里看到你的作品
+
+**提示**:
+💡 Film 保存的是"剧本"（演员、关键帧、镜头），不是视频文件。要出视频得走第 5 章 Export。
+
+---
+
+## 第 4 章 · 录制回放 Replay
+
+`chapterId: replay` · 4 步
+
+**开场白（男版·高冷）**:
+> 真人动作捕捉。开录，动一段，停录，回放，能转成 Film。
+
+**开场白（女版·猫娘）**:
+> 这一章是录动作喵～！不想手动打关键帧？直接真人表演，FSR 帮你录下来，还能转成电影继续编辑！
+
+#### Step 4.1: `start_recording`
+
+**姿势**: `wave_1`
+
+**台词（男版·高冷）**:
+> 回到游戏，按录制快捷键。右上角出现红点，开始录。
+
+**台词（女版·猫娘）**:
+> 准备开录喵～！先关掉所有菜单回到游戏画面，然后按 **录制当前回放** 的快捷键（默认需要自己去按键绑定里设），右上角出现红点就是在录了！
+
+**操作指引**:
+▶ 按 **Esc** 关闭所有菜单，回到游戏画面
+▶ 打开 **设置 → 按键绑定**，找到 **录制当前回放** 一栏，设置一个快捷键（如 **R**）
+▶ 按你设置的快捷键开始录制
+▶ 屏幕右上角出现 **红色录制指示器**
+
+**提示**:
+💡 录制期间你的移动、视角、动作都会被记录下来。
+
+---
+
+#### Step 4.2: `perform_and_stop`
+
+**姿势**: `tada_1`
+
+**台词（男版·高冷）**:
+> 走一段路，挥挥手，做点动作。再按一次快捷键停录。
+
+**台词（女版·猫娘）**:
+> 尽情表演喵～！跑跳、转圈、挥手、蹲下，随便做！做完了再按一次快捷键停止录制，红点消失就停了！
+
+**操作指引**:
+▶ 在游戏中自由移动和操作（走路、跳跃、挥手等）
+▶ 录够了之后**再按一次录制快捷键**停止
+▶ 红色录制指示器消失，录制完成
+
+---
+
+#### Step 4.3: `playback`
+
+**姿势**: `thinking_2`
+
+**台词（男版·高冷）**:
+> 打开 Dashboard → Replay 面板。找到刚才的录像，点 Play，看回放。
+
+**台词（女版·猫娘）**:
+> 录好了来看看效果喵～ 按 **B** 打开 Dashboard，点 **Replay** 面板，列表里最上面那个就是你刚录的，点 **Play** 回放试试！
+
+**操作指引**:
+▶ 按 **B** 键打开 Dashboard
+▶ 点击左侧的 **Replay**（回放）面板图标
+▶ 在回放列表中找到最新的录制（按时间排序）
+▶ 点击该录制，再点 **Play** 按钮播放
+▶ 游戏场景中会出现你的"幽灵演员"重复刚才的动作
+
+**提示**:
+💡 你可以用自由镜头（F1）围着回放转圈看，就像看别人表演一样。
+
+---
+
+#### Step 4.4: `export_to_film`
+
+**姿势**: `bow` / 女版 `awww`
+
+**台词（男版·高冷）**:
+> 满意了点 Export to Film。Replay 转成 Film，后续能编辑关键帧。
+
+**台词（女版·猫娘）**:
+> 回放很满意的话，把它变成电影吧喵～ 点 **Export to Film** 按钮，回放就转成 Film 了，后面还能继续编辑关键帧、加其他演员！
+
+**操作指引**:
+▶ 在 Replay 面板中选中刚才的录制
+▶ 点击 **Export to Film** 按钮
+▶ 输入 Film 名字（如"录制的动作"）
+▶ 点 **确认**，转换完成
+▶ 切到 **Film** 面板就能看到这部新电影
+
+**提示**:
+💡 转成 Film 之后，Replay 原文件还在，不会消失。两者互不影响。
+
+---
+
+## 第 5 章 · 视频导出 Export
+
+`chapterId: export` · 4 步
+
+**开场白（男版·高冷）**:
+> 最后一步，出片。设分辨率、帧率，配好 ffmpeg，点导出。
+
+**开场白（女版·猫娘）**:
+> 最后一章喵～！前面做的电影要变成真正的视频文件，就得走这一步。设置好参数，点一下按钮，坐等出片！
+
+#### Step 5.1: `open_export`
+
+**姿势**: `wave_1`
+
+**台词（男版·高冷）**:
+> Dashboard 左侧找 Export 面板。导出参数都在这里。
+
+**台词（女版·猫娘）**:
+> 按 **B** 打开 Dashboard，点左边的 **Export** 面板喵～ 所有导出设置都在这一页，我们一个一个来看！
+
+**操作指引**:
+▶ 按 **B** 键打开 Dashboard
+▶ 点击左侧的 **Export**（导出）面板图标
+▶ 在顶部的下拉框里**选择要导出的 Film**（就是前面章节做的那部）
+
+**提示**:
+💡 没有可选的 Film？回第 3 章或第 4 章先做一部出来。
+
+---
+
+#### Step 5.2: `check_ffmpeg`
+
+**姿势**: `huh`
+
+**台词（男版·高冷）**:
+> 先确认 ffmpeg 路径。没配好，导出只会得到一堆散图，拼不成视频。
+
+**台词（女版·猫娘）**:
+> 等等喵！先检查 **ffmpeg** 有没有配好～ 这是负责把画面拼成视频的小工具，没有它就只能导出一张张图片，拼不成片子的！
+
+**操作指引**:
+▶ 在 Export 面板里找到 **FFmpeg Path**（ffmpeg 路径）输入框
+▶ 如果是空的，需要先从 **ffmpeg.org** 下载 ffmpeg
+▶ 解压后把 `ffmpeg.exe` 的**完整路径**填进去（例如 `D:\ffmpeg\bin\ffmpeg.exe`）
+▶ 路径填对后，旁边通常会显示绿色勾或版本号
+
+**提示**:
+💡 这一步只需做一次，配好之后 FSR 会记住。路径填错的典型症状：导出后只有 PNG 序列，没有 mp4。
+
+---
+
+#### Step 5.3: `resolution_and_fps`
+
+**姿势**: `thinking_2` / 女版 `shy`
+
+**台词（男版·高冷）**:
+> 分辨率 1920×1080，帧率 60。第一次导出别贪高，先跑通流程。
+
+**台词（女版·猫娘）**:
+> 设置画质喵～ 推荐 **1920×1080** 配 **60** 帧，够清楚又不会等太久。第一次先用这个跑通，熟练了再往上调！
+
+**操作指引**:
+▶ 找到 **Width**（宽）填 **1920**，**Height**（高）填 **1080**
+▶ 找到 **Frame Rate**（帧率）填 **60**
+▶ 检查 **Output Path**（输出路径），默认在 `config/bbs/export/`，想改就点旁边的按钮选文件夹
+
+**提示**:
+💡 分辨率和帧率越高，导出越慢，文件越大。4K + 120帧 可能要等很久，先别碰。
+
+---
+
+#### Step 5.4: `render_and_done`
+
+**姿势**: `praise_the_sun`
+
+**台词（男版·高冷）**:
+> 点 Export，等进度条走完。文件在输出目录里。教程结束，剩下的靠你自己练。
+
+**台词（女版·猫娘）**:
+> 最后点 **Export** 就好啦喵～！等进度条走完，视频就躺在输出文件夹里了。恭喜通关，你已经会用 FSR 拍片了，超棒的！
+
+**操作指引**:
+▶ 点击 Export 面板底部的 **Export**（开始导出）按钮
+▶ 等待进度条走完，**导出期间不要关闭游戏**
+▶ 完成后点 **Open Folder** 按钮直接打开输出目录
+▶ 找到生成的视频文件，双击播放确认效果
+
+**提示**:
+💡 导出时游戏会卡顿甚至像卡死，这是正常的，它在逐帧渲染。耐心等进度条。
+
+---
+
+## 附录 A · 姿势序列总览
+
+| 章节 | 步骤 | 男版姿势 | 女版姿势 |
+|---|---|---|---|
+| 1 Dashboard | 1.1 open | `wave_1` | `wave_1` |
+| | 1.2 panels | `crossed_arms` | `crossed_arms` |
+| | 1.3 four_panels | `thinking_2` | `thinking_2` |
+| | 1.4 theme_and_done | `bow` | `tada_1` |
+| 2 Morphing | 2.1 open | `wave_1` | `wave_1` |
+| | 2.2 select_model | `thinking_2` | `thinking_2` |
+| | 2.3 adjust_pose | `crossed_arms` | `shy` |
+| | 2.4 save_preset | `tada_1` | `tada_1` |
+| | 2.5 apply_and_exit | `bow` | `awww` |
+| 3 Film | 3.1 create_film | `wave_1` | `wave_1` |
+| | 3.2 add_actor | `thinking_2` | `thinking_2` |
+| | 3.3 timeline_and_keyframe | `crossed_arms` | `shy` |
+| | 3.4 preview | `tada_1` | `tada_1` |
+| | 3.5 save_film | `bow` | `awww` |
+| 4 Replay | 4.1 start_recording | `wave_1` | `wave_1` |
+| | 4.2 perform_and_stop | `tada_1` | `tada_1` |
+| | 4.3 playback | `thinking_2` | `thinking_2` |
+| | 4.4 export_to_film | `bow` | `awww` |
+| 5 Export | 5.1 open_export | `wave_1` | `wave_1` |
+| | 5.2 check_ffmpeg | `huh` | `huh` |
+| | 5.3 resolution_and_fps | `thinking_2` | `shy` |
+| | 5.4 render_and_done | `praise_the_sun` | `praise_the_sun` |
+
+男女姿势相同的步骤可以共用一个 `poseId` 字段；不同的（1.4 / 2.3 / 2.5 / 3.3 / 3.5 / 4.4 / 5.3）
+需要按性别取值，建议 `TutorialStep` 存 `poseIdMale` + `poseIdFemale`，
+相同时两个字段填一样的值，避免运行期分支。
+
+## 附录 B · 待核实项
+
+实现前必须确认，否则教程会教错操作：
+
+1. **默认按键值** — 剧本中 Dashboard 写 **B**、Morphing 写 **M**（沿用 PRD 原文）。
+   我只核实到绑定名（`key.bbs.dashboard` / `key.bbs.open_morphing`）存在于语言文件，
+   **没有核实到默认绑定的键位**。请对照按键绑定界面实际默认值，有差异只改 `.action` 文本。
+2. **取消伪装 / 录制回放的默认键** — 语言文件里有 `key.bbs.demorph`、`key.bbs.record_replay`，
+   剧本按「默认可能未绑定，需自己设置」书写。若实际有默认键，把 2.5 与 4.1 的指引简化。
+3. **UI 按钮真实文案** — `Add Actor`、`Add Keyframe`、`Save Film`、`Export to Film`、
+   `FFmpeg Path`、`Open Folder` 等按钮名是按常见命名推断的，未逐个在 UI 代码里核对。
+   实现时请以界面实际文本为准，中文客户端要用中文按钮名。
+4. **姿势 ID** — 9 个姿势 ID 来自 PRD/design 文档描述，`poses.json` 实际内容未读取成功
+   （文件搜索超时）。实现时先 `PoseManager` 列一遍确认 ID 存在，缺失的按附录 A 就近替换。
+5. **Export 面板字段名** — 分辨率/帧率/输出路径的实际控件命名未核实。
+
+## 附录 C · zh_cn.json key 清单
+
+共 5 章 22 步。每步 4 个 key（`.male` / `.female` / `.action` / `.hint`），
+加 5 个章节标题 + 10 个章节开场白（男女各一）+ 面板标题与按钮文本。
+
+```
+tutorial.title
+tutorial.ui.next / tutorial.ui.prev / tutorial.ui.skip / tutorial.ui.done
+
+tutorial.chapter.dashboard_overview.title / .intro.male / .intro.female
+tutorial.step.dashboard_overview.open.male / .female / .action / .hint
+tutorial.step.dashboard_overview.panels.male / .female / .action / .hint
+tutorial.step.dashboard_overview.four_panels.male / .female / .action / .hint
+tutorial.step.dashboard_overview.theme_and_done.male / .female / .action / .hint
+
+tutorial.chapter.morphing.title / .intro.male / .intro.female
+tutorial.step.morphing.open.male / .female / .action            （无 hint）
+tutorial.step.morphing.select_model.male / .female / .action / .hint
+tutorial.step.morphing.adjust_pose.male / .female / .action / .hint
+tutorial.step.morphing.save_preset.male / .female / .action / .hint
+tutorial.step.morphing.apply_and_exit.male / .female / .action / .hint
+
+tutorial.chapter.film.title / .intro.male / .intro.female
+tutorial.step.film.create_film.male / .female / .action         （无 hint）
+tutorial.step.film.add_actor.male / .female / .action / .hint
+tutorial.step.film.timeline_and_keyframe.male / .female / .action / .hint
+tutorial.step.film.preview.male / .female / .action / .hint
+tutorial.step.film.save_film.male / .female / .action / .hint
+
+tutorial.chapter.replay.title / .intro.male / .intro.female
+tutorial.step.replay.start_recording.male / .female / .action / .hint
+tutorial.step.replay.perform_and_stop.male / .female / .action  （无 hint）
+tutorial.step.replay.playback.male / .female / .action / .hint
+tutorial.step.replay.export_to_film.male / .female / .action / .hint
+
+tutorial.chapter.export.title / .intro.male / .intro.female
+tutorial.step.export.open_export.male / .female / .action / .hint
+tutorial.step.export.check_ffmpeg.male / .female / .action / .hint
+tutorial.step.export.resolution_and_fps.male / .female / .action / .hint
+tutorial.step.export.render_and_done.male / .female / .action / .hint
+```
+
+3 个步骤没有 hint（`morphing.open`、`film.create_film`、`replay.perform_and_stop`），
+对应 `TutorialStep.hint` 传 `null`，UI 不渲染提示行。
+

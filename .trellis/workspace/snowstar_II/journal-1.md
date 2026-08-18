@@ -1390,3 +1390,36 @@ Added Addon API 2.0 and hot-plugin Dashboard panel registration, lifecycle-safe 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 36: BBS-PoseCurve 1.21.1 BBSFSR 迁移
+
+**Date**: 2026-08-18
+**Task**: BBS-PoseCurve 1.21.1 BBSFSR 迁移
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+完成独立 NeoForge 1.21.1 BBS-PoseCurve 插件迁移；通过 clean testPoseCurveLogic build、严格 runClient Mixin 目标校验、Jar 内容审计和工作区验证。插件源码位于 BBS-PoseCurve-fsr-1.21.1，保留手动 Film 编辑器交互冒烟测试作为残余风险。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a5d028f` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

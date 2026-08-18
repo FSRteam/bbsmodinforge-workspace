@@ -1,0 +1,10 @@
+camera.editor.keys.clips.layer_down            将片段下移一层
+camera.editor.keys.clips.layer_up              将片段上移一层
+camera.panels.envelopes.end_d                  淡出
+camera.panels.envelopes.modes.normal           普通
+camera.panels.envelopes.post                   后
+camera.panels.envelopes.pre                    前
+camera.panels.envelopes.start_d                淡入
+camera.panels.envelopes.title                  包络
+camera.panels.layer                            剪辑的层级，该数字决定了相机剪辑行为应用的顺序，数字越高，应用越晚
+camera.timeline.context.from_player_recording  来自玩家录制...

@@ -1,0 +1,115 @@
+=== film_core (113 labels)
+  bbs.ui.film.apply_player_settings_to_player                    应用至玩家
+  bbs.ui.film.details.button                                     详情
+  bbs.ui.film.details.created                                    创建时间：%s
+  bbs.ui.film.details.description                                描述：
+  bbs.ui.film.details.duration                                   时长：%s
+  bbs.ui.film.details.name                                       名称：%s
+  bbs.ui.film.details.save                                       保存
+  bbs.ui.film.details.stats                                      回放：%d | 剪辑：%d
+  bbs.ui.film.details.time_spent                                 用时：%s
+  bbs.ui.film.details.title                                      影片详情
+  bbs.ui.film.history-title                                      撤回历史
+  bbs.ui.film.insert_space-description                           输入需要插入多少刻的空白帧：
+  bbs.ui.film.insert_space-title                                 插入空白帧
+  bbs.ui.film.layout_bind_to_editor                              将布局与编辑器绑定
+  bbs.ui.film.layout_lock                                        锁定布局
+  bbs.ui.film.layout_presets                                     布局预设
+  bbs.ui.film.layout_reset                                       重置布局
+  bbs.ui.film.layout_unlock                                      解锁布局
+  bbs.ui.film.move-description                                   输入相对坐标以移动场景：
+  bbs.ui.film.move-title                                         移动影片
+  bbs.ui.film.move.context.fill                                  填充到玩家位置的偏移
+  bbs.ui.film.move.context.fill_rounded                          填充到玩家位置的偏移（取整）
+  bbs.ui.film.no_camera-description                              您似乎没有设置摄像机。若没有摄像机，此功能将不可用。请在摄像机编辑器中设置至少一个摄像机剪辑！
+  bbs.ui.film.no_camera-title                                    无摄像机...
+  bbs.ui.film.open_action_editor                                 打开行为编辑器
+  bbs.ui.film.open_camera_editor                                 打开摄像机编辑器
+  bbs.ui.film.open_history                                       打开撤销/重做历史...
+  bbs.ui.film.open_replay_editor                                 打开回放编辑器
+  bbs.ui.film.options                                            影片选项
+  bbs.ui.film.player_settings                                    配置玩家
+  bbs.ui.film.player_settings-description                        配置存储在影片中玩家的属性
+  bbs.ui.film.player_settings-title                              配置玩家
+  bbs.ui.film.player_settings.hp                                 生命值
+  bbs.ui.film.player_settings.hunger                             饥饿值
+  bbs.ui.film.player_settings.mob_recording_radius               生物录制半径
+  bbs.ui.film.player_settings.mob_recording_radius_tooltip       录制玩家回放（右 Alt 键）时，此半径（以方块为单位）范围内的附近生物会被录制到各自的回放中，并以生物形态呈现。设置为 0 将禁用此功能。
+  bbs.ui.film.player_settings.xp_level                           经验等级
+  bbs.ui.film.player_settings.xp_progress                        经验进度
+  bbs.ui.film.render_audio                                       渲染音频（从音频剪辑）
+  bbs.ui.film.render_audio.error                                 音频剪辑无法渲染！详情请查看 latest.log...
+  bbs.ui.film.render_audio.success                               音频剪辑已渲染！
+  bbs.ui.film.render_queue                                       从打开的标签页导出队列
+  bbs.ui.film.render_queue.cancelled                             队列导出已取消。
+  bbs.ui.film.render_queue.empty                                 没有可导出的影片标签页。
+  bbs.ui.film.render_queue.finished                              队列导出已完成。
+  bbs.ui.film.render_queue.load_timeout                          队列导出因等待影片加载而超时。
+  bbs.ui.film.render_queue.progress                              正在导出影片 %s（共 %s 个）：%s
+  bbs.ui.film.render_queue.started                               队列导出已开始：%s 个影片。
+  bbs.ui.film.replace_inventory                                  替换背包
+  bbs.ui.film.replay.actor                                       演员
+  bbs.ui.film.replay.actor-tooltip                               启用时，该回放会以实体的形式显示（即你可以攻击演员，它能够捡起物品，触发压力板等）。
+  bbs.ui.film.replay.animation_to_pose.generate                  生成
+  bbs.ui.film.replay.animation_to_pose.length                    动画长度
+  bbs.ui.film.replay.animation_to_pose.only_keyframes            仅关键帧
+  bbs.ui.film.replay.animation_to_pose.only_keyframes-tooltip    启用后，将不会为每一刻烘焙动画，而是仅在存在关键帧的位置生成姿势... 对于使用 MoLang 驱动的动画，建议禁用此选项！
+  bbs.ui.film.replay.animation_to_pose.step                      烘焙步阶
+  bbs.ui.film.replay.animation_to_pose.title                     动画转姿势
+  bbs.ui.film.replay.axes_preview                                预览坐标轴
+  bbs.ui.film.replay.context.add                                 在此处添加回放
+  bbs.ui.film.replay.context.animation_to_keyframes              动画转为姿势关键帧...
+  bbs.ui.film.replay.context.clear_ik                            清除 IK 轨迹
+  bbs.ui.film.replay.context.move_here                           将回放移动到此处
+  bbs.ui.film.replay.context.poses_to_limbs                      拆分姿势关键帧
+  bbs.ui.film.replay.entity_keyframes                            打开实体关键帧
+  bbs.ui.film.replay.filter_sheets                               筛选轨道...
+  bbs.ui.film.replay.filter_sheets-disable_all                   全部禁用
+  bbs.ui.film.replay.filter_sheets-enable_all                    全部启用
+  bbs.ui.film.replay.filter_sheets-title                         关键帧轨道
+  bbs.ui.film.replay.form_keyframes                              打开形态关键帧
+  bbs.ui.film.replay.fp                                          第一人称回放
+  bbs.ui.film.replay.label                                       回放显示名称
+  bbs.ui.film.replay.looping                                     循环播放
+  bbs.ui.film.replay.looping-tooltip                             设置为 0 时禁用循环。设置为任意正值时，即可循环播放回放。注意，循环播放并不会更改影片的持续时间。
+  bbs.ui.film.replay.name_tag                                    名称标签
+  bbs.ui.film.replay.orbit.camera                                镜头
+  bbs.ui.film.replay.orbit.first_person                          第一人称
+  bbs.ui.film.replay.orbit.free                                  自由
+  bbs.ui.film.replay.orbit.orbit                                 轨道
+  bbs.ui.film.replay.orbit.teleport_to_recording                 传送至回放
+  bbs.ui.film.replay.orbit.third_person_back                     第三人称（背面）
+  bbs.ui.film.replay.orbit.third_person_front                    第三人称（正面）
+  bbs.ui.film.replay.pick_axes_preview                           选取预览骨骼...
+  bbs.ui.film.replay.record                                      录制回放...
+  bbs.ui.film.replay.relative-tooltip                            启用，该回放将相对于摄像机渲染
+  bbs.ui.film.replay.replay                                      回放
+  bbs.ui.film.replay.section_other                               杂项
+  bbs.ui.film.replay.shadow                                      阴影
+  bbs.ui.film.replay.shadow_follow                               阴影跟随表单
+  bbs.ui.film.replay.shadow_follow_tooltip                       启用后，阴影跟随表单的视觉位置（锚点/变换位移），而不是停留在实体脚下
+  bbs.ui.film.replay.shadow_offset                               阴影偏移（世界 XYZ）
+  bbs.ui.film.replay.shadow_size                                 阴影半径
+  bbs.ui.film.replay.tab.1                                       切换至玩家标签页
+  bbs.ui.film.replay.tab.2                                       切换至模型标签页
+  bbs.ui.film.replay.tab.3                                       切换至姿势标签页
+  bbs.ui.film.replay.tab.4                                       切换到 IK 标签页
+  bbs.ui.film.replay.tab.5                                       切换到物理选项卡
+  bbs.ui.film.replay.teleport_to_player                          传送到玩家
+  bbs.ui.film.replay.title                                       回放
+  bbs.ui.film.reset_replays                                      录制时重置回放状态
+  bbs.ui.film.screenshot                                         截屏
+  bbs.ui.film.screenshot-description                             已成功截屏！点击右侧图标打开文件夹...
+  bbs.ui.film.screenshot-title                                   已截屏
+  bbs.ui.film.swap_small_panels                                  交换小面板
+  bbs.ui.film.tabs.context.close_left                            关闭左侧标签页
+  bbs.ui.film.tabs.context.close_others                          关闭其他标签页
+  bbs.ui.film.tabs.context.close_right                           关闭右侧标签页
+  bbs.ui.film.tabs.new_tab                                       新标签页
+  bbs.ui.film.teleport-description                               您似乎已远离场景。如果您想传送至摄像机所在的位置，请按下方工具栏中的传送图标！
+  bbs.ui.film.teleport-title                                     传送
+  bbs.ui.film.teleport.context.player                            将玩家传送至摄像机
+  bbs.ui.film.title                                              影片
+  bbs.ui.film.toggle_layout                                      切换布局
+  bbs.ui.film.video_recording                                    正在录制 %s, 按 %s 停止...
+

@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 35
-- **Last Active**: 2026-08-17
+- **Total Sessions**: 36
+- **Last Active**: 2026-08-18
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1388 | Active |
+| `journal-1.md` | ~1425 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 36 | 2026-08-18 | BBS-PoseCurve 1.21.1 BBSFSR 迁移 | `a5d028f` | `codex/bootstrap-trellis-workspace` |
 | 35 | 2026-08-17 | 同步剩余工作区改动 | `07a0e65` | `codex/bootstrap-trellis-workspace` |
 | 34 | 2026-08-16 | 手机手势修正 + 版面简约重排 | - | `codex/bootstrap-trellis-workspace` |
 | 33 | 2026-08-16 | webremote 前端重构总纲收尾 | - | `codex/bootstrap-trellis-workspace` |
