@@ -370,6 +370,10 @@ the workspace's other standalone addons do not exercise this path.
 - Any BBS change to a method targeted by a workspace addon must propagate to that addon in the
   same verification session: rebuild one fresh core jar, compile the addon against it, inspect
   that the strict target descriptor still exists, then run the client and execute the target UI.
+- NeoForge parses every declared Mixin config on a dedicated server before it filters client-only
+  entries. A companion `IMixinConfigPlugin` named by a client config must therefore be common-safe
+  and compiled into `src/main`; it may gate optional targets, but it must not reference Minecraft
+  client classes or exist only in `src/client`.
 
 ### 7.4 Validation & Error Matrix
 
@@ -385,6 +389,7 @@ the workspace's other standalone addons do not exercise this path.
 | A host UI edit changes an invocation overload, descriptor, or branch cardinality | Search every workspace addon Mixin targeting that method, update the semantic injection boundary, and verify every reachable layout branch with strict `require` still enabled. |
 | A long-lived client reports several unrelated BBS `ClassNotFoundException`s after its jar changed on disk | Treat it as artifact lifecycle corruption, restart from an audited stable jar, and do not patch the reported classes individually. |
 | Config omits `refmap` and targets only BBS classes | This is the expected working state, not a missing-artifact warning. |
+| Dedicated server reports `ClassNotFoundException` for a client Mixin plugin | Move the plugin implementation to the common source set and keep its logic client-API-free; do not remove the client config from the manifest. |
 | Build passes but no client run was performed | Verification is incomplete because injection target lookup has not run. |
 | `runClient` stops before Mixin config selection with `Failed to locate a primary monitor` | Treat it as a NeoForge early-window environment failure. Temporarily set `runs/client/config/fml.toml` `earlyWindowControl = false`, retry the same verification command, and restore the local value afterward. Do not weaken Mixin checks or edit addon/BBS source. |
 
@@ -396,6 +401,8 @@ the workspace's other standalone addons do not exercise this path.
   callback return only when the list uses the particle icon; file/model lists retain BBS sorting.
 - Base: Iris is absent, so the Iris-only config is skipped while common and client configs
   still apply.
+- Good: the client Mixin config names a common-safe plugin in `src/main`; a dedicated server parses
+  the config without loading client classes, while the client applies the gated Physics Mod target.
 - Base: the early splash cannot resolve a monitor, but disabling only `earlyWindowControl`
   lets the real client window load, the verifier pass, and the local setting be restored.
 - Bad: accept `./gradlew build` as proof that 76 migrated injection signatures are valid.
@@ -403,6 +410,8 @@ the workspace's other standalone addons do not exercise this path.
   requirements to make an unrelated environment failure disappear.
 - Bad: place a logger next to a Mixin because both are client-only; Mixin owns the whole
   package regardless of Java-side intent.
+- Bad: keep the companion plugin in `src/client` because every listed Mixin is client-only; the
+  dedicated server still loads the plugin class while reading `neoforge.mods.toml`.
 - Bad: override `sortElements()`, branch on an addon marker, then call `super.sortElements()`
   for ordinary instances; that reaches `UIList`, bypassing `UIDataPathList` sorting.
 
@@ -692,4 +701,67 @@ Correct:
     at = @At("HEAD"),
     cancellable = true
 )
+```
+
+## 11. Host shader ownership and effect-state isolation
+
+### 11.1 Scope / Trigger
+
+Apply when an external addon adds a model effect by replacing a BBS shader supplier,
+copying a BBS core shader, or publishing resources under `assets/bbs/shaders/core/`.
+
+### 11.2 Contracts
+
+- Normal BBS rendering remains owned by the host. An addon must not unconditionally replace
+  `BBSShaders.getModel()` or another host shader supplier for previews, picker passes, world
+  rendering, and unrelated forms.
+- Prefer effect inputs that survive the active rendering pipeline, such as bounded texture,
+  material, mesh, or framebuffer state. If one such path works with both the BBS shader and
+  Iris/vanilla entity shaders, use it everywhere and remove the duplicate custom shader path.
+- When a custom shader is unavoidable, select it only inside the explicit effect render scope.
+  Restore the host program and every static effect flag in `finally`; deferred draw suppliers
+  must capture the intended program instead of reading an effect flag after the scope ends.
+- A copied host shader is a versioned external contract. For every target BBSFSR update, compare
+  its attributes, samplers, uniforms, imported helpers, fog-distance semantics, alpha/discard
+  rules, and pass-control branches such as `PassMode` before accepting the addon build.
+- Keep addon programs uniquely named. Never shadow the host's `model.json`, `model.vsh`, or
+  `model.fsh` in-place to obtain load-order-dependent behavior.
+
+### 11.3 Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Effect is inactive | Return the exact host shader and leave host uniforms/state untouched. |
+| Addon shader copy differs from the current host contract | Update and exercise every render context, or remove the copy in favor of a pipeline-independent effect. |
+| UI preview is invisible while other forms render | Compare UI fog-distance semantics and global host-shader interception before changing model data or textures. |
+| Host adds a uniform or render pass | Treat the addon copy as incompatible until the control flow and deferred paths are audited. |
+| Iris bypasses the addon shader | Move the effect to shared texture/material/mesh/framebuffer state; do not maintain two visually divergent implementations. |
+
+### 11.4 Tests Required
+
+- Render a normal model form in the form picker/UI preview and in the world with the effect off.
+- Render one effect copy, then another normal model in the same frame and verify state restoration.
+- Exercise opaque and translucent model textures so the host's split/deferred pass still runs.
+- Repeat the world smoke test with vanilla rendering and the supported Iris/Sodium profile.
+- Inspect the release JAR for accidental host `model.*` overrides and stale shader/Mixin classes.
+- Do not accept compilation or a title-screen-only launch as visual rendering evidence.
+
+### 11.5 Wrong vs Correct
+
+Wrong:
+
+```java
+@ModifyReturnValue(method = "getModel", at = @At("RETURN"))
+private static ShaderInstance replaceEveryModelShader(ShaderInstance host)
+{
+    return addonModelShader;
+}
+```
+
+Correct:
+
+```java
+Texture rendered = EffectRenderState.active
+    ? dissolveTextures.lookup(original, EffectRenderState.amount)
+    : original;
 ```
