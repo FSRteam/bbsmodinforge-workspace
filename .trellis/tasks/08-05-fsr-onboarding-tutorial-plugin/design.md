@@ -1,270 +1,231 @@
-# FSR 新手教程热插件 · 设计方案
+# FSR 新手教程插件 · 设计方案
+
+> 本文档已按实际实现重写。规划期的热插件方案（`BBSPlugin.prepare`、`META-INF/bbs-plugin.json`、255 个语言 key、11 章 59 步）已作废，作废理由见 `prd.md` §Context。
 
 ## 1. 架构概览
 
 ```
 bbs-tutorial-plugin/
-├── src/main/
-│   ├── java/bbstutorial/
-│   │   ├── TutorialPlugin.java           # 主入口，实现 BBSPlugin
-│   │   ├── TutorialDashboardPanel.java   # 面板内容工厂 + 生命周期
-│   │   ├── TutorialContentView.java      # 右侧步骤卡片 UI 根容器
-│   │   ├── TutorialCharacterView.java    # 左侧人物渲染器（UIFormRenderer）
-│   │   ├── TutorialProgress.java         # 进度持久化（JSON 读写）
-│   │   ├── TutorialChapter.java          # 章节数据结构
-│   │   └── TutorialStep.java             # 步骤数据结构（文本 key + 姿势名）
-│   └── resources/
-│       ├── META-INF/bbs-plugin.json      # 热插件 manifest
-│       └── assets/bbs_tutorial/
-│           ├── strings/
-│           │   ├── zh_cn.json            # 中文翻译（完整）
-│           │   └── en_us.json            # 英文翻译（占位）
-│           ├── textures/skins/
-│           │   ├── tutorial_male.png     # 男款皮肤（日式长风衣）
-│           │   └── tutorial_female.png   # 女款皮肤（预留路径）
-│           └── models/player/
-│               └── tutorial_steve/       # 可选：自定义模型变体（先用内置 steve）
-└── build.gradle                          # NeoGradle 构建脚本
+├── src/main/java/mchorse/bbs_tutorial/
+│   ├── BBSTutorialMod.java              # @Mod 入口：registerAddon + 客户端启动
+│   ├── BBSTutorialAddon.java            # descriptor + 源包注册
+│   ├── BBSTutorialClientStarter.java    # 按名反射到客户端入口（避免服务端类加载）
+│   ├── content/
+│   │   ├── TutorialContent.java         # content.json 单次加载 + 降级
+│   │   ├── TutorialChapter.java
+│   │   ├── TutorialStep.java
+│   │   └── TutorialGender.java          # 两位讲解者：id/label/模型/皮肤路径
+│   └── progress/TutorialProgress.java   # 按 id 存取的进度持久化
+├── src/client/java/mchorse/bbs_tutorial/client/
+│   ├── BBSTutorialClient.java           # 面板注册 + L10n provider
+│   └── ui/
+│       ├── UITutorialPanel.java         # 面板内容根（UIElement + BBSDashboardPanelContent）
+│       ├── UITutorialCharacter.java     # 固定视角人物渲染
+│       ├── TutorialKeys.java            # 延迟解析的 chrome 语言键
+│       └── TutorialSkinPicker.java      # tinyfd 选皮肤 + 校验 + 导入
+├── src/contentTest/java/mchorse/bbs_tutorial/content/
+│   ├── TutorialContentTestMain.java     # 内容结构校验
+│   ├── TutorialWiringTestMain.java      # 运行期契约校验
+│   └── SourceText.java                  # 读源码/资源文本，不加载 BBS 类
+└── src/main/resources/
+    ├── META-INF/neoforge.mods.toml
+    └── assets/bbstutorial/assets/
+        ├── strings/{zh_cn,en_us}.json
+        ├── textures/skins/tutorial_male.png
+        └── tutorial/content.json
 ```
+
+`src/client` 是独立 source set：客户端类不进服务端类路径，`BBSTutorialMod` 只在 `FMLEnvironment.dist == Dist.CLIENT` 时经反射触达它们。
 
 ## 2. 数据模型
 
 ### 2.1 章节与步骤
 
-```java
-public record TutorialChapter(
-    String id,              // "ch01_dashboard", "ch02_morphing_basic", ...
-    IKey title,             // tutorial.ch01.title, tutorial.ch02.title, ...
-    List<TutorialStep> steps
-) {}
+`content.json` 结构（`_meta` + `chapters`）：
 
-public record TutorialStep(
-    String id,              // "ch01_s1_open", "ch02_s1_open_b", ...
-    IKey dialogueMale,      // 男版台词 key
-    IKey dialogueFemale,    // 女版台词 key
-    IKey instruction,       // 操作指引（男女共用）
-    String pose,            // 姿势 ID（wave_1/thinking_2/crossed_arms/tada_1/bow/praise_the_sun/huh/awww）
-    @Nullable IKey hint     // 提示（所有步骤均含 hint，nullable 为容错）
-) {}
+```
+chapter: { id, order, act, titleZh, steps[] }
+step:    { id, order, pose, dialogueMale, dialogueFemale, instruction, userWillSee, hint }
 ```
 
-**权威内容源**：`tutorial-script.json` v2.0.0（11章59步）
-- 章节：ch01_dashboard (5步) / ch02_morphing_basic (5步) / ch03_ik_vs_fk (5步) / ch04_form_types (5步) / ch05_presets (5步) / ch06_film_basics (7步) / ch07_replay_recording (6步) / ch08_export (5步) / ch09_constraints (5步) / ch10_physics (5步) / ch11_animation_states (6步)
-- 字段对应：JSON `dialogueMale/dialogueFemale/instruction/pose/hint/userWillSee` → Record `dialogueMale/dialogueFemale/instruction/pose/hint`
-- `userWillSee` 不进代码，仅作冒烟测试人工对照
-- 风格定位（JSON `_meta.styles`）：男版=简洁/冷静/短句，女版=活泼/每句1-2个语气词（喵/啦/哦）
+对应的运行时类型是普通 final class（不是 record，与 BBS 内部风格一致），全部字段经 `MapType.getString(key, fallback)` 读取，缺字段降级为空串、缺 pose 降级为 `crossed_arms`。台词按讲解风格取，缺失时取另一版本，两版都缺则空串——单步缺文案不会中断阅读。
+
+步骤正文是作者中文，不进语言文件（见 `prd.md` §4）。
 
 ### 2.2 进度持久化
 
-`config/bbs/tutorial-progress.json`（ID 取自 `tutorial-script.json`，不再使用旧的 `dashboard_overview` 系命名）:
+`config/bbs/settings/tutorial-progress.json`（`BBSMod.getSettingsPath`）：
+
 ```json
 {
   "version": 1,
-  "skipped": false,
   "gender": "male",
-  "currentChapter": "ch03_ik_vs_fk",
-  "currentStep": 2,
-  "completedSteps": [
-    "ch01_s1_open",
-    "ch01_s2_layout",
-    "ch01_s3_hover",
-    "ch01_s4_switch",
-    "ch01_s5_close",
-    "ch02_s1_open_b"
-  ]
+  "skin": "textures/skins/tutorial/my_skin.png",
+  "skipped": false,
+  "currentChapter": "ch09_ik_chains",
+  "currentStep": "ch09_s3_target",
+  "completedSteps": ["ch01_s1_open", "ch01_s2_layout"]
 }
 ```
 
-**容错**：`currentChapter` / `completedSteps` 中出现未知 ID 时忽略该条并回退到最近一个已知步骤，不抛异常（教程内容会随版本增删）。
+**为什么存 id 不存下标**：内容还在增删章节，存下标会让老读者在下一版被静默传送。`seek()` 把 id 解析成下标，未知章节 id 直接放弃恢复（回到开头），未知步骤 id 回到该章第一步，都不抛异常。
 
-### 2.3 翻译 key 命名约定
+写盘时机：切风格、切皮肤、切跳过、跳章、上一步/下一步各自 `save()`。教程是低频交互，逐次写盘比攒批次丢进度划算。
 
-JSON 的 `titleKey` 已给定章节标题 key（`tutorial.ch01.title` … `tutorial.ch11.title`），
-步骤 key 按同一 `chNN` 前缀 + step id 展开，无需任何 slug 映射：
+### 2.3 语言键
+
+只有 UI chrome 进语言文件，共 24 键，统一前缀 `bbstutorial.ui.`：
 
 ```
-tutorial.panel.title                        # 面板标题
-tutorial.chNN.title                         # 章节标题（JSON titleKey 原样使用）
-tutorial.step.<stepId>.male                 # 步骤台词（男版·简洁冷静）
-tutorial.step.<stepId>.female               # 步骤台词（女版·活泼带语气词）
-tutorial.step.<stepId>.instruction          # 操作指引（男女共用）
-tutorial.step.<stepId>.hint                 # 提示（男女共用，59 步全含）
-tutorial.button.male / .female / .skin      # 风格切换与皮肤按钮
-tutorial.ui.next / .prev / .skip            # 导航按钮
+title dialogue instruction expectation hint
+previous next skip resume chapters
+pick_skin skin_dialog skin_rejected skin_rejected_body skin_failed skin_failed_body
+style gender.male gender.female
+missing_content skipped step_done heading progress
 ```
 
-**stepId 直接取 JSON `step.id`**，其自带 `chNN_sN_` 前缀，天然唯一：
-
-| 章节 id | 步数 | stepId 示例 | 展开后的 key |
-|--------|-----|------------|-------------|
-| `ch01_dashboard` | 5 | `ch01_s1_open` | `tutorial.step.ch01_s1_open.male` |
-| `ch02_morphing_basic` | 5 | `ch02_s1_open_b` | `tutorial.step.ch02_s1_open_b.female` |
-| `ch03_ik_vs_fk` | 5 | `ch03_s1_fk_pain` | `tutorial.step.ch03_s1_fk_pain.instruction` |
-| `ch04_form_types` | 5 | `ch04_s1_categories` | `tutorial.step.ch04_s1_categories.hint` |
-| `ch05_presets` | 5 | `ch05_s1_why_save` | … |
-| `ch06_film_basics` | 7 | `ch06_s1_open_film` | … |
-| `ch07_replay_recording` | 6 | `ch07_s1_replay_vs_keyframe` | … |
-| `ch08_export` | 5 | `ch08_s1_ffmpeg_check` | … |
-| `ch09_constraints` | 5 | `ch09_s1_constraint_concept` | … |
-| `ch10_physics` | 5 | `ch10_s1_physics_concept` | … |
-| `ch11_animation_states` | 6 | `ch11_s1_state_concept` | … |
-
-**key 总量**：59 步 × 4（male/female/instruction/hint）+ 11 章标题 + 8 UI = **255 个 key**
-
-章节内排序用 JSON `step.order`（章内 1..N），不要依赖数组下标。
-
-**按键绑定**（JSON `_meta.keybinds_verified: true`，源 `BBSModClient.java:976-988`，我已独立复核一致）：
-
-| 功能 | 默认键 | GLFW 常量 |
-|-----|-------|----------|
-| Dashboard | 数字键 **0** | `GLFW_KEY_0` |
-| 打开 Morphing | **B** | `GLFW_KEY_B` |
-| 取消伪装 | 句号 **.** | `GLFW_KEY_PERIOD` |
-| 播放 Film | **右 Ctrl** | `GLFW_KEY_RIGHT_CONTROL` |
-| 暂停 Film | 反斜杠 **\\** | `GLFW_KEY_BACKSLASH` |
-| 录制 Replay | **右 Alt** | `GLFW_KEY_RIGHT_ALT` |
-| 打开 Replays | **右 Shift** | `GLFW_KEY_RIGHT_SHIFT` |
-| 手动录视频 | **F4** | `GLFW_KEY_F4` |
-| 播放 Film 并录制 | **F6** | `GLFW_KEY_F6` |
-| 传送到 Replay | **Y** | `GLFW_KEY_Y` |
-| 物品编辑器 | **Home** | `GLFW_KEY_HOME` |
-
-> ⚠️ **M 键与 Morphing 无关**：全仓 `GLFW_KEY_M` 仅出现在 camera/pixels/film_controller 的
-> 内部 `KeyCombo`（`ui/Keys.java`），从未绑定 Morphing。旧版 `tutorial-script.md` 的
-> 「Dashboard 按 B / Morphing 按 M」两处均错，该文件已被作者标记废弃，不作为实现依据。
-
-**JSON `_meta.corrections` 两条结构性纠正**（影响章节划分，勿按旧版 5 章理解）：
-- Export **不是** Dashboard 面板，视频生成走 F4/F6 按键流程
-- Replay **不是** 独立面板，它是 Film 面板内的编辑对象，右 Shift 为直达入口
+`heading` 和 `progress` 是格式串（`%s`）；`style` 的参数本身是另一个键（`gender.<id>`）。
 
 ## 3. 核心组件设计
 
-（见完整 design.md）
+### 3.1 面板注册
 
-### 3.3 皮肤切换与风格管理
-
-**风格切换按钮**：
-- 位置：教程面板右上角，与关闭按钮同行
-- UI：♂/♀ 图标，当前风格高亮（`UITheme.accent`）；对应 key `tutorial.button.male` / `tutorial.button.female`
-- 交互：点击切换 → `BBSSettings.tutorialGender` 写入 → `TutorialContentView.refresh()` 重新加载台词
-- 无动画：人物姿势保持，仅文本切换
-
-**皮肤选择按钮**：
-- 位置：人物渲染区域右下角，悬浮圆形按钮（`tutorial.button.skin` key，🎨图标）
-- 交互：点击 → `FileDialog.showOpenDialog("*.png")` → 验证 64×64（或 64×32）→ `BBSSettings.tutorialSkin` 写入 → `TutorialCharacterView.reloadTexture()`
-- 降级：读取失败时回退到内置皮肤，toast 提示错误，清空 `tutorialSkin` 设置
-
-**数据持久化**：
-`config/bbs/settings.json` 新增字段：
-```json
-{
-  "tutorialGender": "male",
-  "tutorialSkin": "D:/skins/my_skin.png"
-}
 ```
-- `tutorialGender`：`"male"` | `"female"`，默认 `"male"`
-- `tutorialSkin`：可选字符串，未设置时用内置 `tutorial_male.png` 或 `tutorial_female.png`
+BBSTutorialMod (构造期)
+  └─ BBSApi.registerAddon(DESCRIPTOR, BBSTutorialAddon::new)
+  └─ [CLIENT] BBSTutorialClientStarter.initialize()
+       └─ 反射 mchorse.bbs_tutorial.client.BBSTutorialClient.initialize()
+            ├─ BBSClientApi.onClientStarted(→ activateTranslations)
+            └─ BBSClientApi.registerDashboardPanel(DESCRIPTOR, spec, UITutorialPanel::new)
+```
 
-## 4. 实现路线图
+`spec.title(TutorialKeys.panelTitle())` 传的是延迟 `IKey`：spec 在构造期创建，此时 `BBSModClient.getL10n()` 还不存在，而 tooltip 每次绘制都会重新 `get()`。
 
-### 阶段一：基础框架（构建 + manifest + 降级面板）
-- [ ] 创建 `bbs-tutorial-plugin/` 工程，配置 NeoGradle + BMCLAPI 镜像
-- [ ] manifest 声明 `resources` + `dashboard_panels` 能力
-- [ ] `TutorialPlugin.prepare()` 注册面板（先用 `RegisterDashboardPanelsEvent` 降级）
-- [ ] 空面板能在 Dashboard 显示，点击打开无报错
-- [ ] **验收**：`./gradlew buildPlugin` 成功，jar 放入 `config/bbs/plugins/` 后 Dashboard 显示 ★教程 按钮
+注册结果只写日志：`result.accepted()` 为假时教程没有入口，Dashboard 照常可用。
 
-### 阶段二：人物渲染与姿势
-- [ ] `TutorialCharacterView extends UIFormRenderer`，加载 `player/steve` 模型
-- [ ] 皮肤贴图 `tutorial_male.png` 打包到 jar，通过 `Link.create("bbs_tutorial:textures/skins/tutorial_male.png")` 寻址
-- [ ] 视角固定 yaw=25°/pitch=10°/distance=2.5
-- [ ] `playPose(poseId)` 从 `PoseManager` 加载姿势并应用到 `ModelForm.pose`
-- [ ] **验收**：打开教程面板，左侧显示穿日式长风衣的 steve，做 wave_1 姿势
+### 3.2 面板内容
 
-### 阶段三：步骤卡片与进度
-- [ ] `TutorialProgress` 硬编码五章内容结构（每章 3-5 步）
-- [ ] `TutorialContentView` 渲染步骤卡片，使用 `roundedBox` + v2 主题 token
-- [ ] [上一步][下一步] 按钮切换步骤，触发 `onStepChanged` 回调
-- [ ] 人物姿势随步骤切换（wave → thinking → tada → crossed_arms ...）
-- [ ] 进度持久化到 `config/bbs/tutorial-progress.json`
-- [ ] **验收**：完整走完五章，关闭重开后进度保留，姿势与文本对应
+`UITutorialPanel extends UIElement implements BBSDashboardPanelContent`：
 
-### 阶段四：多语言与主题适配
-- [ ] `assets/bbs_tutorial/strings/zh_cn.json` 完整翻译（20+ keys）
-- [ ] `en_us.json` 占位翻译（复制中文 key 作为默认值）
-- [ ] 所有 UI 文本使用 `IKey`，通过 `L10n` 解析
-- [ ] 步骤卡片颜色、圆角、按钮 hover 动画适配 v2 主题
-- [ ] 右上角 ♂/♀ 切换按钮，点击后文本立即更新，不刷新姿势
-- [ ] 人物区域右下角皮肤选择按钮，文件选择器 + 验证 + 持久化
-- [ ] 热替换测试：修改皮肤文件 → 重新选择 → 人物立即换装
-- [ ] **验收**：切换语言（中/英）文本更新，切换主题（dark/strawberry）颜色跟随
+- **不能继承宿主面板类**。宿主自己用 `UIExtensionDashboardPanel` 包装 addon 内容，并要求内容根没有 parent。
+- `root()` 返回 `this`，`onAppear()` 触发 `refresh()`。
+- 布局：左侧固定 190px 人物区 + 右侧滚动正文（台词/操作/预期/提示四段，各带小标题）+ 底部三按钮行。预期与提示为空时整段隐藏。
+- 章节标题、幕名与进度行在 `render` 里直接绘文本，不占布局元素。
 
-### 阶段五：跳过与热替换
-- [ ] [跳过教程] 按钮写入 `skipped: true`，关闭面板
-- [ ] 热替换测试：修改步骤文本 → 重新 buildPlugin → 覆盖 jar → 教程面板立即更新
-- [ ] 删除插件后 Dashboard 不残留教程按钮
-- [ ] **验收**：完整 AC 列表通过，人工冒烟无报错
+### 3.3 主题读取时机
+
+`applyTheme()` 在每次 `refresh()` 调用，`renderCards()` 每帧读 `cornerPanel()` / `raisedSurface()`。构造期缓存颜色会让切主题后面板保持旧配色直到 Dashboard 重建。
+
+### 3.4 人物渲染与姿势
+
+`UITutorialCharacter extends UIFormRenderer`，固定 `setRotation(25, 10)` + `setDistance(16)`，`subMouseClicked` / `subMouseScrolled` 直接返回 false。
+
+姿势解析链：
+
+```
+poseGroup()  → ModelInstance.getPoseGroup()（模型异步加载，未就绪时退回模型 id）
+findPose(g)  → PoseManager.getData(g).getMap(name) → 未命中试 name + "_1"
+未命中       → 试 POSE_GROUP_FALLBACK = "player/steve"
+仍未命中     → 保留上一个姿势（不闪 T-pose）
+```
+
+**关键事实**：姿势按 pose group 存放，不按模型。`player/alex` 没有自己的 `poses.json`，其模型配置声明 `pose_group: player/steve`——直接用模型 id 查会让女版角色全程无姿势。
+
+皮肤解析：自定义皮肤走 `Link.assets(path)`；否则用 `bbstutorial:` 前缀指向源包内纹理，且先用 `getResource` 探测——女款纹理尚未随包，探测失败时回退男款纹理，但模型与台词仍是女版。
+
+### 3.5 皮肤导入
+
+tinyfd 选文件 → `ImageIO` 校验 64×64 或 64×32 → **复制**到 `BBSMod.getAssetsPath("textures/skins/tutorial/…")` → `BBSModClient.getTextures().delete(link)` 清缓存 → 返回 assets 相对路径。
+
+复制而非引用原路径：读者移动或删除源文件后角色不该变空白。清缓存是因为同名文件重选时纹理已被上传，不清就还是旧像素。
+
+### 3.6 L10n 接入
+
+```java
+BBSClientApi.onClientStarted(client -> activateTranslations());
+
+// activateTranslations():
+l10n.register(BBSTutorialClient::translationLinks);
+l10n.reload();
+```
+
+三个约束决定了这个形状：
+
+1. **时机**：`BBSModClient.onInitializeClient()` 创建 L10n 后立即 reload，addon 构造期更早，那时注册的 provider 会在源包就绪前被读一次。
+2. **语言过滤**：`translationLinks` 只对 `TRANSLATED_LANGUAGES`（`zh_cn`、`en_us`）返回 Link。`L10n.reload()` 对不存在的 Link 会打印失败与堆栈，法语客户端不该在日志里看到教程的报错。
+3. **fallback**：`L10n.reload()` 总是先加载 `en_us` 再加载当前语言，所以未翻译语言自动落到英文，不需要额外处理。
+
+`TutorialKeys.value()` 用 `l10n.getKey(full, fallback)`：`computeIfAbsent` 让同一个 `LangKey` 实例先持有随包中文，语言文件加载时原位覆盖 `content`。整段包在 try/catch 里——读翻译不该让面板崩。
+
+## 4. 测试设计
+
+两个裸 JVM `JavaExec` 入口，都挂在 `check` 上。**不加载任何 BBS 类**（会触发 `BBSMod` 静态初始化），改为读源码与资源文本。
+
+### 4.1 `testTutorialContent`
+
+解析 `content.json`：章节/步骤 id 唯一、order 连续、必需字段存在、总数与 `_meta` 一致。
+
+### 4.2 `testTutorialWiring`
+
+钉住**编译期发现不了、只表现为「面板在游戏里不存在」**的四类契约：
+
+| 检查 | 失败时的真实症状 |
+|-----|----------------|
+| starter 常量指向的类存在且有 `public static void initialize()` | 面板静默缺失 |
+| 面板本地 id 匹配宿主 `LOCAL_ID` 正则 | 宿主拒绝注册 |
+| descriptor 的 addon id / apiVersion / `CLIENT_UI` / `requiredMod` / 非 `LEGACY_COMPAT_ONLY` | 宿主拒绝 addon |
+| 语言键契约 | 英文玩家看到中文，或 `String.format` 抛异常后显示原始 key |
+
+语言契约的具体做法：
+
+- 从 `TutorialKeys.java` 正则抽 `key(...)` / `value(...)` 的 id 与 fallback；
+- `gender.<id>` 的 id 在运行期拼接，从 `TutorialGender` 枚举常量展开；
+- 从 `BBSTutorialClient.java` 解析 `TRANSLATED_LANGUAGES = Set.of(...)`，用它决定要检查哪些语言文件（而不是在测试里再硬编码一份语言列表），并要求必含 `en_us`；
+- 对每个语言文件检查：键缺失、值为空、`%s` 数量与代码传参不符、语言文件里有无人读取的死键。
+
+`SourceText` 从 `src/main/resources` 而不是 classpath 读资源：测试要断言文件**位于源包需要的那个路径**，从 classpath 读会让放错目录的文件照样通过。
+
+反例验证（已执行）：删掉 `en_us` 一个键并把 `progress` 的 `%s` 从 4 个改成 2 个，测试报出这两条并以 exit 1 失败，随后恢复。
 
 ## 5. 关键技术决策
 
-### 5.1 为什么选热插件而非 NeoForge Addon？
+### 5.1 为什么放弃热插件改用 addon
 
-**优势**：
-- 用户可热替换（修改教程文案立即生效，无需重启游戏）
-- 不占用 mod 槽位，轻量级交付
-- 资源自动寻址（`PluginRoutingSourcePack` 自动注册）
+见 `prd.md` §Context。核心是 `BBSClientApi.registerDashboardPanel` 才是 FSR 的正式面板契约，热插件路径需要的 `dashboard_panels` 能力与 `BBSPluginClientContext` 在当前 FSR 里不是面板注册的入口。代价是失去覆盖 jar 热更文案。
 
-**代价**：
-- 依赖 Dashboard 面板 API（当前 in_progress，有降级路径）
-- 需验证皮肤贴图从插件 jar 寻址是否通畅
+### 5.2 为什么正文不进语言文件
 
-### 5.2 为什么单角色 + 设置切换而非双人对讲？
+343 步 × 5 个字段 ≈ 1700 条，全进语言文件会把作者剧本变成翻译工程，且中文正文本身就是权威内容。语言文件只承担 24 条 UI chrome，翻译成本可控。
 
-**理由**：
-- 文案量减半（一套对话 vs 两套对话）
-- 姿势库足够表达情绪（thinking/huh/awww/tada），无需对话推进叙事
-- 用户体验更聚焦（一个清晰的讲解者 vs 两人抢话）
+### 5.3 为什么每个 key 都是延迟 lambda
 
-**扩展性**：若后续需要双人，只需增加右侧第二个 `UIFormRenderer` + 对话气泡 UI，核心架构无需重构
+面板 spec 在 mod 构造期创建（L10n 不存在），tooltip 与按钮文本在挂载期反复读取（读者可能中途切语言）。延迟解析一次解决两端：早期不 NPE，后期不缓存旧语言。
 
-### 5.3 为什么固定视角而非自由旋转？
+### 5.4 为什么固定视角
 
-**理由**：
-- 教程人物是"配角出镜"，不是可操作的展示台
-- 固定视角确保每个姿势的表现角度一致（wave_1 必须看到挥手，不能转到背面）
-- 减少交互复杂度（无需处理拖拽旋转与步骤切换的冲突）
-
-### 5.4 降级策略：为什么优先 RegisterDashboardPanelsEvent？
-
-**原因**：
-- `08-05-fsr-plugin-dashboard-api` 任务 in_progress，API 可能晚于本插件落地
-- 旧事件在 spec 明确保留（§3.4.2："remains available and is still emitted"）
-- 面板内容实现（`TutorialDashboardPanel`）与注册方式解耦，API 落地后只改注册代码
-
-**迁移成本**：< 20 行代码（`prepare()` 里的注册逻辑），面板内容零改动
+姿势是按单一角度授权的；可拖拽预览会让读者在句子中途把角色转到背面。同时省掉拖拽与步骤切换的冲突处理。
 
 ## 6. 风险与缓解
 
-| 风险 | 影响 | 缓解措施 |
-|------|------|---------|
-| Dashboard 面板 API 未完成 | 阻塞实施 | 使用 `RegisterDashboardPanelsEvent` 降级实现，API 落地后平滑迁移 |
-| 姿势库加载失败（模型不存在） | 人物无姿势，僵硬站立 | 降级到默认 T-pose，日志警告，不阻塞教程流程 |
-| 皮肤贴图寻址失败 | 人物显示默认 steve 皮肤 | 捕获异常，回退到内置 steve.png，诊断日志记录 |
-| 进度文件损坏 | 无法读取进度 | catch 异常，删除损坏文件，从第 1 章重新开始 |
-| 多会话并发修改 new/ | 编译失败 | 插件工程独立目录，只依赖 BBS jar（compileOnly），不触碰 new/ 源码 |
-| 女款皮肤素材未提供 | 只能用男款 | 设置项暂时隐藏，`tutorial_female.png` 路径预留，素材到位后立即启用 |
-| 用户皮肤文件尺寸错误 | 拉伸/模糊 | 验证 64×64 或 64×32，不符合拒绝并 toast 提示 |
-| 皮肤文件路径失效 | 显示空白 | catch IOException，回退到内置皮肤，清空 `tutorialSkin` 设置 |
+| 风险 | 影响 | 缓解 |
+|------|------|------|
+| 反射入口改名 | 面板静默消失 | `testTutorialWiring` 钉住常量与方法签名 |
+| 面板注册被宿主拒 | 无教程入口 | 只记日志，Dashboard 不受影响 |
+| 姿势组解析失败 | 角色僵直 | pose group → `_1` 变体 → steve 三级回退，最后保留上一姿势 |
+| 女款纹理缺失 | 指向不存在的纹理 | 资源探测失败回退男款纹理，保留女版模型与台词 |
+| 进度文件损坏 | 无法恢复位置 | catch 后从头开始，日志告警 |
+| 未翻译语言 | 日志刷缺文件堆栈 | provider 按 `TRANSLATED_LANGUAGES` 过滤，其余返回空列表 |
+| 语言键与代码漂移 | 英文玩家看中文 / 格式化异常显示 raw key | 语言契约测试覆盖缺键、空值、格式符数量、死键 |
+| 用户皮肤尺寸错误 | 拉伸模糊 | 校验 64×64 / 64×32，不符拒绝并提示 |
+| 多会话并发改 `new/` | 编译失败 | 独立工程只 compileOnly 依赖 FSR jar，不触碰 `new/` |
 
 ## 7. 验收测试计划
 
-### 集成测试（手动冒烟）
-1. **构建与加载**：`./gradlew buildPlugin` → 复制到 `config/bbs/plugins/` → 启动客户端 → Dashboard 显示 ★教程
-2. **人物渲染**：打开教程面板 → 左侧显示 steve + 日式长风衣皮肤 + wave_1 姿势
-3. **步骤切换**：点 [下一步] → 姿势变为 thinking_2 → 文本更新 → 进度 JSON 写入
-4. **进度保留**：关闭 Dashboard → 重新打开 → 停留在上次步骤
-5. **跳过功能**：点 [跳过教程] → `skipped: true` 写入 → 面板关闭
-6. **热替换**：修改步骤文本 → 重新 build → 覆盖 jar → 教程面板文本立即更新
-7. **主题适配**：切换到 strawberry 主题 → 步骤卡片颜色/圆角跟随变化
-8. **语言切换**：改为英文 → 所有文本切换为英文占位
-9. **删除清理**：删除 jar → 重启客户端 → Dashboard 不残留教程按钮
+自动（已执行，见 `prd.md` 勾选项）：
+
+```bash
+cd bbs-tutorial-plugin
+./gradlew build     # 含 testTutorialContent + testTutorialWiring
+```
+
+人工冒烟边界见 `implement.md`：客户端视觉、姿势与皮肤、语言切换、主题切换、tinyfd 选择器、addon 删除后残留，裸 JVM 测试全部覆盖不到。

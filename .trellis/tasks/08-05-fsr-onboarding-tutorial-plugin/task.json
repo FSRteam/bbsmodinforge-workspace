@@ -1,9 +1,9 @@
 {
   "id": "08-05-fsr-onboarding-tutorial-plugin",
   "name": "fsr-onboarding-tutorial-plugin",
-  "title": "FSR 新手教程热插件",
-  "description": "通过 Dashboard 独立面板 + 人物出镜引导 + 五章核心内容覆盖，降低 FSR 新玩家学习门槛",
-  "status": "planned",
+  "title": "FSR 新手教程插件",
+  "description": "通过 Dashboard 独立面板 + 人物出镜引导 + 52 章 343 步内容覆盖，降低 FSR 新玩家学习门槛",
+  "status": "in_progress",
   "dev_type": "feature",
   "scope": "plugin",
   "package": "bbs-tutorial-plugin",
@@ -21,10 +21,12 @@
   "children": [],
   "parent": null,
   "relatedFiles": [],
-  "notes": "依赖 08-05-fsr-plugin-dashboard-api 任务产出的 dashboard_panels API；有降级路径（RegisterDashboardPanelsEvent）。素材：temp/男雪新日式长风.png；女款待补充。",
+  "notes": "交付形态由热插件改为独立 NeoForge addon：面板走 BBSClientApi.registerDashboardPanel（08-05-fsr-plugin-dashboard-api 的正式 API 2.0 入口），不需要 RegisterDashboardPanelsEvent 降级。工程源码不进 workspace 仓库。素材：tutorial_male.png 已随包；女款待补充，纹理暂回退男款。自动验证全绿，人工冒烟未执行（边界见 implement.md）。",
   "meta": {
     "dependencies": ["08-05-fsr-plugin-dashboard-api"],
-    "deliverable": "bbs-tutorial-plugin/ 工程 + bbs-tutorial-1.0.0.jar",
-    "assets": ["tutorial_male.png (已有)", "tutorial_female.png (待补充)"]
+    "deliverable": "bbs-tutorial-plugin/ 工程 + bbs-tutorial-plugin-0.1.0.jar",
+    "assets": ["tutorial_male.png (已有)", "tutorial_female.png (待补充)"],
+    "content": "52 章 343 步 / content.json _meta 3.0.0",
+    "form": "standalone NeoForge addon (not a hot plugin)"
   }
 }
