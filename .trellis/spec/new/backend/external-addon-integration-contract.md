@@ -76,6 +76,9 @@ bootstrap class, so the common `@Mod` class never references a client-only type.
 | Add form to the "Extra" picker category | `BBSModClient.getFormCategories().addExtraForm(Form)` (`FormCategories.java:80`) | Purpose-built public API; also calls `markDirty()`. Paired `removeExtraForm` (`:94`) |
 | Extra controls on a string keyframe editor | `UIStringKeyframeFactory.registerDecorator(IStringKeyframeDecorator)` (`:18`) | Receives `(factory, track)` where `track` is the sheet id; use `factory.addControl(UIElement)` and `factory.setStringValue(String)` |
 | Dashboard panel | `BBSClientApi.registerDashboardPanel(BBSAddonDescriptor, BBSDashboardPanelSpec, BBSDashboardPanelFactory)` | Requires `CLIENT_UI`; host composes `<addonId>:<localId>`, owns the wrapper, and isolates factory/lifecycle failures. |
+| Dashboard panel navigation | `BBSClientApi.navigateDashboardPanel(BBSAddonDescriptor, String)` | Requires `CLIENT_UI`; accepts stable built-in ids or an addon panel's full `<addonId>:<localId>` id and completes after the client-thread switch takes effect. |
+| Dashboard control anchor | `BBSClientApi.resolveDashboardAnchor(BBSAddonDescriptor, String)` | Requires `CLIENT_UI`; returns a fresh screen-space value snapshot and never exposes the host `UIElement`. |
+| Dashboard guide overlay | `BBSClientApi.registerDashboardOverlay(BBSAddonDescriptor, BBSDashboardOverlayFactory)` | Requires `CLIENT_UI`; one initially hidden root-layer slot per addon with explicit visibility and unregister ownership. |
 | Client lifecycle / tick hooks | `BBSClientApi.onClientStarted` (`:82`), `onStartClientTick` (`:97`), `onEndClientTick` (`:107`), `onClientStopping` (`:87`), `onDisconnect` (`:92`), `onEndWorldTick` (`:102`) | One-to-one replacements for the Fabric `ClientLifecycleEvents` / `ClientTickEvents` an addon ported from BBS CML will be using |
 | Game directory | `BBSMod.getGameFolder()` (`:322`) | Prefer over `FMLPaths` — one less platform API in an addon that already depends on BBS |
 | Timeline track colour / icon | Reflection on private `UIReplaysEditor.COLORS` / `ICONS` (`:86,87`) | **No public channel.** Degrade to default styling on failure; never propagate |
@@ -226,6 +229,45 @@ icon and decorator registration are plain static maps and can run during constru
   host rejects all present identically in-game: the panel is simply absent. Pin the entry-point
   name, method signature, local-id pattern, and descriptor fields in a check that reads source or
   bytecode without loading BBS classes.
+
+### 3.4.4 Guided Dashboard navigation, anchors, and overlay contract
+
+- `BBSDashboardPanelIds` is the public source of truth for the nine built-in panel ids. Those ids
+  are semantic API values, not class names or translation keys. Addon panels remain addressable by
+  the full id already composed by the panel registry: `<addonId>:<localId>`.
+- `navigateDashboardPanel(...)` accepts calls from any thread and performs the switch on the
+  Minecraft client thread. Its future means **the target panel is active**, not merely that the
+  request was queued. `DASHBOARD_NOT_CREATED`, `NOT_DASHBOARD_SCREEN`, `PANEL_NOT_FOUND`,
+  `REJECTED`, and `FAILED` remain distinct so callers can degrade deliberately.
+- `BBSDashboardAnchors` contains host-owned semantic anchor ids. Built-in and addon panel buttons
+  and content roots use `panelButton(panelId)` / `panelContent(panelId)`; the first tutorial range
+  also registers Dashboard settings/selectors and Morphing palette/demorph/from-mob controls.
+  Registration is explicit at the control construction site. Do not add a tooltip/L10n-key search
+  fallback: a renamed key would otherwise turn a host refactor into a silent pointer mismatch.
+- `resolveDashboardAnchor(...)` recalculates from the live element tree on every call. The result is
+  a value object containing the UI-scaled screen rectangle plus separate visible/hittable flags.
+  It distinguishes an inactive panel, absent control, hidden control, and scroll-clipped control;
+  it never returns a `UIElement` or caches coordinates across resize, scroll, or UI-scale changes.
+- `registerDashboardOverlay(...)` is first-wins and allows one overlay per addon. The returned
+  `BBSDashboardOverlaySubscription` starts hidden, owns `setVisible`, and must be closed when the
+  addon no longer owns the content. Rejection uses normal `BBSRegistrationResult` semantics;
+  factory and lifecycle failures are isolated and recorded at `CLIENT_SETUP`.
+- The host mounts overlay content outside every reusable panel. Root render order is Dashboard
+  `main` (panel + taskbar), addon guide layer, modal `menu.overlay`, then existing root tool/debug
+  layers. Panel switches therefore keep the guide alive, while confirmation/settings overlays and
+  host debug tools remain authoritative.
+- The host forces both its wrapper and the addon content root to `EventPropagation.PASS`. Empty
+  guide space must reach the real panel below; only visible interactive descendants may consume
+  input. Pure render children should remain non-interactive. Taskbar auto-hide still observes the
+  global pointer and is not driven by whether the guide consumed an event.
+- Root-layer guide models continue advancing through their renderer/context clock. Do not add a
+  `UIDashboard.update()` forwarding channel: doing so would rebind guide animation to the selected
+  panel lifecycle that this API exists to escape.
+
+Required regression coverage: built-in ids versus the real taskbar registrations in both
+directions, explicit anchor wiring, typed client-thread navigation/anchor failures, overlay factory
+and lifecycle isolation, blank-area input pass-through, idempotent unregister, and retained Addon
+2.0 JVM descriptors.
 
 ### 3.5 Do not extend a registration surface by overwriting it
 
