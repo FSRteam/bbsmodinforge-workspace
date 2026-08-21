@@ -106,6 +106,18 @@ pendingL10n.reload()
   In `onClientStarted`, register the pack, register the provider, then reload L10n in that order.
 - Guard pack registration against repeated lifecycle delivery, while L10n provider registration
   may use identity de-duplication.
+- `registerOne` promises one link for *every* language. An addon that ships a subset of the
+  languages BBS supports must use `register(Function<String, List<Link>>)` and return an empty
+  list for the languages it does not carry. `L10n.reload(...)` loads `DEFAULT_LANGUAGE` first and
+  then the active language, printing `Failed to load <link> language file!` plus a stack trace for
+  every link it cannot resolve — a French client should never see an addon's language files in that
+  output. Returning nothing is safe: `en_us` is always loaded first and remains the fallback layer.
+- A missing translation key never throws. `getKey(key)` seeds `content` with the key itself and
+  `getKey(key, fallback)` seeds it with the fallback, and `LangKey.get()` returns `content`. The
+  observable defect is therefore silent: an English reader sees the addon's fallback language, and
+  a `FormatKey` whose specifier count no longer matches the arguments catches the exception and
+  renders the raw key. Neither is visible to javac or to a "does the key resolve" smoke check, so
+  the key set the code requests must be verified against the shipped language files (see §6).
 
 #### 4. Validation & Error Matrix
 
@@ -116,6 +128,10 @@ pendingL10n.reload()
 | `Link.path` starts with `assets/<namespace>/` | Remove that prefix; the pack's internal root already owns it. |
 | L10n event fires before the pack exists | Capture the `L10n` instance only; defer provider registration until after pack registration. |
 | Client lifecycle callback runs again | Do not register a duplicate source pack. |
+| Addon ships fewer languages than BBS supports | Use `register(...)` and answer with an empty list for the rest; do not let `registerOne` fabricate links to files that are not in the jar. |
+| A language file omits a key the code requests | Treat it as a defect even though nothing throws; the reader silently gets the fallback language. |
+| A language file's `%s` count differs from the arguments the code passes | Treat it as a defect; `FormatKey` swallows the exception and renders the raw key. |
+| A language file declares a key nothing reads | Remove it; it is dead weight that no runtime check will ever surface. |
 
 #### 5. Good / Base / Bad Cases
 
@@ -134,6 +150,13 @@ pendingL10n.reload()
 - Run the client and assert its complete console and logs contain no missing addon translation asset.
 - Assert at least one addon translation key exists in `L10n.getStrings()` and resolves to a
   value other than the bare key.
+- Assert the key set the code requests against every shipped language file, without loading BBS
+  classes: each requested key is present and non-empty, its `%s` count equals what the code passes,
+  and no language file declares a key nothing reads. Derive the language list from the addon's own
+  authoritative declaration rather than restating it in the test, so a language added to the
+  provider without a file fails the check instead of being skipped.
+- Prove the check has teeth: delete one key and change one format string's specifier count, confirm
+  the check fails, then restore. A key-contract check that was never seen failing is not evidence.
 
 #### 7. Wrong vs Correct
 
@@ -149,6 +172,17 @@ Correct:
 ```java
 new InternalAssetsSourcePack(MOD_ID, NS, "assets/" + NS, ClientBootstrap.class);
 l10n.registerOne((language) -> new Link(NS, "strings/" + language + ".json"));
+l10n.reload();
+```
+
+An addon that ships only a subset of languages answers per language instead:
+
+```java
+static final Set<String> TRANSLATED_LANGUAGES = Set.of("zh_cn", "en_us");
+
+l10n.register((language) -> TRANSLATED_LANGUAGES.contains(language)
+    ? Collections.singletonList(new Link(NS, "strings/" + language + ".json"))
+    : Collections.emptyList());
 l10n.reload();
 ```
 
@@ -175,6 +209,23 @@ icon and decorator registration are plain static maps and can run during constru
   startup-only and have no unload facade.
 - The legacy `RegisterDashboardPanelsEvent` remains available and is still
   emitted after host-owned API contributions are projected.
+- The content root must not extend a host panel class. The host wraps the root in its own
+  `UIExtensionDashboardPanel` and refuses a root that already has a parent, so
+  `extends UIElement implements BBSDashboardPanelContent` is the only shape that works.
+  Extending `UIDashboardPanel` compiles and then fails at registration.
+- A `BBSDashboardPanelSpec.title(...)` key is read on every tooltip draw, and the spec is
+  normally built during addon construction — before `BBSModClient.getL10n()` exists. Pass a
+  deferred `IKey` that resolves on each `get()`; a key captured at construction either NPEs or
+  pins the language that was active when the Dashboard was first built. The same applies to any
+  panel text that stays mounted while the reader changes language or theme.
+- Registration is best-effort from the addon's side: log `BBSRegistrationResult` and continue.
+  A rejected panel costs the addon its entry and must not take the Dashboard down.
+- Nothing about this chain is checked by javac when the client entry point is reached by name
+  through reflection (the usual shape for keeping client classes off a dedicated server). A
+  renamed entry class, a non-static `initialize`, an illegal local panel id, or a descriptor the
+  host rejects all present identically in-game: the panel is simply absent. Pin the entry-point
+  name, method signature, local-id pattern, and descriptor fields in a check that reads source or
+  bytecode without loading BBS classes.
 
 ### 3.5 Do not extend a registration surface by overwriting it
 
