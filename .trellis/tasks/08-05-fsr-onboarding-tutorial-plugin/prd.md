@@ -3,7 +3,6 @@
 ## Goal
 
 让 FSR 新玩家通过交互式、角色出镜的教程掌握核心工作流（Dashboard 总览 → 伪装 → 影片编辑 → 创作工具 → 导出 → 系统设置），配合男女两种讲解风格与固定视角人物出镜，降低学习门槛。
-
 ## Context
 
 ### 交付形态：独立 NeoForge addon（原「热插件」方案已作废）
@@ -19,10 +18,10 @@
 ### 依赖与既有能力
 
 - `08-05-fsr-plugin-dashboard-api` 提供的面板契约已落地为 `BBSClientApi` / `BBSDashboardPanelSpec` / `BBSDashboardPanelContent`。
-- 内置模型与姿势库：`player/steve`、`player/alex` + `poses.json` 预设姿势。`player/alex` 自身不带 `poses.json`，其模型配置声明 `pose_group: player/steve`。
+- 内置模型与动作库：`emoticons/steve`、`emoticons/alex` + 宿主共享的 `assets/actions.bobj`（85 个动画，其中 60+ 个 `emote_*`）。这个前缀不是外观选择：`BOBJModelLoader` 只对 id 以 `emoticons/` 开头的模型注入这套动画，也只有这批骨架带下臂骨（`low_left_arm` / `low_right_arm`），`player/steve` 的 21 个 group 里没有下臂，手臂弯不了。
 - `UIFormRenderer extends UIModelRenderer` 可按固定 camera/yaw/pitch/distance 在 UI 里渲染模型，皮肤通过 `ModelForm.texture` 替换。
 - 素材现状：只有男款 `tutorial_male.png`（64×64），女款素材未提供。
-- 讲解风格定位：男版高冷简洁；女版猫娘活泼带语气词。风格切换只换台词，不换姿势。
+- 讲解风格与模型款式是两个独立维度：讲解风格（男版高冷简洁 / 女版猫娘活泼带语气词）只决定台词；模型款式（男款 / 女款）只决定模型与皮肤。要男版台词配女款模型是合法组合。
 
 ## Requirements
 
@@ -30,7 +29,7 @@
 
 1. **Dashboard 独立教程面板**
    - addon 通过 `BBSClientApi.registerDashboardPanel` 注册本地 id 为 `tutorial` 的面板，宿主组合出 `bbstutorial:tutorial`；标题走语言键，图标 `Icons.HELP`。
-   - 左侧固定宽度区域渲染 3D 人物出镜（`UIFormRenderer`），按当前步骤播放对应姿势。
+   - 左侧固定宽度区域渲染 3D 人物出镜（`UIFormRenderer`），按当前步骤播放对应动作动画。
    - 右侧显示章节标题、进度、台词、操作指引、预期画面、提示，以及 [上一步][下一步][跳过教程]。
    - 章节跳转通过右上角列表图标弹出 `UIListOverlayPanel`；进度持久化到 `config/bbs/settings/tutorial-progress.json`（`BBSMod.getSettingsPath`）。
 
@@ -55,23 +54,27 @@
 
    **已验证按键**（`BBSModClient.java`）：Dashboard = `0`、Morphing = `B`、取消伪装 = `.`、播放 = 右 Ctrl、暂停 = `\`、录制 Replay = 右 Alt、Replay 编辑器 = 右 Shift、手动录像 = `F4`、Film 播放并录制 = `F6`、传送到回放 = `Y`、物品编辑器 = `Home`。
 
-3. **人物出镜与姿势联动**
-   - 左侧 `UITutorialCharacter extends UIFormRenderer` 渲染 `player/steve`（男）或 `player/alex`（女）。
-   - 默认皮肤为 addon 源包内的 `bbstutorial:textures/skins/tutorial_male.png`；女款纹理缺失时回退男款纹理，但保留纤细模型与女版台词。
-   - 每步关联一个姿势名，姿势按**模型声明的 pose group** 解析（不是模型 id），未命中再回退 `player/steve`；命名缺变体后缀时重试 `<name>_1`；全部未命中保留上一个姿势，不闪 T-pose。
+3. **人物出镜与动作联动**
+   - 左侧 `UITutorialCharacter extends UIFormRenderer` 渲染 `emoticons/steve`（男款）或 `emoticons/alex`（女款）。
+   - 默认皮肤为 addon 源包内的 `bbstutorial:textures/skins/tutorial_male.png`；女款纹理缺失时回退男款纹理，但保留纤细模型与所选台词。
+   - 每步关联一个动作名，取值限定在 `TutorialActions` 的白名单内（16 个：`idle` 加 15 个手势 emote）。白名单外的名字在解析期降级为 `idle`——`Animator` 对缺失动画是静默跳过，那样上一个动作会一直播下去，看起来像角色卡住。
+   - 动作写进 `ActionsConfig` 的 `idle` slot：`Animator` 只认固定 slot 名，且预览实体从不移动，所以主动作永远落在 `idle`。`base_pre` / `base_post` 是全量混合层，会把自己不动的骨骼拉回静止姿态，不能当叠加层用。
+   - 动画时钟必须自己推：`UIFormRenderer` 总把自己声明为 simulation owner，宿主的 `ModelFormRenderer.renderInUI` 因此跳过自推时钟，必须覆写 `update()` 调 `form.update(entity)`，否则动作冻在起始关键帧对上。
+   - 讲解风格与模型款式各有一个切换按钮（`Icons.BUBBLE` / `Icons.USER`），互不影响，各自持久化。
    - 视角固定 yaw=25°、pitch=10°、distance=16（`UIModelRenderer.distance` 为平方尺度，约合 2.5 格），禁用拖拽旋转与滚轮缩放。
    - 皮肤自定义：人物区域右下角按钮 → tinyfd 文件选择器 → 校验 64×64 或 64×32 PNG → 复制进 BBS assets 目录（而非引用原路径）→ 清掉纹理缓存 → 路径写入进度文件。
 
 4. **多语言支持**
-   - addon 打包 `assets/bbstutorial/assets/strings/zh_cn.json`、`en_us.json`，覆盖全部 24 个 UI chrome 键（标签、按钮、tooltip、状态文本、章节标题模板、进度模板、皮肤对话框文案）。
+   - addon 打包 `assets/bbstutorial/assets/strings/zh_cn.json`、`en_us.json`，覆盖全部 27 个 UI chrome 键（标签、按钮、tooltip、状态文本、章节标题模板、进度模板、皮肤对话框文案，含讲解风格与模型款式两组枚举标签）。
    - 所有 chrome 文本经 `TutorialKeys` 走 `L10n`；每个键是延迟 `IKey`，在 `get()` 时读取当前 `L10n`，因此面板 spec 可在 mod 构造期创建，且挂载中切语言即时生效。
    - L10n provider 在 `BBSClientApi.onClientStarted` 注册后 `reload()`：宿主在客户端初始化期创建并立即 reload 核心 L10n，更早注册会被抢在前面。
    - provider 只对 `zh_cn` / `en_us` 返回 Link，其它语言返回空列表——否则 `L10n.reload()` 会为不存在的语言文件打印堆栈。英文永远先加载，天然是 fallback 层。
    - 343 步的章节/步骤正文**不进语言文件**：它是作者中文剧本，随 `content.json` 交付。
 
 5. **进度持久化与跳过**
-   - 记录讲解风格、皮肤路径、`skipped`、当前章节/步骤 id 与已完成步骤 id 集合。
+   - 记录讲解风格、模型款式、皮肤路径、`skipped`、当前章节/步骤 id 与已完成步骤 id 集合。
    - 位置按 **id** 而非下标存取，未知 id 回退到开头，插入章节不会把读者传送到别处。
+   - 拆分前写下的进度文件没有 `look` 字段，读取时按讲解风格推出模型款式——那正是它当初的含义。
    - [跳过教程] 可反向切回 [恢复教程]。
 
 ### 技术约束
@@ -104,13 +107,16 @@
 - [x] addon descriptor 声明 API 2.0、`CLIENT_UI` + `SOURCE_PACKS`、`API2_ONLY`、`requiredMod("bbs")`；面板本地 id 通过宿主 `LOCAL_ID` 正则。
 - [x] `BBSTutorialClientStarter` 反射目标类存在，且有 `public static void initialize()`。
 - [x] `content.json` 52 章 343 步，章节/步骤 id 唯一、order 连续、必需字段完整，解析器降级行为一致。
-- [x] 24 个代码请求的 UI 键在 `zh_cn.json` 与 `en_us.json` 中都存在、非空、`%s` 数量与代码传参一致；语言文件不含无人读取的死键。
+- [x] 343 步的 `action` 全部落在 `TutorialActions` 白名单内，且白名单里每个名字都真实存在于宿主 `assets/actions.bobj`（反向注入一个假名字确认会 FAIL）。
+- [x] 27 个代码请求的 UI 键在 `zh_cn.json` 与 `en_us.json` 中都存在、非空、`%s` 数量与代码传参一致；语言文件不含无人读取的死键（删掉 `look.female` 确认会 FAIL）。
 - [x] `TRANSLATED_LANGUAGES` 声明的语言与随包语言文件一一对应，且必含 `en_us`。
 - [x] `./gradlew build` 通过（真实 exit code 0），jar 内含两份语言文件、皮肤纹理与 `content.json`。
 
 需人工冒烟（未执行，见 implement.md「人工冒烟边界」）：
 
-- [ ] Dashboard 显示教程面板按钮，打开后左侧人物出镜、右侧显示当前步骤，切步骤时姿势与文本同步更新。
+- [ ] Dashboard 显示教程面板按钮，打开后左侧人物出镜、右侧显示当前步骤，切步骤时动作与文本同步更新。
+- [ ] 人物在面板里持续做动作（手臂能弯，不是静止姿势），切步骤时动作交叉淡入而非硬切。
+- [ ] 讲解风格与模型款式两个按钮互不牵连：男版台词 + 女款模型这一组合可设并在重开后保留。
 - [ ] 关闭重开 Dashboard 后进度保留；[跳过教程] 写入 `skipped` 并可切回 [恢复教程]。
 - [ ] 切换 zh_cn / en_us 后面板文本即时更新，无需重建面板；第三种语言只落到英文且日志无缺文件堆栈。
 - [ ] 切换 dark / light / strawberry 主题后卡片颜色与圆角跟随。
@@ -122,7 +128,7 @@
 - 宿主侧真实 UI 导航、锚点与覆盖层 API 由 `08-21-fsr-guided-tour-overlay-api` 提供；本任务不回填教程内容到该 API，消费接线另行验收。
 - 不实现视频/gif 演示嵌入。
 - 不实现交互式练习验证（如「必须真正打开一次 Morphing 才能下一步」）。
-- 不实现双人搭档对讲，采用单角色旁白 + 姿势表达。
+- 不实现双人搭档对讲，采用单角色旁白 + 动作表达。
 - 不再承诺覆盖 jar 热替换文案（改为 addon 后由 mod 生命周期决定）。
 - 女款皮肤素材待补充，纹理暂回退男款。
 - Dashboard 首次打开主动提示教程为可选优化，不做。

@@ -21,7 +21,7 @@
         {
           "id": "ch32_s1_open_textures_panel",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "dialogueMale": "Dashboard 左侧找到纹理图标，点击打开纹理面板。",
           "dialogueFemale": "按 **数字键 0** 打开 Dashboard 喵～左边找到 **Textures**（调色板图标），点开～",
           "instruction": "按 **数字键 0** 打开 Dashboard → 点击左侧 **Textures** 图标（调色板）",
@@ -41,7 +41,7 @@
         {
           "id": "ch32_s2_create_texture",
           "order": 2,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "切换到纹理列表标签，点击添加纹理，创建一个新的像素画。",
           "dialogueFemale": "切到 **纹理列表** 标签喵～点底部的 **+ 添加纹理**，选 **空白纹理** ～",
           "instruction": "点击顶部 **纹理列表** 标签 → 点击底部 **+ 添加纹理** → 在菜单里选择 **空白纹理** → 输入名称 `test_paint` → 设置宽度 64、高度 64 → 确认",
@@ -51,7 +51,7 @@
         {
           "id": "ch32_s3_brush_tool",
           "order": 3,
-          "pose": "huh",
+          "action": "emote_confused",
           "dialogueMale": "左侧工具栏第一个是画笔。按 B 键激活，调整笔刷大小和颜色，在画布上拖动绘制。",
           "dialogueFemale": "看左边工具栏喵～第一个是 **画笔**（B 键）！点一下激活，然后在画布上拖鼠标画～",
           "instruction": "按 **B** 键（或点击左侧工具栏 **画笔** 图标）→ 在颜色选择器选一个颜色（左下角色轮）→ 调整 **笔刷尺寸** 滑块为 5 → 在画布上拖动鼠标绘制几笔",
@@ -72,7 +72,7 @@
         {
           "id": "ch32_s4_eraser_tool",
           "order": 4,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "dialogueMale": "按 E 键切换到橡皮擦。擦除刚才画的笔触。",
           "dialogueFemale": "按 **E** 键切换成 **橡皮擦** 喵～在画过的地方拖动鼠标，就能擦掉～",
           "instruction": "按 **E** 键（或点击 **橡皮擦** 图标）→ 在画布上有颜色的区域拖动鼠标",
@@ -82,7 +82,7 @@
         {
           "id": "ch32_s5_fill_tool",
           "order": 5,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "按 F 键切换到油漆桶。点击空白区域填充一片颜色。按住 Shift 点击可以全局替换颜色。",
           "dialogueFemale": "按 **F** 键切换成 **油漆桶** 喵～点一下空白地方，整片连续区域都会被填满～",
           "instruction": "按 **F** 键（或点击 **油漆桶** 图标）→ 在颜色选择器选一个颜色 → 点击画布上的空白区域",
@@ -92,7 +92,7 @@
         {
           "id": "ch32_s6_eyedropper_move",
           "order": 6,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "dialogueMale": "吸管工具取色，按住 Alt 可以临时激活。移动工具拖动整个图层。",
           "dialogueFemale": "**吸管** 工具吸取颜色喵～不用切换工具，直接按住 **Alt** 点击就能临时吸管取色！还有 **移动工具**（V 键）可以拖动整个图层～",
           "instruction": "在任意工具下，按住 **Alt** 键点击画布上有颜色的像素 → 观察颜色选择器变化 → 松开 Alt → 按 **V** 键切换到移动工具 → 拖动画布",
@@ -102,7 +102,7 @@
         {
           "id": "ch32_s7_swap_colors",
           "order": 7,
-          "pose": "bow",
+          "action": "emote_bow",
           "dialogueMale": "按 X 键交换前景色和背景色。左下角两个色块显示当前颜色。",
           "dialogueFemale": "按 **X** 键可以快速交换前景色和背景色喵～左下角两个色块就是它们～",
           "instruction": "观察左下角颜色选择器的两个色块（前景色在上，背景色在下）→ 按 **X** 键",
@@ -123,7 +123,7 @@
         {
           "id": "ch33_s1_switch_to_layers_tab",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "dialogueMale": "点击像素画图层标签，查看当前纹理的所有图层。",
           "dialogueFemale": "切到 **像素画图层** 标签喵～能看到所有图层的列表～",
           "instruction": "点击顶部 **像素画图层** 标签",
@@ -133,7 +133,7 @@
         {
           "id": "ch33_s2_add_empty_layer",
           "order": 2,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "点击添加图层，选择空白图层。新图层会叠在当前图层上方。",
           "dialogueFemale": "点 **+ 添加图层...** 喵～选 **空白图层**，会新建一个透明图层叠在最上面～",
           "instruction": "点击底部 **+ 添加图层...** → 在菜单里选择 **空白图层**",
@@ -143,7 +143,7 @@
         {
           "id": "ch33_s3_draw_on_new_layer",
           "order": 3,
-          "pose": "huh",
+          "action": "emote_confused",
           "dialogueMale": "在新图层上画一些内容。切回图层标签，观察两个图层的缩略图。",
           "dialogueFemale": "在新图层上画点东西喵～用不同颜色，然后切回 **像素画图层** 看看～",
           "instruction": "在 **像素画** 标签用画笔画一些笔触（选择与第一层不同的颜色）→ 切回 **像素画图层** 标签",
@@ -153,7 +153,7 @@
         {
           "id": "ch33_s4_toggle_visibility",
           "order": 4,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "dialogueMale": "点击图层左侧的眼睛图标，隐藏该图层。再点一次恢复显示。",
           "dialogueFemale": "点图层左边的小眼睛喵～图层会隐藏，再点一次恢复～",
           "instruction": "点击 **图层 2** 左侧的 **眼睛图标**（VISIBLE）→ 切回像素画标签观察画布 → 再次切回图层标签点击眼睛图标",
@@ -163,7 +163,7 @@
         {
           "id": "ch33_s5_opacity",
           "order": 5,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "调整底部的不透明度滑块，改变当前图层的透明度。",
           "dialogueFemale": "拖动底部的 **不透明度** 滑块喵～图层会变半透明，能看到下面的图层～",
           "instruction": "确保 **图层 2** 被选中（高亮）→ 拖动底部 **不透明度** 滑块从 100% 拉到 50% → 切回像素画标签观察",
@@ -173,7 +173,7 @@
         {
           "id": "ch33_s6_merge_down",
           "order": 6,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "dialogueMale": "右键图层 2，选择向下合并。两个图层合并为一个，保留各自的偏移和透明度。",
           "dialogueFemale": "右键 **图层 2** 喵～选 **向下合并**，两层会合成一层～",
           "instruction": "右键 **图层 2** → 选择 **向下合并**",
@@ -183,7 +183,7 @@
         {
           "id": "ch33_s7_no_blend_modes",
           "order": 7,
-          "pose": "bow",
+          "action": "emote_bow",
           "dialogueMale": "FSR 的图层系统支持：新建、删除、隐藏、合并、透明度。不支持混合模式。",
           "dialogueFemale": "总结一下喵：FSR 图层有 **新建 / 删除 / 隐藏 / 合并 / 透明度**，但没有混合模式（如正片叠底、滤色）～",
           "instruction": "理解边界（无需操作）：FSR 像素画编辑器的图层功能是标准的透明度叠加，不支持 Photoshop 风格的混合模式（正片叠底/滤色/叠加等）",
@@ -220,7 +220,7 @@
         {
           "id": "ch34_s1_switch_to_textures_tab",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "dialogueMale": "点击纹理标签，查看当前选中的纹理信息。点击纹理列表标签，查看所有纹理。",
           "dialogueFemale": "切到 **纹理** 标签喵～能看到当前纹理的详细信息。再切到 **纹理列表** 看所有纹理～",
           "instruction": "点击 **纹理** 标签 → 观察面板 → 点击 **纹理列表** 标签",
@@ -230,7 +230,7 @@
         {
           "id": "ch34_s2_import_texture",
           "order": 2,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "点击添加纹理，选择从图片导入。选择一个 PNG 文件导入。",
           "dialogueFemale": "点 **+ 添加纹理** 喵～选 **从图片导入纹理...** ，找一张 PNG 图片导入～",
           "instruction": "在 **纹理列表** 标签，点击 **+ 添加纹理** → 选择 **从图片导入纹理...** → 在文件选择器选择一个 PNG 文件（准备好或用任意图片）→ 输入纹理名称 `imported_texture` → 确认",
@@ -240,7 +240,7 @@
         {
           "id": "ch34_s3_duplicate_texture",
           "order": 3,
-          "pose": "huh",
+          "action": "emote_confused",
           "dialogueMale": "右键一个纹理，选择复制。可以基于现有纹理快速创建变体。",
           "dialogueFemale": "右键某个纹理喵～选 **复制**，就能快速做一个副本～",
           "instruction": "右键 **test_paint** → 选择 **复制** → 输入新名称 `test_paint_copy` → 确认",
@@ -250,7 +250,7 @@
         {
           "id": "ch34_s4_export_texture",
           "order": 4,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "dialogueMale": "右键纹理，选择导出为 PNG。保存到文件系统，可以在外部编辑器打开。",
           "dialogueFemale": "右键纹理喵～选 **导出为 PNG...**，就能保存成图片文件～",
           "instruction": "右键 **test_paint** → 选择 **导出为 PNG...** → 在文件保存对话框选择保存位置 → 确认",
@@ -260,7 +260,7 @@
         {
           "id": "ch34_s5_rename_delete",
           "order": 5,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "右键菜单还有重命名和移除。移除纹理会从资源库删除，但不影响已使用它的模型。",
           "dialogueFemale": "右键菜单还有 **重命名** 和 **移除** 喵～移除纹理不会让用它的模型报错，只是变成空白～",
           "instruction": "右键 **test_paint_copy** → 选择 **移除** → 确认删除",
@@ -270,7 +270,7 @@
         {
           "id": "ch34_s6_texture_path",
           "order": 6,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "dialogueMale": "纹理存储路径遵循 Minecraft 资源包规范。路径格式：命名空间:路径/文件名。",
           "dialogueFemale": "纹理的路径格式是 **命名空间:路径/文件名** 喵～比如 `bbs:textures/test_paint` ～",
           "instruction": "点击 **纹理** 标签 → 选择一个纹理 → 观察面板顶部显示的 **路径** 字段",
@@ -280,7 +280,7 @@
         {
           "id": "ch34_s7_texture_picker",
           "order": 7,
-          "pose": "bow",
+          "action": "emote_bow",
           "dialogueMale": "其他面板需要选择纹理时，会打开纹理选择器。点击缩略图即可选中。",
           "dialogueFemale": "在模型编辑器、形态编辑器里需要纹理时，会弹出纹理选择器喵～就像纹理列表一样，点一下就选中了～",
           "instruction": "理解机制（无需操作）：FSR 各处需要选择纹理时（模型编辑器 / 形态编辑器 / 粒子设置等），都会打开统一的纹理选择器，显示纹理列表的所有纹理供选择",
@@ -301,7 +301,7 @@
         {
           "id": "ch35_s1_what_model_editor_does",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "dialogueMale": "模型编辑器不能建模。它配置已有的 BBS 模型：绑纹理、隐藏骨骼、挂物品。",
           "dialogueFemale": "重要提醒喵：模型编辑器**不能建模**（不能加立方体、不能加骨骼、不能调 UV）！它只能**配置**现成模型～",
           "instruction": "理解边界（无需操作）：模型编辑器（Model Editor）编辑的是 **ModelConfig**（模型配置），不是几何体。几何必须在 Blockbench 或其他建模工具完成后导入 FSR；模型编辑器只负责把做好的模型配置成游戏角色",
@@ -315,7 +315,7 @@
         {
           "id": "ch35_s2_open_model_editor",
           "order": 2,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "Dashboard 左侧找到模型编辑器图标，点击打开。",
           "dialogueFemale": "按 **数字键 0** 打开 Dashboard 喵～左边找到 **Model Editor**（立方体图标），点开～",
           "instruction": "打开 Dashboard（数字键 0）→ 点击左侧 **Model Editor** 图标（立方体）",
@@ -325,7 +325,7 @@
         {
           "id": "ch35_s3_pick_model",
           "order": 3,
-          "pose": "huh",
+          "action": "emote_confused",
           "dialogueMale": "顶部点击模型选择器，选择一个现有模型（如 player/steve）。",
           "dialogueFemale": "顶部有个模型选择器喵～点开选一个现成模型，比如 **player/steve** ～",
           "instruction": "点击顶部模型选择器（显示当前模型名或「无」）→ 在弹出的模型列表里展开 **player** 文件夹 → 选择 **steve**",
@@ -335,7 +335,7 @@
         {
           "id": "ch35_s4_bind_texture",
           "order": 4,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "dialogueMale": "展开通用分区，点击纹理字段，从纹理选择器选择一个纹理。",
           "dialogueFemale": "展开 **通用** 分区喵～找到 **纹理** 一项，点右边的按钮打开纹理选择器～",
           "instruction": "展开左侧 **通用** 分区（点击标题栏）→ 找到 **纹理** 字段 → 点击右侧按钮打开纹理选择器 → 选择之前创建的 **test_paint** 纹理",
@@ -345,7 +345,7 @@
         {
           "id": "ch35_s5_hide_bones",
           "order": 5,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "在骨骼可见性列表，取消勾选某些骨骼，隐藏它们。",
           "dialogueFemale": "下面有个 **骨骼可见性** 列表喵～取消勾选某个骨骼（比如 **leftArm**），它就会隐藏～",
           "instruction": "在左侧底部 **骨骼可见性** 列表找到 **leftArm**（左臂）→ 取消勾选它的复选框",
@@ -355,7 +355,7 @@
         {
           "id": "ch35_s6_scale_settings",
           "order": 6,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "dialogueMale": "通用分区还有缩放和界面缩放设置。调整它们改变模型大小。",
           "dialogueFemale": "**通用** 分区里还有 **缩放** 和 **界面缩放** 喵～拖滑块可以改变模型大小～",
           "instruction": "在 **通用** 分区找到 **缩放** 滑块 → 拖动到 1.5 → 观察预览",
@@ -365,7 +365,7 @@
         {
           "id": "ch35_s7_save_config",
           "order": 7,
-          "pose": "bow",
+          "action": "emote_bow",
           "dialogueMale": "模型配置自动保存。关闭 Dashboard 后，配置持久化到模型资产。",
           "dialogueFemale": "模型配置会自动保存喵～你做的所有改动（绑纹理/隐藏骨骼/调缩放）都会持久化～",
           "instruction": "理解机制（无需操作）：模型编辑器的所有改动立即应用到 ModelConfig 并自动保存；下次打开该模型时，配置会保留",
@@ -386,7 +386,7 @@
         {
           "id": "ch36_s1_why_items",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "dialogueMale": "角色需要手持武器、穿戴盔甲。模型编辑器的手持物品和盔甲分区配置它们。",
           "dialogueFemale": "想让角色拿剑、戴头盔？用 **手持物品** 和 **盔甲** 分区喵！",
           "instruction": "理解用途（无需操作）：模型编辑器的 **手持物品** 分区可以把 Minecraft 物品绑定到模型的指定骨骼（如手臂），**盔甲** 分区可以绑定盔甲到头 / 胸 / 腿 / 脚",
@@ -396,7 +396,7 @@
         {
           "id": "ch36_s2_open_items_section",
           "order": 2,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "展开手持物品分区。分为主手和副手两个子区。",
           "dialogueFemale": "展开 **手持物品** 分区喵～里面分 **主手** 和 **副手** 两块～",
           "instruction": "在模型编辑器左侧，展开 **手持物品** 分区",
@@ -406,7 +406,7 @@
         {
           "id": "ch36_s3_add_main_hand_slot",
           "order": 3,
-          "pose": "huh",
+          "action": "emote_confused",
           "dialogueMale": "点击主手的添加槽位。弹出物品选择器，选择一个物品（如钻石剑）。",
           "dialogueFemale": "点 **主手** 下面的 **+ 添加槽位** 喵～选一个物品，比如 **钻石剑**～",
           "instruction": "点击 **主手** 下的 **+ 添加槽位** → 在物品选择器里搜索并选择 **钻石剑**（diamond_sword）",
@@ -416,7 +416,7 @@
         {
           "id": "ch36_s4_adjust_item_transform",
           "order": 4,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "dialogueMale": "展开槽位配置，调整位置、旋转、缩放，让物品位于正确的握持姿势。",
           "dialogueFemale": "展开那个槽位喵～调整 **X/Y/Z** 和 **旋转** 滑块，让剑的位置和角度看起来自然～",
           "instruction": "展开钻石剑槽位 → 调整 **Y** 为 -0.1、**旋转 Z** 为 45 → 观察预览",
@@ -426,7 +426,7 @@
         {
           "id": "ch36_s5_armor_sections",
           "order": 5,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "展开盔甲分区。分为头部、胸部、腿部、靴子四个子区。",
           "dialogueFemale": "展开 **盔甲** 分区喵～分四块：**头部** / **胸部** / **腿部** / **靴子** ～",
           "instruction": "展开 **盔甲** 分区",
@@ -436,7 +436,7 @@
         {
           "id": "ch36_s6_add_helmet",
           "order": 6,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "dialogueMale": "点击头部的添加槽位，选择一个头盔（如钻石头盔）。",
           "dialogueFemale": "点 **头部** 的 **+ 添加槽位** 喵～选 **钻石头盔** ～",
           "instruction": "点击 **头部** 下的 **+ 添加槽位** → 选择 **钻石头盔**（diamond_helmet）",
@@ -446,7 +446,7 @@
         {
           "id": "ch36_s7_remove_slot",
           "order": 7,
-          "pose": "bow",
+          "action": "emote_bow",
           "dialogueMale": "右键槽位配置块，选择移除，删除该装备绑定。",
           "dialogueFemale": "右键某个槽位喵～选 **移除**，就能删掉那个装备～",
           "instruction": "右键钻石头盔槽位配置块 → 选择 **移除**",
@@ -464,7 +464,7 @@
         {
           "id": "ch36_s8_full_outfit",
           "order": 8,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "dialogueMale": "可以给同一个模型配置完整套装：主手副手各持武器，头胸腿脚全套盔甲。",
           "dialogueFemale": "你可以给角色配全套装备喵～双手都拿武器，头到脚全套盔甲，做一个完全武装的战士～",
           "instruction": "理解组合（无需操作）：手持物品（主手+副手）和盔甲（4 部位）可以同时配置，每个槽位独立；最终预览会显示完整装备效果",
@@ -485,7 +485,7 @@
         {
           "id": "ch37_s1_what_model_blocks_are",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "dialogueMale": "模型方块是可放置的实体。用它可以把任意 BBS 模型摆进世界，做场景装饰。",
           "dialogueFemale": "想把模型放到世界里当装饰？用 **模型方块** 喵！它是个可以放置的方块，显示你选的模型～",
           "instruction": "理解概念（无需操作）：模型方块（Model Block）是一个特殊方块，放置后显示为 BBS 模型实体；可以选择任意模型、调整缩放和旋转，用于场景搭建和装饰",
@@ -495,7 +495,7 @@
         {
           "id": "ch37_s2_open_model_blocks_panel",
           "order": 2,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "Dashboard 左侧找到模型方块图标，点击打开。",
           "dialogueFemale": "打开 Dashboard 喵～左边找 **Model Blocks**（方块堆叠图标），点开～",
           "instruction": "打开 Dashboard → 点击左侧 **Model Blocks** 图标",
@@ -505,7 +505,7 @@
         {
           "id": "ch37_s3_pick_model_and_place",
           "order": 3,
-          "pose": "huh",
+          "action": "emote_confused",
           "dialogueMale": "选择一个模型，调整缩放，点击放置模型方块，然后在世界里右键一个方块。",
           "dialogueFemale": "选个模型喵～调整 **缩放** 滑块，然后点 **放置模型方块** ～再到世界里右键一个方块～",
           "instruction": "点击顶部模型选择器 → 选择一个模型（如 player/steve）→ 调整 **缩放** 为 1.5 → 点击底部 **放置模型方块** 按钮 → 按 Esc 关闭 Dashboard → 在世界里右键点击一个方块表面",
@@ -515,7 +515,7 @@
         {
           "id": "ch37_s4_rotation_shadow",
           "order": 4,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "dialogueMale": "旋转字段控制模型初始朝向。阴影开关控制是否渲染实体阴影。",
           "dialogueFemale": "**旋转** 字段控制模型朝向喵～**阴影** 开关控制要不要画影子～",
           "instruction": "重新打开 Dashboard 模型方块面板 → 调整 **旋转 Y**（偏航）为 90 → 关闭 **阴影** 开关 → 再次放置一个模型方块",
@@ -525,7 +525,7 @@
         {
           "id": "ch37_s5_texture_picker",
           "order": 5,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "面板还有纹理选择器。可以给模型方块指定不同于模型默认纹理的贴图。",
           "dialogueFemale": "面板里还有 **纹理** 选项喵～可以给模型换个纹理～",
           "instruction": "在模型方块配置区找到 **纹理** 字段 → 点击按钮打开纹理选择器 → 选择之前创建的 **test_paint**",
@@ -535,7 +535,7 @@
         {
           "id": "ch37_s6_remove_model_block",
           "order": 6,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "dialogueMale": "用命令移除模型方块。输入 /mp remove，右键点击要移除的模型方块。",
           "dialogueFemale": "想移除模型方块喵？输入命令 **/mp remove**，然后右键点击那个模型～",
           "instruction": "按 T 打开聊天框 → 输入 `/mp remove` → 按回车 → 右键点击之前放置的某个模型方块",
@@ -545,7 +545,7 @@
         {
           "id": "ch37_s7_use_cases",
           "order": 7,
-          "pose": "bow",
+          "action": "emote_bow",
           "dialogueMale": "模型方块常用于：场景装饰、NPC 占位、展示模型、构建静态动画。",
           "dialogueFemale": "模型方块超有用喵～做场景装饰、摆 NPC、展示模型、甚至做静态定格动画～",
           "instruction": "理解应用（无需操作）：模型方块是「把模型放进世界的最简单方式」，适合不需要动画和交互的场景；如果需要动画，用 Film 的回放系统",
@@ -570,7 +570,7 @@
         {
           "id": "ch37_s8_model_vs_replay",
           "order": 8,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "dialogueMale": "模型方块和回放的区别：模型方块是静态实体，回放可以动画和录制。",
           "dialogueFemale": "记住区别喵：**模型方块** = 静态摆件，不会动；**回放** = 可以录制动画、播放、互动～",
           "instruction": "理解区别（无需操作）：模型方块只是放置在世界的静态模型实体，不能播放动画、不能录制；回放是 Film 系统的动态实体，可以录制、播放、有关键帧动画",
@@ -591,7 +591,7 @@
         {
           "id": "ch38_s1_what_we_learned",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "dialogueMale": "第六幕学了：像素画编辑器（画笔/橡皮/油漆桶/图层），纹理管理器（导入/导出/复用），模型编辑器（绑纹理/隐藏骨骼/挂物品/绑盔甲），模型方块（放置模型到世界）。",
           "dialogueFemale": "第六幕学完啦喵～我们学了：画像素画、管理纹理、配置模型、摆模型到世界～",
           "instruction": "回顾内容（无需操作）：像素画编辑器 6 工具 + 图层系统 → 纹理管理器导入导出 → 模型编辑器配置现成模型 → 模型方块放置到世界",
@@ -612,7 +612,7 @@
         {
           "id": "ch38_s2_minimum_product",
           "order": 2,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "最小成品：亲手画一张 64x64 像素画 → 导出为 PNG → 在模型编辑器选一个现成模型 → 给它绑定你的纹理 → 隐藏几根骨骼 → 用模型方块放到世界里。",
           "dialogueFemale": "你现在能做的最小成品喵：画一张贴图 → 给模型换上 → 隐藏一些部位 → 摆进世界当装饰～",
           "instruction": "理解边界（无需操作）：第六幕的成品是「自己画的贴图 + 配置好的现成模型 + 摆进世界」，不包括从零建模",
@@ -635,7 +635,7 @@
         {
           "id": "ch38_s3_dead_keys_warning",
           "order": 3,
-          "pose": "huh",
+          "action": "emote_confused",
           "dialogueMale": "注意：R 键和 Ctrl+B 在像素画编辑器里不起作用。它们在代码里定义了但没注册。",
           "dialogueFemale": "重要提醒喵：**R 键**和 **Ctrl+B** 在像素画编辑器里按了没反应！它们是死键，别浪费时间找～",
           "instruction": "理解已知问题（无需操作）：Keys.java 定义了 PIXEL_PICK(R) 和 PIXEL_FILL(Ctrl+B)，但整个 ui/ 目录没有 keys().register() 引用它们 —— 这两个键不会响应",
@@ -656,7 +656,7 @@
         {
           "id": "ch38_s4_next_chapter",
           "order": 4,
-          "pose": "bow",
+          "action": "emote_bow",
           "dialogueMale": "下一幕：粒子系统。学习创建和配置粒子效果。",
           "dialogueFemale": "下一幕是 **粒子系统** 喵～学怎么做火焰、烟雾、光效这些特效～",
           "instruction": "准备进入下一幕（无需操作）",

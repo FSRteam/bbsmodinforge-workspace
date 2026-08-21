@@ -16,7 +16,7 @@
         {
           "id": "ch46_s1_queue_concept",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "dialogueMale": "单部影片按 F6 导出就够了。当你有一整集分镜，逐部手动等待会浪费大量时间。队列的价值在于把等待交给程序。",
           "dialogueFemale": "一部影片按 F6 就好啦～可是有十部的时候，一部一部等太累了喵～这时候就交给队列～",
           "instruction": "理解概念（无需操作）：**从打开的标签页导出队列** 会按标签页顺序依次导出当前 **影片** 面板里打开的每一部影片，全过程无需你逐部触发",
@@ -38,7 +38,7 @@
         {
           "id": "ch46_s2_prepare_tabs",
           "order": 2,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "队列以标签页为单位。导出前先确认每个标签页都已保存，并且分辨率、帧率等导出设置符合预期。",
           "dialogueFemale": "队列是按标签页来的喵～所以先把每个标签页都保存好，再检查一下导出设置～",
           "instruction": "在 **影片** 面板通过 **新标签页** 打开你要批量导出的影片 → 逐个切换标签页确认内容正确 → 检查 **视频导出设置** 中的 **帧分辨率** 与 **帧率**",
@@ -58,7 +58,7 @@
         {
           "id": "ch46_s3_start_queue",
           "order": 3,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "dialogueMale": "打开影片选项启动队列。开始后会报告总数，随后逐部显示当前进度。",
           "dialogueFemale": "在 **影片选项** 里点 **从打开的标签页导出队列** 喵～它会先说一共几部，然后一部一部报进度～",
           "instruction": "点击 **影片选项** → 选择 **从打开的标签页导出队列** → 观察提示从 **队列导出已开始：%s 个影片。** 变为 **正在导出影片 %s（共 %s 个）：%s**",
@@ -68,7 +68,7 @@
         {
           "id": "ch46_s4_handle_interruptions",
           "order": 4,
-          "pose": "huh",
+          "action": "emote_confused",
           "dialogueMale": "队列可能被取消，也可能因影片加载太慢而超时。两种情况的处理方式不同。",
           "dialogueFemale": "队列有时候会取消，有时候会等太久超时喵～这两种要分开看～",
           "instruction": "理解异常（无需操作）：**队列导出已取消。** 表示人为终止；**队列导出因等待影片加载而超时。** 表示某部影片没能在等待时间内加载完成",
@@ -84,7 +84,7 @@
         {
           "id": "ch46_s5_verify_output",
           "order": 5,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "dialogueMale": "完成后逐一核对输出文件。文件名格式决定了你能否分辨这些视频。",
           "dialogueFemale": "全部完成啦～去 **导出路径** 一个个核对喵～文件名要能看出是哪部影片～",
           "instruction": "等待提示 **队列导出已完成。** → 打开 **导出路径** → 确认视频数量与标签页数量一致 → 检查 **文件名格式** 生成的名称是否可分辨",
@@ -99,7 +99,7 @@
         {
           "id": "ch46_s6_failure_triage",
           "order": 6,
-          "pose": "bow",
+          "action": "emote_bow",
           "dialogueMale": "如果个别影片缺失，不要重跑整个队列。先用编码器日志定位那一部的原因。",
           "dialogueFemale": "少了几部就别整个重来喵～先看 **编码器日志**，找出到底哪一部出问题～",
           "instruction": "确认缺失的影片名称 → 启用 **编码器日志** → 单独打开那部影片并按 F6 导出 → 对比日志判断是编码问题还是影片自身问题",
@@ -117,7 +117,7 @@
         {
           "id": "ch47_s1_import_concept",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "dialogueMale": "外部素材往往不是 BBS 直接能用的格式。导入器的作用是把它们转换成模组内部使用的标准格式，而不是简单复制文件。",
           "dialogueFemale": "从外面下载的图片和音频，BBS 不一定认得喵～导入器会帮你转成能用的格式～",
           "instruction": "理解概念（无需操作）：导入器按“输入格式 → 目标格式”组织功能，例如 **JPEG 转为 PNG**、**GIF 转为 PNG 序列**、**OGG 转为 WAV**、**64x32 皮肤转为 64x64 皮肤**",
@@ -133,7 +133,7 @@
         {
           "id": "ch47_s2_pick_converter",
           "order": 2,
-          "pose": "huh",
+          "action": "emote_confused",
           "dialogueMale": "先判断素材真实类型，再选对应转换器。扩展名可能与实际内容不一致。",
           "dialogueFemale": "选之前先看清楚素材到底是什么喵～有些文件改了扩展名，其实内容不一样～",
           "instruction": "确认素材类型 → 选择匹配的转换入口：图片用 **JPEG 转为 PNG** 或 **WEBP 转为 PNG**，动图用 **GIF 转为 PNG 序列**，音频用 **OGG 转为 WAV** 或 **MP4/MP3 转为 WAV**",
@@ -143,7 +143,7 @@
         {
           "id": "ch47_s3_process_file",
           "order": 3,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "选择文件后等待处理完成。重复点击不会加快速度，反而可能产生重复输出。",
           "dialogueFemale": "选好文件耐心等一下喵～连续点很多次不会更快，还会多出好几份文件～",
           "instruction": "选择待处理文件 → 等待处理状态结束 → 观察是否出现 **拖放的文件已被 %s 成功处理！** 提示",
@@ -162,7 +162,7 @@
         {
           "id": "ch47_s4_audio_and_ffmpeg",
           "order": 4,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "dialogueMale": "音视频转换依赖 FFmpeg。若提示配置有问题，先修好编码器路径，再回来转换。",
           "dialogueFemale": "转音频和视频要靠 FFmpeg 喵～如果提示配置有问题，先去设置里修路径～",
           "instruction": "若出现 **FFmpeg 的配置似乎存在问题... 请在视频设置中检查编码器路径选项！** → 打开 **视频录制** → 检查 **编码器路径**",
@@ -172,7 +172,7 @@
         {
           "id": "ch47_s5_verify_output",
           "order": 5,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "dialogueMale": "最后在真实编辑器中验证素材。文件生成成功不等于内容可用。",
           "dialogueFemale": "最后一步是在编辑器里试一下喵～能生成文件不代表效果一定对～",
           "instruction": "点击 **打开文件夹...** 查看输出 → 在纹理管理器、音频剪辑或模型贴图中实际加载该素材",
@@ -195,7 +195,7 @@
         {
           "id": "ch48_s1_open_settings",
           "order": 1,
-          "pose": "wave_1",
+          "action": "emote_wave",
           "dialogueMale": "设置面板按功能域分类，不是一长串开关。理解分类结构，比记住单个选项更有用。",
           "dialogueFemale": "设置是按类别分好的喵～先看清有哪些类别，比死记每个开关轻松多啦～",
           "instruction": "打开 **设置** 面板 → 浏览左侧分类：**外观**、**个性化**、**变换**、**相机编辑器**、**视频录制**、**录制**、**音频**、**教程选项**",
@@ -209,7 +209,7 @@
         {
           "id": "ch48_s2_appearance",
           "order": 2,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "dialogueMale": "外观影响你每天的阅读成本。先解决界面尺寸和语言，再谈其他细节。",
           "dialogueFemale": "界面看不清就先调 **GUI 缩放** 和 **语言** 喵～这两个最影响用起来舒不舒服～",
           "instruction": "进入 **外观** → 调整 **GUI 缩放** → 确认 **语言** 正确 → 查看 **工具提示样式**、**FOV** 与 **点击音效**",
@@ -224,7 +224,7 @@
         {
           "id": "ch48_s3_transform_and_editor",
           "order": 3,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "变换与相机编辑器分类直接影响操作手感。吸附步长和操控器设置决定你能否精确摆位。",
           "dialogueFemale": "**变换** 和 **相机编辑器** 会改操作手感喵～吸附和操控器调好了，摆位会准很多～",
           "instruction": "进入 **变换** → 查看 **移动吸附步长**、**旋转吸附步长**、**缩放吸附步长** 与 **操控器** → 再进入 **相机编辑器** → 查看 **摄像机平滑度** 与 **速度**",
@@ -239,7 +239,7 @@
         {
           "id": "ch48_s4_recording_and_video",
           "order": 4,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "dialogueMale": "录制与视频录制是两个不同分类：一个管玩家录制行为，一个管视频输出规格。",
           "dialogueFemale": "注意喵：**录制** 管录动作，**视频录制** 管导出视频，别搞混～",
           "instruction": "进入 **录制** → 查看 **录制倒计时**、**录制提示** 与 **额外附加层（Overlay）** → 再进入 **视频录制** → 查看 **编码器路径**、**导出路径**、**帧率**、**视频宽度**、**高度**",
@@ -255,7 +255,7 @@
         {
           "id": "ch48_s5_debug_overlays",
           "order": 5,
-          "pose": "huh",
+          "action": "emote_confused",
           "dialogueMale": "调试叠加层在排错时很有价值，但会干扰画面。用完记得关掉。",
           "dialogueFemale": "**IK 调试叠加层** 和 **物理调试叠加层** 排错很好用喵～不过导出前一定要关掉～",
           "instruction": "进入 **相机编辑器** → 找到 **IK 调试叠加层** 与 **物理调试叠加层** → 需要排错时启用，排错结束后关闭",
@@ -265,7 +265,7 @@
         {
           "id": "ch48_s6_settings_workflow",
           "order": 6,
-          "pose": "bow",
+          "action": "emote_bow",
           "dialogueMale": "养成两套习惯：预览用轻量配置，成片用目标规格。改动时一次只调一项。",
           "dialogueFemale": "最后记住喵：预览用省资源的设置，成片再开高规格；每次只改一项才好排查～",
           "instruction": "理解工作流（无需操作）：预览阶段降低 **帧率** 与 **帧分辨率**，成片阶段恢复目标规格，并确认所有调试叠加层已关闭",
@@ -283,7 +283,7 @@
         {
           "id": "ch49_s1_theme_concept",
           "order": 1,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "dialogueMale": "主题只改变界面表现层，不触碰影片、模型或纹理数据。换主题是零风险操作。",
           "dialogueFemale": "主题就是界面的衣服喵～换来换去都不会弄坏你的影片和模型～",
           "instruction": "理解概念（无需操作）：主题控制界面颜色、阴影、高亮色与提示样式；影片、回放、模型和纹理数据完全不受影响",
@@ -298,7 +298,7 @@
         {
           "id": "ch49_s2_switch_theme",
           "order": 2,
-          "pose": "wave_1",
+          "action": "emote_wave",
           "dialogueMale": "在个性化分类中切换主题，内置五个可选值。切换后观察各类控件是否一致更新。",
           "dialogueFemale": "去 **个性化** 里换主题喵～有 **深色**、**浅色**、**焕新**、**草莓** 和 **复古琥珀** 五个～",
           "instruction": "进入 **个性化** → 找到主题选项 → 依次试用 **深色**、**浅色**、**焕新**、**草莓**、**复古琥珀**",
@@ -312,7 +312,7 @@
         {
           "id": "ch49_s3_personalization_details",
           "order": 3,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "dialogueMale": "主题之外还有独立的细节项：主要颜色、高亮色、阴影和关键帧轨道厚度。",
           "dialogueFemale": "除了主题还能单独调喵～**主要颜色**、**选中项高亮颜色**、**阴影** 都可以自己定～",
           "instruction": "在 **个性化** 中查看 **主要颜色**、**选中项高亮颜色**、**阴影**、**背景亮度**、**关键帧轨道厚度** 与 **默认关键帧形状**",
@@ -327,7 +327,7 @@
         {
           "id": "ch49_s4_skin_vs_theme",
           "order": 4,
-          "pose": "shy",
+          "action": "emote_laughing",
           "dialogueMale": "皮肤与主题层级不同：主题作用于界面，皮肤作用于角色模型贴图。",
           "dialogueFemale": "记牢喵：主题换界面，皮肤换角色～两个是不同层的东西～",
           "instruction": "使用教程面板的皮肤按钮选择本地 .png 皮肤，或在模型形态中替换贴图，观察只有角色外观发生变化",
@@ -337,7 +337,7 @@
         {
           "id": "ch49_s5_tooltips_and_dashboard",
           "order": 5,
-          "pose": "huh",
+          "action": "emote_confused",
           "dialogueMale": "工具提示与仪表盘自动隐藏都属于工作区习惯。前者帮你认识控件，后者帮你腾出画面。",
           "dialogueFemale": "**显示工具提示** 能帮你认按钮喵～**自动隐藏仪表盘边框** 能让画面更干净～",
           "instruction": "确认 **显示工具提示** 已启用 → 悬停陌生按钮读取说明 → 需要更大预览区时启用 **自动隐藏仪表盘边框** 并调整 **仪表盘隐藏延迟（毫秒）**",
@@ -352,7 +352,7 @@
         {
           "id": "ch49_s6_workspace_summary",
           "order": 6,
-          "pose": "bow",
+          "action": "emote_bow",
           "dialogueMale": "把主题、缩放、语言、提示与皮肤定下来，就有了稳定的工作区起点。",
           "dialogueFemale": "全部选好之后，你就有自己固定的工作台啦～每次打开都能直接开工喵～",
           "instruction": "回顾并确认：主题、**GUI 缩放**、**语言**、**显示工具提示**、角色皮肤与 **关键帧轨道厚度**",
@@ -370,7 +370,7 @@
         {
           "id": "ch50_s1_plugin_concept",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "dialogueMale": "热插件是可以在运行期加载和卸载的扩展。它不占用 mod 槽位，但同样会注入界面和功能。",
           "dialogueFemale": "热插件可以在游戏运行时装卸喵～很方便，但也是真的在改功能，要看清来源～",
           "instruction": "理解概念（无需操作）：插件详情包含 **类型**、**能力**、**运行端**、**版本**、**API**、**代次** 与 **状态**，这些字段共同决定它能否在当前环境运行",
@@ -384,7 +384,7 @@
         {
           "id": "ch50_s2_open_plugins",
           "order": 2,
-          "pose": "wave_1",
+          "action": "emote_wave",
           "dialogueMale": "打开插件面板。先读懂状态，再决定动作。状态是排错的第一入口。",
           "dialogueFemale": "打开 **插件** 面板喵～先看每个插件的状态，再决定要不要动它～",
           "instruction": "打开 **插件** 面板 → 阅读每个插件的状态：**运行中**、**已发现**、**准备中**、**已禁用**、**失败**、**不兼容**、**等待重载**、**需要重启**",
@@ -400,7 +400,7 @@
         {
           "id": "ch50_s3_install_plugin",
           "order": 3,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "dialogueMale": "安装可以走文件选择，也可以直接放入插件目录后重新扫描。两条路径结果一致。",
           "dialogueFemale": "装插件有两种方式喵～用 **安装插件…** 选文件，或者丢进目录再点 **重新扫描**～",
           "instruction": "点击 **安装插件…** 选择插件 JAR，或点击 **打开插件目录** 放入文件后点击 **重新扫描** → 等待状态变为 **运行中**",
@@ -415,7 +415,7 @@
         {
           "id": "ch50_s4_hot_reload",
           "order": 4,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "dialogueMale": "重载是热插件的核心优势。改文案或资源后重载即可生效，不必重启游戏。",
           "dialogueFemale": "**重载** 是热插件最好用的地方喵～改了文案点一下就生效，不用重开游戏～",
           "instruction": "修改插件资源后点击 **重载**；若希望文件变更自动生效，启用 **自动应用**",
@@ -430,7 +430,7 @@
         {
           "id": "ch50_s5_disable_uninstall",
           "order": 5,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "停用分两级：禁用是可逆的，卸载会移除插件。先禁用观察，再决定是否卸载。",
           "dialogueFemale": "先 **禁用** 看看会不会好喵～确认真的不要了，再 **卸载**～",
           "instruction": "选择插件 → 点击 **禁用** → 确认相关界面元素消失 → 若确定不再使用，点击 **卸载**；需要修复损坏安装时用 **重新安装**",
@@ -445,7 +445,7 @@
         {
           "id": "ch50_s6_diagnostics",
           "order": 6,
-          "pose": "huh",
+          "action": "emote_confused",
           "dialogueMale": "插件失败时，先采集诊断字段再求助。完整信息比“它坏了”有用得多。",
           "dialogueFemale": "插件坏掉的时候先记下 **最近错误**、**版本**、**依赖** 和 **API** 喵～这样别人才好帮你～",
           "instruction": "打开失败插件的详情 → 记录 **最近错误**、**版本**、**已安装版本**、**API**、**代次**、**依赖** 与 **最近变更**",
@@ -463,7 +463,7 @@
         {
           "id": "ch51_s1_selector_concept",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "dialogueMale": "实体选择器把“我要找谁”变成可复用的条件。实体多、需要重复定位时，选择器比手动点击稳定。",
           "dialogueFemale": "实体选择器就是给目标写条件喵～实体一多，就不用一个一个找啦～",
           "instruction": "理解概念（无需操作）：选择器可以组合 **实体 ID**、**名称标签** 和 **NBT**，用条件筛选目标实体",
@@ -477,7 +477,7 @@
         {
           "id": "ch51_s2_add_selector",
           "order": 2,
-          "pose": "wave_1",
+          "action": "emote_wave",
           "dialogueMale": "添加选择器后先用实体 ID 验证大范围结果，再加名称标签。这个顺序便于排错。",
           "dialogueFemale": "先点 **添加实体选择器**，只填 **实体 ID** 看看结果，再加 **名称标签** 喵～",
           "instruction": "打开 **实体选择器** → 点击 **添加实体选择器** → 填写 **实体 ID** → 再填写 **名称标签**",
@@ -492,7 +492,7 @@
         {
           "id": "ch51_s3_nbt_filter",
           "order": 3,
-          "pose": "huh",
+          "action": "emote_confused",
           "dialogueMale": "只有基础条件命中后，才加入 NBT。否则空结果出现时，你不知道是实体 ID 还是 NBT 写错。",
           "dialogueFemale": "基础条件找得到目标以后，再加 **NBT** 喵～不然空结果时很难知道哪一项错了～",
           "instruction": "在已有选择器中加入 **NBT** 条件 → 保存 → 检查结果仍包含目标实体 → 若为空，暂时移除 **NBT** 再重新比较",
@@ -506,7 +506,7 @@
         {
           "id": "ch51_s4_graph_help",
           "order": 4,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "dialogueMale": "图形计算器是另一个高级工具：它把数学函数画出来，帮助你理解输入和输出的关系。",
           "dialogueFemale": "**图形计算器** 可以把公式画出来喵～先用图看懂变化，再把公式放回动画和粒子里～",
           "instruction": "打开 **图形计算器** → 点击 **点击此按钮，跳转到文档页面，了解以下图形计算器的功能。** → 先尝试简单的加法、乘法或周期函数",
@@ -521,7 +521,7 @@
         {
           "id": "ch51_s5_apply_math",
           "order": 5,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "dialogueMale": "验证过的数学关系可以迁移到动画、粒子或摄像机参数。先保留原值，确认效果后再覆盖。",
           "dialogueFemale": "在图形计算器里试好的公式，可以拿去动画、粒子或镜头里用喵～先复制一份再替换～",
           "instruction": "理解扩展（无需操作）：把已验证的公式复制到支持表达式的字段，先与原值对比，再决定是否保存",
@@ -539,7 +539,7 @@
         {
           "id": "ch52_s1_utility_panel",
           "order": 1,
-          "pose": "wave_1",
+          "action": "emote_wave",
           "dialogueMale": "实用工具面板集中了资源重载和文件夹入口。改动外部素材后不必重启游戏。",
           "dialogueFemale": "**实用工具面板** 里有各种重载按钮喵～改了外部文件点一下就能刷新～",
           "instruction": "打开 **实用工具面板** → 查看 **重新加载** 分组下的 **模型**、**纹理**、**声音**、**地形**、**语言**，以及 **打开文件夹...** 入口",
@@ -554,7 +554,7 @@
         {
           "id": "ch52_s2_audio_editor",
           "order": 2,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "dialogueMale": "音频编辑器处理音频资源本身。影片里的播放时机仍由音频剪辑控制，两者不要混淆。",
           "dialogueFemale": "**音频编辑器** 是处理声音资源的喵～什么时候播放，还是要在影片的音频剪辑里定～",
           "instruction": "打开 **打开音频编辑器...** → 查看 **音频编辑器** 界面与颜色代码相关操作 → 需要放入影片时改用 **音频** 剪辑并 **选择音频...**",
@@ -570,7 +570,7 @@
         {
           "id": "ch52_s3_language_editor",
           "order": 3,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "语言编辑器可以查看、筛选和修改翻译字符串。粘贴 JSON 前必须备份。",
           "dialogueFemale": "**语言编辑器** 能改翻译喵～不过粘贴 JSON 之前一定要先备份，不然会覆盖进度～",
           "instruction": "点击 **打开语言编辑器...** → 使用 **仅显示缺失（未翻译）的字符串** 定位待补条目 → 通过 **更改参考语言...** 对照原文 → 完成后点击保存",
@@ -586,7 +586,7 @@
         {
           "id": "ch52_s4_lang_compile",
           "order": 4,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "dialogueMale": "翻译改完后编译并重载语言，就能在界面里直接验证结果。",
           "dialogueFemale": "改完翻译点 **编译**，再 **重新加载** 语言喵～马上就能在界面看到效果～",
           "instruction": "在实用工具中点击 **编译** 生成语言文件 → 点击 **重新加载** 分组中的 **语言** → 在界面确认译文已更新",
@@ -601,7 +601,7 @@
         {
           "id": "ch52_s5_finish_workflow",
           "order": 5,
-          "pose": "bow",
+          "action": "emote_bow",
           "dialogueMale": "到这里，从形态、影片、素材、设置到导出与排错的完整链路已经走通。",
           "dialogueFemale": "全部学完啦喵～从变身、拍片、做素材，到调设置和导出，你都能自己完成啦～",
           "instruction": "回顾完整工作流（无需操作）：形态与姿势 → 影片与关键帧 → 回放与镜头 → 纹理模型粒子 → 素材导入 → 设置与主题 → 导出与批量导出 → 插件与工具排错",

@@ -18,7 +18,7 @@
         {
           "id": "ch11_s1_why_physics",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "problem": "手动给每一帧摆头发 = 地狱",
             "solution": "物理骨链自动计算摆动"
@@ -32,7 +32,7 @@
         {
           "id": "ch11_s2_open_physics_tab",
           "order": 2,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "uiElements": {
             "tab": "物理骨链",
             "sections": [
@@ -50,7 +50,7 @@
         {
           "id": "ch11_s3_enable_chain",
           "order": 3,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "uiElements": {
             "checkbox": "启用骨链",
             "field": "骨链末端: %s",
@@ -65,7 +65,7 @@
         {
           "id": "ch11_s4_gravity",
           "order": 4,
-          "pose": "huh",
+          "action": "emote_confused",
           "uiElements": {
             "field": "重力强度",
             "related": [
@@ -83,7 +83,7 @@
         {
           "id": "ch11_s5_damping_stiffness",
           "order": 5,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "fields": [
               "稳定度（阻尼）",
@@ -100,7 +100,7 @@
         {
           "id": "ch11_s6_iterations",
           "order": 6,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "uiElements": {
             "field": "解算质量",
             "source": "forms.editors.model.physics.iterations"
@@ -114,7 +114,7 @@
         {
           "id": "ch11_s7_debug_and_save",
           "order": 7,
-          "pose": "bow",
+          "action": "emote_bow",
           "uiElements": {
             "checkbox": "显示调试叠加层",
             "buttons": [
@@ -148,7 +148,7 @@
         {
           "id": "ch12_s1_wind_enable",
           "order": 1,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "uiElements": {
             "section": "风",
             "fields": [
@@ -166,7 +166,7 @@
         {
           "id": "ch12_s2_wind_local",
           "order": 2,
-          "pose": "huh",
+          "action": "emote_confused",
           "uiElements": {
             "checkbox": "局部方向",
             "tooltip": "使风向相对于模型，并随模型旋转，而不是固定在世界坐标中。",
@@ -181,7 +181,7 @@
         {
           "id": "ch12_s3_turbulence",
           "order": 3,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "uiElements": {
             "fields": [
               "阵风强度",
@@ -199,7 +199,7 @@
         {
           "id": "ch12_s4_collisions",
           "order": 4,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "uiElements": {
             "checkbox": "世界碰撞",
             "field": "碰撞半径",
@@ -214,7 +214,7 @@
         {
           "id": "ch12_s5_attach_target",
           "order": 5,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "field": "附加末端：%s",
             "source": "forms.editors.model.physics.target"
@@ -228,7 +228,7 @@
         {
           "id": "ch12_s6_debug_overlay",
           "order": 6,
-          "pose": "huh",
+          "action": "emote_confused",
           "uiElements": {
             "checkbox": "显示调试叠加层",
             "key": "F5（Dashboard 内默认，同时开关 IK 与物理调试）",
@@ -253,7 +253,7 @@
         {
           "id": "ch13_s1_why_constraints",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "problem": "IK 或物理可能把关节掰到不可能的角度",
             "solution": "角度限制"
@@ -267,7 +267,7 @@
         {
           "id": "ch13_s2_open_tab",
           "order": 2,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "uiElements": {
             "tab": "骨骼约束",
             "sections": [
@@ -285,7 +285,7 @@
         {
           "id": "ch13_s3_enable_limit",
           "order": 3,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "uiElements": {
             "checkbox": "启用角度限制",
             "fields": [
@@ -303,7 +303,7 @@
         {
           "id": "ch13_s4_apply_to_children",
           "order": 4,
-          "pose": "huh",
+          "action": "emote_confused",
           "uiElements": {
             "checkbox": "应用于子骨骼",
             "source": "forms.editors.model.constraints.apply_to_children"
@@ -317,7 +317,7 @@
         {
           "id": "ch13_s5_with_ik",
           "order": 5,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "uiElements": {
             "combo": "约束 + IK 配合使用"
           },
@@ -330,7 +330,7 @@
         {
           "id": "ch13_s6_save",
           "order": 6,
-          "pose": "bow",
+          "action": "emote_bow",
           "uiElements": {
             "buttons": [
               "保存约束",
@@ -359,7 +359,7 @@
         {
           "id": "ch14_s1_shape_keys_concept",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "title": "形态键",
             "source": "shape_keys.title"
@@ -373,7 +373,7 @@
         {
           "id": "ch14_s2_drive_shape_key",
           "order": 2,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "uiElements": {
             "action": "拖动形态键滑块"
           },
@@ -386,7 +386,7 @@
         {
           "id": "ch14_s3_shape_key_presets",
           "order": 3,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "uiElements": {
             "buttons": [
               "保存形态键",
@@ -405,7 +405,7 @@
         {
           "id": "ch14_s4_glint_modes",
           "order": 4,
-          "pose": "huh",
+          "action": "emote_confused",
           "uiElements": {
             "field": "附魔",
             "modes": [
@@ -426,7 +426,7 @@
         {
           "id": "ch14_s5_glint_color_speed",
           "order": 5,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "uiElements": {
             "fields": [
               "附魔层",
@@ -447,7 +447,7 @@
         {
           "id": "ch14_s6_form_level_glint",
           "order": 6,
-          "pose": "bow",
+          "action": "emote_bow",
           "uiElements": {
             "field": "附魔（形态级）",
             "tooltip": "该形态的附魔光效：整体覆膜、边缘光或 Minecraft 原版附魔",
@@ -472,7 +472,7 @@
         {
           "id": "ch15_s1_open_actions",
           "order": 1,
-          "pose": "wave_1",
+          "action": "emote_wave",
           "uiElements": {
             "tab": "动作",
             "source": "forms.editors.actions.title / forms.editors.model.actions"
@@ -486,7 +486,7 @@
         {
           "id": "ch15_s2_animations_list",
           "order": 2,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "field": "动画",
             "source": "forms.editors.actions.animations"
@@ -500,7 +500,7 @@
         {
           "id": "ch15_s3_speed_loops",
           "order": 3,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "uiElements": {
             "fields": [
               "速度",
@@ -518,7 +518,7 @@
         {
           "id": "ch15_s4_fade",
           "order": 4,
-          "pose": "huh",
+          "action": "emote_confused",
           "uiElements": {
             "field": "淡入淡出",
             "source": "forms.editors.actions.fade"
@@ -532,7 +532,7 @@
         {
           "id": "ch15_s5_states_editor",
           "order": 5,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "uiElements": {
             "key": "反斜杠（forms 分类默认，open_states_editor）",
             "source": "Keys.forms.open_states_editor"
@@ -546,7 +546,7 @@
         {
           "id": "ch15_s6_trigger_test",
           "order": 6,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "uiElements": {
             "flow": "设置状态热键 → 关闭 Dashboard → 游戏内按键触发"
           },
@@ -569,7 +569,7 @@
         {
           "id": "ch16_s1_open_film",
           "order": 1,
-          "pose": "wave_1",
+          "action": "emote_wave",
           "uiElements": {
             "panel": "影片",
             "source": "UIDashboard.java:312 registerPanel(UIFilmPanel, FILM_TITLE, Icons.FILM)"
@@ -583,7 +583,7 @@
         {
           "id": "ch16_s2_cycle_editors",
           "order": 2,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "key": "反引号 `（film_controller 分类默认，cycle_editors）",
             "label": "循环切换编辑器",
@@ -598,7 +598,7 @@
         {
           "id": "ch16_s3_layout",
           "order": 3,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "uiElements": {
             "items": [
               "布局预设",
@@ -619,7 +619,7 @@
         {
           "id": "ch16_s4_new_tab",
           "order": 4,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "uiElements": {
             "key": "Ctrl + N（dashboard 分类默认，new_tab）",
             "tabKeys": [
@@ -637,7 +637,7 @@
         {
           "id": "ch16_s5_film_details",
           "order": 5,
-          "pose": "huh",
+          "action": "emote_confused",
           "uiElements": {
             "button": "详情",
             "fields": [
@@ -660,7 +660,7 @@
         {
           "id": "ch16_s6_player_settings",
           "order": 6,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "panel": "配置玩家",
             "button": "应用至玩家",
@@ -675,7 +675,7 @@
         {
           "id": "ch16_s7_save_undo",
           "order": 7,
-          "pose": "bow",
+          "action": "emote_bow",
           "uiElements": {
             "keys": {
               "save": "Ctrl + S（editor 分类默认）",
@@ -704,7 +704,7 @@
         {
           "id": "ch17_s1_insert_frame",
           "order": 1,
-          "pose": "wave_1",
+          "action": "emote_wave",
           "uiElements": {
             "key": "I（film_controller 分类默认，insert_frame）",
             "labels": [
@@ -722,7 +722,7 @@
         {
           "id": "ch17_s2_recording_groups",
           "order": 2,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "groups": {
               "所有组": "1",
@@ -748,7 +748,7 @@
         {
           "id": "ch17_s3_select_keyframes",
           "order": 3,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "uiElements": {
             "keys": {
               "全选": "Ctrl + A",
@@ -770,7 +770,7 @@
         {
           "id": "ch17_s4_track_scope",
           "order": 4,
-          "pose": "huh",
+          "action": "emote_confused",
           "uiElements": {
             "items": [
               "编辑轨道 %s",
@@ -793,7 +793,7 @@
         {
           "id": "ch17_s5_move_and_round",
           "order": 5,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "uiElements": {
             "items": [
               "关键帧刻数取整",
@@ -817,7 +817,7 @@
         {
           "id": "ch17_s6_copy_paste_remove",
           "order": 6,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "items": [
               "拷贝关键帧",
@@ -841,7 +841,7 @@
         {
           "id": "ch17_s7_maximize",
           "order": 7,
-          "pose": "bow",
+          "action": "emote_bow",
           "uiElements": {
             "item": "查看所有关键帧",
             "key": "Home（keyframes 分类默认，maximize）",
@@ -867,7 +867,7 @@
         {
           "id": "ch18_s1_what_is_interp",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "concept": "两个关键帧之间的过渡方式",
             "setting": "默认插值",
@@ -883,7 +883,7 @@
         {
           "id": "ch18_s2_toggle_interp",
           "order": 2,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "uiElements": {
             "key": "Shift + T（keyframes 分类默认，interp）",
             "label": "切换插值选择",
@@ -898,7 +898,7 @@
         {
           "id": "ch18_s3_basic_group",
           "order": 3,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "uiElements": {
             "types": {
               "线性": "interpolations.linear",
@@ -916,7 +916,7 @@
         {
           "id": "ch18_s4_smooth_group",
           "order": 4,
-          "pose": "huh",
+          "action": "emote_confused",
           "uiElements": {
             "types": {
               "三次曲线": "cubic",
@@ -937,7 +937,7 @@
         {
           "id": "ch18_s5_easing_family",
           "order": 5,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "families": [
               "正弦",
@@ -971,7 +971,7 @@
         {
           "id": "ch18_s6_special_family",
           "order": 6,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "uiElements": {
             "types": {
               "回弹": "back_in / back_out / back_inout",
@@ -989,7 +989,7 @@
         {
           "id": "ch18_s7_bezier_handles",
           "order": 7,
-          "pose": "bow",
+          "action": "emote_bow",
           "uiElements": {
             "handles": [
               "左手柄",

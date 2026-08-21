@@ -18,7 +18,7 @@
         {
           "id": "ch01_s1_open_dashboard",
           "order": 1,
-          "pose": "wave_1",
+          "action": "emote_wave",
           "uiElements": {
             "key": "数字键 0（主键盘区最上排，不是小键盘）",
             "panel": "Dashboard（仪表盘）",
@@ -33,7 +33,7 @@
         {
           "id": "ch01_s2_nine_panels",
           "order": 2,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "panels": [
               "伪装（Morphing，人形图标）",
@@ -57,7 +57,7 @@
         {
           "id": "ch01_s3_switch_panel",
           "order": 3,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "uiElements": {
             "panel": "伪装（Morphing）",
             "activeIndicator": "左侧图标高亮，右侧内容区切换"
@@ -71,7 +71,7 @@
         {
           "id": "ch01_s4_f9_keybinds",
           "order": 4,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "uiElements": {
             "key": "F9（默认）",
             "panel": "按键绑定列表",
@@ -86,7 +86,7 @@
         {
           "id": "ch01_s5_taskbar_behavior",
           "order": 5,
-          "pose": "huh",
+          "action": "emote_confused",
           "uiElements": {
             "key": "Ctrl + S（默认）",
             "setting": "dashboard.toggle_taskbar_auto_hide",
@@ -101,7 +101,7 @@
         {
           "id": "ch01_s6_tab_system",
           "order": 6,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "key": "Ctrl + N（默认）",
             "tab": "影片 Tab",
@@ -116,7 +116,7 @@
         {
           "id": "ch01_s7_close_dashboard",
           "order": 7,
-          "pose": "bow",
+          "action": "emote_bow",
           "uiElements": {
             "key": "数字键 0 或 F1（默认）",
             "source": "全局 0 或 dashboard.toggle F1"
@@ -141,7 +141,7 @@
         {
           "id": "ch02_s1_two_layers",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "globalKeys": "11 个全局键（Dashboard 关闭时有效）",
             "editorKeys": "155 个编辑器键（Dashboard 打开时有效）",
@@ -159,7 +159,7 @@
         {
           "id": "ch02_s2_global_keys",
           "order": 2,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "uiElements": {
             "keys": {
               "0": "开关 Dashboard",
@@ -185,7 +185,7 @@
         {
           "id": "ch02_s3_editor_categories",
           "order": 3,
-          "pose": "huh",
+          "action": "emote_confused",
           "uiElements": {
             "categories": [
               "camera(25)",
@@ -216,7 +216,7 @@
         {
           "id": "ch02_s4_conflict_keys",
           "order": 4,
-          "pose": "awww",
+          "action": "emote_shrug",
           "uiElements": {
             "conflicts": {
               "F4": "全局=录制视频 | 编辑器=切换回放菜单",
@@ -236,7 +236,7 @@
         {
           "id": "ch02_s5_rebind_demo",
           "order": 5,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "uiElements": {
             "panel": "BBS 设置 → 按键绑定",
             "demo": "修改一个不常用的键（如 pixels.tool_eraser）"
@@ -250,7 +250,7 @@
         {
           "id": "ch02_s6_categories_meaning",
           "order": 6,
-          "pose": "bow",
+          "action": "emote_bow",
           "uiElements": {
             "categories": {
               "常规": "在 BBS 模组中常用的按快捷键",
@@ -292,7 +292,7 @@
         {
           "id": "ch03_s1_open_morphing",
           "order": 1,
-          "pose": "wave_1",
+          "action": "emote_wave",
           "uiElements": {
             "key": "B（全局快捷键）",
             "panel": "伪装（Morphing）",
@@ -307,7 +307,7 @@
         {
           "id": "ch03_s2_categories",
           "order": 2,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "categories": [
               "最近使用的形态",
@@ -330,7 +330,7 @@
         {
           "id": "ch03_s3_pick_mob",
           "order": 3,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "uiElements": {
             "category": "生物 (动物)",
             "picker": "选取生物...",
@@ -345,7 +345,7 @@
         {
           "id": "ch03_s4_editor_tabs",
           "order": 4,
-          "pose": "huh",
+          "action": "emote_confused",
           "uiElements": {
             "tabs": [
               "常规",
@@ -367,7 +367,7 @@
         {
           "id": "ch03_s5_general_tab",
           "order": 5,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "fields": {
               "visible": "可见性",
@@ -387,7 +387,7 @@
         {
           "id": "ch03_s6_demorph",
           "order": 6,
-          "pose": "awww",
+          "action": "emote_shrug",
           "uiElements": {
             "key": "句号键 .（全局快捷键）",
             "label": "取消伪装",
@@ -402,7 +402,7 @@
         {
           "id": "ch03_s7_recent",
           "order": 7,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "uiElements": {
             "category": "最近使用的形态",
             "source": "forms.categories.recent"
@@ -426,7 +426,7 @@
         {
           "id": "ch04_s1_model_form",
           "order": 1,
-          "pose": "wave_1",
+          "action": "emote_wave",
           "uiElements": {
             "category": "模型",
             "form": "player/steve",
@@ -441,7 +441,7 @@
         {
           "id": "ch04_s2_pose_tab",
           "order": 2,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "tab": "姿势",
             "limbs": [
@@ -463,7 +463,7 @@
         {
           "id": "ch04_s3_rotate_head",
           "order": 3,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "uiElements": {
             "bone": "Head",
             "axis": "Rotation Y",
@@ -478,7 +478,7 @@
         {
           "id": "ch04_s4_apply_to_children",
           "order": 4,
-          "pose": "huh",
+          "action": "emote_confused",
           "uiElements": {
             "button": "应用至子集",
             "source": "pose.context.apply"
@@ -492,7 +492,7 @@
         {
           "id": "ch04_s5_copy_paste_pose",
           "order": 5,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "uiElements": {
             "copy": "拷贝姿势",
             "paste": "粘贴姿势",
@@ -507,7 +507,7 @@
         {
           "id": "ch04_s6_reset",
           "order": 6,
-          "pose": "bow",
+          "action": "emote_bow",
           "uiElements": {
             "button": "重置姿势",
             "source": "pose.context.reset"
@@ -532,7 +532,7 @@
         {
           "id": "ch05_s1_why_presets",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "problem": "取消伪装后姿势丢失"
           },
@@ -545,7 +545,7 @@
         {
           "id": "ch05_s2_save_preset",
           "order": 2,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "uiElements": {
             "button": "保存为预设...",
             "source": "presets.save"
@@ -559,7 +559,7 @@
         {
           "id": "ch05_s3_load_preset",
           "order": 3,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "uiElements": {
             "button": "查看预设...",
             "source": "presets"
@@ -573,7 +573,7 @@
         {
           "id": "ch05_s4_preset_folder",
           "order": 4,
-          "pose": "bow",
+          "action": "emote_bow",
           "uiElements": {
             "button": "打开预设文件夹...",
             "source": "presets.open"
@@ -587,7 +587,7 @@
         {
           "id": "ch05_s5_hotkey",
           "order": 5,
-          "pose": "awww",
+          "action": "emote_shrug",
           "uiElements": {
             "field": "快捷键",
             "source": "forms.editors.general.hotkey"
@@ -601,7 +601,7 @@
         {
           "id": "ch05_s6_share_export",
           "order": 6,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "uiElements": {
             "share": "分享形态...",
             "copyCommand": "拷贝 /bbs morph 命令...",
@@ -627,7 +627,7 @@
         {
           "id": "ch06_s1_type_overview",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "types": [
               "模型",
@@ -654,7 +654,7 @@
         {
           "id": "ch06_s2_model_bends",
           "order": 2,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "uiElements": {
             "forms": [
               "player/steve",
@@ -673,7 +673,7 @@
         {
           "id": "ch06_s3_mob_pick",
           "order": 3,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "uiElements": {
             "tab": "生物",
             "picker": "选取生物...",
@@ -688,7 +688,7 @@
         {
           "id": "ch06_s4_from_look",
           "order": 4,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "uiElements": {
             "button": "从您所看向的生物创建形态",
             "source": "morphing.from_mob"
@@ -702,7 +702,7 @@
         {
           "id": "ch06_s5_mob_pose",
           "order": 5,
-          "pose": "huh",
+          "action": "emote_confused",
           "uiElements": {
             "tab": "姿势",
             "note": "生物形态同样支持姿势与 IK"
@@ -716,7 +716,7 @@
         {
           "id": "ch06_s6_fix_pose",
           "order": 6,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "uiElements": {
             "button": "固定",
             "tooltip": "启用后，禁用模型动画的影响",
@@ -731,7 +731,7 @@
         {
           "id": "ch06_s7_flip_pose",
           "order": 7,
-          "pose": "bow",
+          "action": "emote_bow",
           "uiElements": {
             "button": "翻转姿势",
             "source": "pose.context.flip_pose"
@@ -755,7 +755,7 @@
         {
           "id": "ch07_s1_block",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "tab": "方块",
             "empty": "选择方块...",
@@ -771,7 +771,7 @@
         {
           "id": "ch07_s2_item_picker",
           "order": 2,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "uiElements": {
             "tab": "物品",
             "sources": [
@@ -798,7 +798,7 @@
         {
           "id": "ch07_s3_item_transforms",
           "order": 3,
-          "pose": "huh",
+          "action": "emote_confused",
           "uiElements": {
             "section": "物品变换",
             "source": "forms.editors.item.transforms"
@@ -812,7 +812,7 @@
         {
           "id": "ch07_s4_label",
           "order": 4,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "uiElements": {
             "tab": "文字标签选项",
             "fields": [
@@ -834,7 +834,7 @@
         {
           "id": "ch07_s5_billboard_texture",
           "order": 5,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "uiElements": {
             "tab": "广告牌",
             "fields": [
@@ -856,7 +856,7 @@
         {
           "id": "ch07_s6_billboard_crop",
           "order": 6,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "fields": [
               "裁剪",
@@ -875,7 +875,7 @@
         {
           "id": "ch07_s7_shading",
           "order": 7,
-          "pose": "bow",
+          "action": "emote_bow",
           "uiElements": {
             "field": "阴影",
             "lighting": "光照",
@@ -900,7 +900,7 @@
         {
           "id": "ch08_s1_trail",
           "order": 1,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "uiElements": {
             "tab": "拖影",
             "fields": [
@@ -918,7 +918,7 @@
         {
           "id": "ch08_s2_extruded",
           "order": 2,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "tab": "拉伸",
             "source": "forms.editors.extruded.title"
@@ -932,7 +932,7 @@
         {
           "id": "ch08_s3_sound_basic",
           "order": 3,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "uiElements": {
             "tab": "声音",
             "fields": [
@@ -955,7 +955,7 @@
         {
           "id": "ch08_s4_sound_falloff",
           "order": 4,
-          "pose": "huh",
+          "action": "emote_confused",
           "uiElements": {
             "fields": [
               "衰减模型",
@@ -977,7 +977,7 @@
         {
           "id": "ch08_s5_sound_reflections",
           "order": 5,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "fields": [
               "启用反射",
@@ -1000,7 +1000,7 @@
         {
           "id": "ch08_s6_sound_cone",
           "order": 6,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "uiElements": {
             "tab": "圆锥声音",
             "fields": [
@@ -1023,7 +1023,7 @@
         {
           "id": "ch08_s7_vanilla_particle",
           "order": 7,
-          "pose": "bow",
+          "action": "emote_bow",
           "uiElements": {
             "tab": "原版粒子",
             "source": "forms.editors.vanilla_particle / forms.categories.particles"
@@ -1047,7 +1047,7 @@
         {
           "id": "ch09_s1_fk_pain",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "tab": "姿势",
             "bones": [
@@ -1064,7 +1064,7 @@
         {
           "id": "ch09_s2_ik_concept",
           "order": 2,
-          "pose": "huh",
+          "action": "emote_confused",
           "uiElements": {
             "tab": "IK 链",
             "source": "forms.editors.model.ik"
@@ -1078,7 +1078,7 @@
         {
           "id": "ch09_s3_open_ik_tab",
           "order": 3,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "uiElements": {
             "tab": "IK 链",
             "sections": [
@@ -1096,7 +1096,7 @@
         {
           "id": "ch09_s4_enable_ik",
           "order": 4,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "uiElements": {
             "checkbox": "启用 IK",
             "field": "链长",
@@ -1111,7 +1111,7 @@
         {
           "id": "ch09_s5_target",
           "order": 5,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "uiElements": {
             "field": "目标: %s",
             "source": "forms.editors.model.ik.target"
@@ -1125,7 +1125,7 @@
         {
           "id": "ch09_s6_debug_overlay",
           "order": 6,
-          "pose": "huh",
+          "action": "emote_confused",
           "uiElements": {
             "checkbox": "显示调试叠加层",
             "key": "F5（Dashboard 内默认，toggle_debug）",
@@ -1140,7 +1140,7 @@
         {
           "id": "ch09_s7_save_ik",
           "order": 7,
-          "pose": "bow",
+          "action": "emote_bow",
           "uiElements": {
             "buttons": [
               "保存 IK",
@@ -1169,7 +1169,7 @@
         {
           "id": "ch10_s1_pole_problem",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "problem": "肘部朝向不可控"
           },
@@ -1182,7 +1182,7 @@
         {
           "id": "ch10_s2_pole_vector",
           "order": 2,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "uiElements": {
             "fields": [
               "极向量",
@@ -1200,7 +1200,7 @@
         {
           "id": "ch10_s3_tip_rotation",
           "order": 3,
-          "pose": "huh",
+          "action": "emote_confused",
           "uiElements": {
             "checkbox": "末端跟随目标",
             "source": "forms.editors.model.ik.tip_rotation"
@@ -1214,7 +1214,7 @@
         {
           "id": "ch10_s4_stretch",
           "order": 4,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "uiElements": {
             "checkbox": "超出可达范围时拉伸",
             "source": "forms.editors.model.ik.stretch"
@@ -1228,7 +1228,7 @@
         {
           "id": "ch10_s5_softness",
           "order": 5,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "uiElements": {
             "field": "柔软度",
             "source": "forms.editors.model.ik.softness"
@@ -1242,7 +1242,7 @@
         {
           "id": "ch10_s6_weight",
           "order": 6,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "uiElements": {
             "field": "权重",
             "source": "forms.editors.model.ik.weight"
@@ -1256,7 +1256,7 @@
         {
           "id": "ch10_s7_recap",
           "order": 7,
-          "pose": "bow",
+          "action": "emote_bow",
           "uiElements": {
             "recap": [
               "链长",

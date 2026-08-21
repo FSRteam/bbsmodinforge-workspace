@@ -21,7 +21,7 @@
         {
           "id": "ch39_s1_what_are_particles",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "dialogueMale": "粒子是短暂的视觉特效。火焰、烟雾、闪光、水花，都是粒子。",
           "dialogueFemale": "粒子就是那些飘来飘去的小东西喵～火花、烟雾、光点、魔法特效，都是粒子做的～",
           "instruction": "理解概念（无需操作）：粒子效果由 **发射器**（Emitter）生成 **粒子**（Particle）；发射器控制何时何地发射多少粒子，每个粒子有自己的寿命、运动、外观",
@@ -31,7 +31,7 @@
         {
           "id": "ch39_s2_open_particles_panel",
           "order": 2,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "Dashboard 左侧找到粒子图标，点击打开粒子面板。",
           "dialogueFemale": "按 **数字键 0** 打开 Dashboard 喵～左边找 **Particles**（星星图标），点开～",
           "instruction": "打开 Dashboard → 点击左侧 **Particles** 图标（星星/火花）",
@@ -54,7 +54,7 @@
         {
           "id": "ch39_s3_create_from_template",
           "order": 3,
-          "pose": "huh",
+          "action": "emote_confused",
           "dialogueMale": "点击粒子选择器，选择一个预设粒子（如火焰）。观察预览窗口。",
           "dialogueFemale": "顶部粒子选择器点开喵～选一个预设（比如 **火焰** 或 **烟雾**）～右边预览会动起来～",
           "instruction": "点击顶部粒子选择器 → 展开预设分类（如果有）→ 选择一个内置粒子效果",
@@ -64,7 +64,7 @@
         {
           "id": "ch39_s4_preview_controls",
           "order": 4,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "dialogueMale": "切换到预览标签。有播放/暂停、重启、相机控制按钮。",
           "dialogueFemale": "切到 **预览** 标签喵～能看到播放控制按钮，还能拖鼠标旋转视角～",
           "instruction": "点击 **预览** 标签 → 在预览窗口按住鼠标左键拖动旋转视角 → 点击 **重启** 按钮（循环箭头图标）",
@@ -74,7 +74,7 @@
         {
           "id": "ch39_s5_create_new_particle",
           "order": 5,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "回到文件标签，点击新建粒子。输入名称，创建一个空白粒子。",
           "dialogueFemale": "切回 **文件** 标签喵～点底部 **新建粒子**，输入名字 `my_sparkle` ～",
           "instruction": "切换到 **文件** 标签 → 点击底部 **新建粒子** 按钮 → 输入名称 `my_sparkle` → 确认",
@@ -84,7 +84,7 @@
         {
           "id": "ch39_s6_identifier_field",
           "order": 6,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "dialogueMale": "在通用分区，看到标识符字段。这是粒子在游戏中的唯一 ID。",
           "dialogueFemale": "看 **通用** 分区喵～有个 **标识符** 字段，这是粒子的身份证号～",
           "instruction": "在 **文件** 标签找到 **通用** 分区 → 观察 **标识符** 字段（显示格式如 `bbs:my_sparkle`）",
@@ -94,7 +94,7 @@
         {
           "id": "ch39_s7_minimum_setup",
           "order": 7,
-          "pose": "bow",
+          "action": "emote_bow",
           "dialogueMale": "最小可见粒子需要：发射器（何时发射）、粒子寿命（活多久）、外观（长什么样）。下一章逐个配置。",
           "dialogueFemale": "记住喵～粒子要显示出来，至少需要三样东西：**发射器**（什么时候发射）、**寿命**（活多久）、**外观**（长什么样）～",
           "instruction": "理解最小配置（无需操作）：空白粒子什么都不显示，因为缺少发射器配置；接下来会学习如何配置这三个核心要素",
@@ -114,7 +114,7 @@
         {
           "id": "ch40_s1_switch_to_emitter",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "dialogueMale": "切换到发射器标签。这里配置粒子从哪发射、发射形状、发射速率。",
           "dialogueFemale": "切到 **发射器** 标签喵～这里控制粒子从哪里喷出来～",
           "instruction": "点击 **发射器** 标签",
@@ -124,7 +124,7 @@
         {
           "id": "ch40_s2_emitter_rate",
           "order": 2,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "展开速率分区。设置发射模式为稳定，速率为 10。",
           "dialogueFemale": "展开 **速率** 分区喵～选 **稳定**模式，把 **速率** 滑块拉到 10 ～",
           "instruction": "展开 **速率** 分区 → 选择发射模式 **稳定**（Steady）→ 设置 **速率** 为 10（每秒发射 10 个粒子）",
@@ -143,7 +143,7 @@
         {
           "id": "ch40_s3_shape_point",
           "order": 3,
-          "pose": "huh",
+          "action": "emote_confused",
           "dialogueMale": "展开形状分区。选择点形状。粒子从单个点发射。",
           "dialogueFemale": "展开 **形状** 分区喵～选 **点**，粒子会从一个点射出来～",
           "instruction": "展开 **形状** 分区 → 在 **形状** 下拉菜单选择 **点**（Point）",
@@ -153,7 +153,7 @@
         {
           "id": "ch40_s4_particle_lifetime",
           "order": 4,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "dialogueMale": "切换到时间标签。展开粒子寿命分区，设置最大寿命为 2.0 秒。",
           "dialogueFemale": "切到 **时间** 标签喵～展开 **粒子寿命** 分区，把 **最大** 设成 2.0 秒～",
           "instruction": "点击 **时间** 标签 → 展开 **粒子寿命** 分区 → 在 **最大** 字段输入 `2.0`",
@@ -168,7 +168,7 @@
         {
           "id": "ch40_s5_appearance_size",
           "order": 5,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "切换到外观与纹理标签。展开纹理分区，设置广告牌大小为 0.2。",
           "dialogueFemale": "切到 **外观与纹理** 标签喵～展开 **纹理** 分区，把 **广告牌大小** 的宽高都设成 0.2 ～",
           "instruction": "点击 **外观与纹理** 标签 → 展开 **纹理** 分区 → 找到 **广告牌大小** → 设置 **宽度** 和 **高度** 均为 0.2",
@@ -178,7 +178,7 @@
         {
           "id": "ch40_s6_check_preview",
           "order": 6,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "dialogueMale": "切换到预览标签。现在能看到白色方块粒子从中心点持续发射。",
           "dialogueFemale": "切到 **预览** 标签喵～成功啦！能看到小白块块不停地冒出来～",
           "instruction": "点击 **预览** 标签 → 观察预览窗口",
@@ -188,7 +188,7 @@
         {
           "id": "ch40_s7_emitter_lifetime",
           "order": 7,
-          "pose": "bow",
+          "action": "emote_bow",
           "dialogueMale": "发射器自己也有寿命。不设置则无限发射。在发射器寿命分区可以配置。",
           "dialogueFemale": "注意喵～**发射器寿命** 和 **粒子寿命** 是两回事！发射器寿命控制发射器活多久，粒子寿命控制每个粒子活多久～",
           "instruction": "理解区别（无需操作）：发射器寿命（在 **发射器** 标签 → **发射器寿命** 分区）控制发射器何时停止发射；粒子寿命（在 **时间** 标签）控制每个粒子存活时间",
@@ -208,7 +208,7 @@
         {
           "id": "ch41_s1_switch_to_motion",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "dialogueMale": "切换到运动标签。这里配置粒子的初始速度、加速度、阻力。",
           "dialogueFemale": "切到 **运动** 标签喵～让粒子动起来～",
           "instruction": "点击 **运动** 标签",
@@ -218,7 +218,7 @@
         {
           "id": "ch41_s2_initial_velocity",
           "order": 2,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "展开粒子初始化分区。设置初始速度 Y 为 2.0，粒子向上发射。",
           "dialogueFemale": "展开 **粒子初始化** 分区喵～找到 **初始速度**，把 **Y** 设成 2.0 ～粒子会向上飞～",
           "instruction": "展开 **粒子初始化** 分区 → 找到 **初始速度** → 设置 **Y** 为 `2.0`（X 和 Z 保持 0）",
@@ -228,7 +228,7 @@
         {
           "id": "ch41_s3_acceleration",
           "order": 3,
-          "pose": "huh",
+          "action": "emote_confused",
           "dialogueMale": "展开运动分区。设置加速度 Y 为 -9.8，模拟重力。",
           "dialogueFemale": "展开 **运动** 分区喵～把 **加速度 Y** 设成 -9.8，就像真实重力一样～",
           "instruction": "展开 **运动** 分区 → 找到 **加速度** → 设置 **Y** 为 `-9.8`",
@@ -238,7 +238,7 @@
         {
           "id": "ch41_s4_drag",
           "order": 4,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "dialogueMale": "在运动分区设置阻力为 1.0。粒子受到空气阻力，速度逐渐减慢。",
           "dialogueFemale": "在 **运动** 分区找 **阻力** 喵～设成 1.0，粒子会慢慢减速～",
           "instruction": "在 **运动** 分区找到 **阻力** 字段 → 设置为 `1.0`",
@@ -248,7 +248,7 @@
         {
           "id": "ch41_s5_appearance_color",
           "order": 5,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "切换到外观与纹理标签。展开纹理分区下的颜色设置，选择一个颜色（如红色）。",
           "dialogueFemale": "切回 **外观与纹理** 标签喵～找到 **颜色** 设置，点色轮选个颜色（红色？橙色？）～",
           "instruction": "切换到 **外观与纹理** 标签 → 展开 **纹理** 分区 → 找到 **颜色** / **色调** 字段 → 点击颜色选择器 → 选择红色（或任意颜色）",
@@ -258,7 +258,7 @@
         {
           "id": "ch41_s6_gradient_color",
           "order": 6,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "dialogueMale": "颜色可以渐变。展开渐变编辑器，添加关键点，设置不同时刻的颜色。",
           "dialogueFemale": "颜色能做渐变喵～展开渐变编辑器，左边是粒子刚生成，右边是快消失，点几个点设不同颜色～",
           "instruction": "在颜色字段旁边找到 **渐变** 模式切换 → 启用渐变 → 在渐变条上双击添加一个关键点 → 设置该点颜色为黄色",
@@ -268,7 +268,7 @@
         {
           "id": "ch41_s7_lighting",
           "order": 7,
-          "pose": "bow",
+          "action": "emote_bow",
           "dialogueMale": "在外观分区可以开启光照。粒子会受世界光照影响，看起来更真实。",
           "dialogueFemale": "找 **光照** 开关喵～打开后粒子会受光影响，在暗处变暗～",
           "instruction": "在 **外观与纹理** 标签找到 **光照** 分区或开关 → 启用光照",
@@ -288,7 +288,7 @@
         {
           "id": "ch42_s1_pick_texture",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "dialogueMale": "在外观与纹理标签，找到纹理选择器。选择一个纹理（如之前画的像素画）。",
           "dialogueFemale": "在 **外观与纹理** 标签找纹理选择器喵～可以选之前画的 test_paint，或者 Minecraft 原版的粒子纹理～",
           "instruction": "在 **外观与纹理** 标签 → **纹理** 分区 → 点击纹理选择按钮 → 选择一个纹理（如 `test_paint` 或 Minecraft 原版粒子纹理）",
@@ -298,7 +298,7 @@
         {
           "id": "ch42_s2_uv_mapping",
           "order": 2,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "如果纹理是图集，需要配置 UV 映射。设置 UV X/Y 和宽度/高度，选择图集中的某一格。",
           "dialogueFemale": "如果纹理是很多小图拼成的大图喵～要用 **UV 映射** 选择其中一格～设 X/Y 和宽高～",
           "instruction": "在 **纹理** 分区找到 **UV 映射** → 设置 **UV X** 为 `0`，**UV Y** 为 `0`，**宽度** 和 **高度** 根据图集尺寸设置（如 16x16 图集每格是 1/16 = 0.0625）",
@@ -308,7 +308,7 @@
         {
           "id": "ch42_s3_texture_animation",
           "order": 3,
-          "pose": "huh",
+          "action": "emote_confused",
           "dialogueMale": "启用动画模式。设置帧数和帧率，粒子纹理会逐帧播放。",
           "dialogueFemale": "找 **动画** 开关喵～打开后设 **帧数** 和 **帧率**，粒子会像动画一样播放～",
           "instruction": "在 **纹理** 分区启用 **动画** → 设置 **帧数** 为 `4`，**帧率** 为 `10`（每秒 10 帧）",
@@ -318,7 +318,7 @@
         {
           "id": "ch42_s4_loop_and_stretch",
           "order": 4,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "dialogueMale": "动画有循环和拉伸两种模式。循环模式重复播放，拉伸模式将动画拉伸到粒子寿命。",
           "dialogueFemale": "**循环** 模式：动画播完再从头播喵～**拉伸** 模式：动画播完正好粒子消失～",
           "instruction": "在动画设置找到 **循环** 开关 → 关闭循环 → 启用 **拉伸** 模式",
@@ -328,7 +328,7 @@
         {
           "id": "ch42_s5_facing_mode",
           "order": 5,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "广告牌朝向模式控制粒子如何朝向相机。默认朝向 XYZ，可以切换为只朝向 Y 轴。",
           "dialogueFemale": "**朝向模式** 控制粒子怎么转喵～**朝向 XYZ** = 完全面向相机，**朝向 Y 轴** = 只绕 Y 轴转～",
           "instruction": "在 **外观与纹理** 标签找到 **摄像机朝向模式** 下拉菜单 → 切换不同模式观察预览变化",
@@ -338,7 +338,7 @@
         {
           "id": "ch42_s6_rotation",
           "order": 6,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "dialogueMale": "可以给粒子添加旋转。在粒子初始化设置初始旋转角度和旋转速度。",
           "dialogueFemale": "在 **运动** 标签的 **粒子初始化** 喵～设 **初始旋转** 和 **旋转速度**，粒子会转圈圈～",
           "instruction": "切换到 **运动** 标签 → **粒子初始化** 分区 → 设置 **初始旋转** 为 `0`，**旋转速度** 为 `90`（每秒旋转 90 度）",
@@ -348,7 +348,7 @@
         {
           "id": "ch42_s7_size_over_lifetime",
           "order": 7,
-          "pose": "bow",
+          "action": "emote_bow",
           "dialogueMale": "广告牌大小可以随时间变化。用表达式或曲线让粒子从小变大、再缩小消失。",
           "dialogueFemale": "**广告牌大小** 可以做动画喵～用 **曲线** 或 **表达式** 让粒子先长大再缩小～",
           "instruction": "在 **外观与纹理** 标签 → **纹理** 分区 → **广告牌大小** 字段旁边切换到 **表达式** 模式 → 输入 `0.1 + variable.particle_age * 0.05`（粒子随年龄变大）",
@@ -368,7 +368,7 @@
         {
           "id": "ch43_s1_enable_collision",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "dialogueMale": "切换到运动标签，展开碰撞分区。启用碰撞，粒子会与方块碰撞。",
           "dialogueFemale": "在 **运动** 标签找 **碰撞** 分区喵～打开 **启用**，粒子会撞到方块～",
           "instruction": "切换到 **运动** 标签 → 展开 **碰撞** 分区 → 启用 **启用** 开关",
@@ -378,7 +378,7 @@
         {
           "id": "ch43_s2_collision_radius",
           "order": 2,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "设置碰撞箱半径为 0.1。半径越大，粒子越早碰撞。",
           "dialogueFemale": "设 **碰撞箱半径** 为 0.1 喵～这是粒子的碰撞大小～",
           "instruction": "在 **碰撞** 分区设置 **碰撞箱半径** 为 `0.1`",
@@ -388,7 +388,7 @@
         {
           "id": "ch43_s3_bounciness",
           "order": 3,
-          "pose": "huh",
+          "action": "emote_confused",
           "dialogueMale": "设置弹性为 0.8。粒子碰撞后会反弹，保留 80% 的速度。",
           "dialogueFemale": "设 **弹性** 为 0.8 喵～粒子撞到地面会弹起来～",
           "instruction": "在 **碰撞** 分区设置 **弹性** 为 `0.8`",
@@ -398,7 +398,7 @@
         {
           "id": "ch43_s4_expire_on_collision",
           "order": 4,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "dialogueMale": "启用接触后过期。粒子碰撞后立即消失，可以做爆炸溅射效果。",
           "dialogueFemale": "打开 **接触后过期** 喵～粒子一碰到东西就消失，像溅起的水花～",
           "instruction": "在 **碰撞** 分区启用 **接触后过期** 开关",
@@ -408,7 +408,7 @@
         {
           "id": "ch43_s5_switch_to_events",
           "order": 5,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "切换到事件标签。事件让粒子在特定时刻触发动作：生成其他粒子、播放声音。",
           "dialogueFemale": "切到 **事件** 标签喵～可以让粒子做各种事情～比如碰撞时炸出更多粒子～",
           "instruction": "点击 **事件** 标签",
@@ -418,7 +418,7 @@
         {
           "id": "ch43_s6_add_collision_event",
           "order": 6,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "dialogueMale": "展开碰撞触发器分区。点击添加，创建一个碰撞事件。配置事件节点为粒子，选择另一个粒子效果。",
           "dialogueFemale": "展开 **碰撞触发器** 喵～点 **添加**，选 **粒子** 节点，然后选一个粒子效果～碰撞时会炸出那个粒子～",
           "instruction": "展开 **碰撞触发器** 分区 → 点击 **添加** → 在弹出的节点类型选择 **粒子** → 在粒子选择器选择一个粒子效果（或当前粒子本身）",
@@ -428,7 +428,7 @@
         {
           "id": "ch43_s7_timeline_events",
           "order": 7,
-          "pose": "bow",
+          "action": "emote_bow",
           "dialogueMale": "时间线事件可以在粒子寿命的特定时刻触发。用于做定时变化、闪烁、分裂效果。",
           "dialogueFemale": "**时间线** 事件可以在粒子活到某个时间点时触发喵～比如粒子活了 1 秒后变色、分裂～",
           "instruction": "理解概念（无需操作）：时间线事件在 **粒子触发器** 分区配置，可以指定粒子年龄（秒）或移动距离触发；常用于粒子生命周期中的阶段变化",
@@ -448,7 +448,7 @@
         {
           "id": "ch44_s1_what_is_molang",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "dialogueMale": "Molang 是 Minecraft Bedrock 的表达式语言。可以用数学公式控制粒子参数。",
           "dialogueFemale": "**Molang** 是粒子系统的编程语言喵～用数学公式让粒子做复杂的事～",
           "instruction": "理解概念（无需操作）：Molang 表达式是字符串形式的数学公式，可以引用变量（如 variable.particle_age / variable.particle_lifetime）、使用函数（如 math.sin / math.random）、做算术运算（+ - * /）",
@@ -458,7 +458,7 @@
         {
           "id": "ch44_s2_expression_example",
           "order": 2,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "在广告牌大小字段切换到表达式模式。输入 `0.1 * (1 + math.sin(variable.particle_age * 3))`，粒子大小会震荡。",
           "dialogueFemale": "在 **广告牌大小** 切到 **表达式** 模式喵～输入 `0.1 * (1 + math.sin(variable.particle_age * 3))`，粒子会一大一小跳动～",
           "instruction": "在 **外观与纹理** 标签 → **纹理** 分区 → **广告牌大小** 字段旁边切换到 **表达式** 模式 → 在宽度和高度都输入 `0.1 * (1 + math.sin(variable.particle_age * 3))`",
@@ -468,7 +468,7 @@
         {
           "id": "ch44_s3_random_expression",
           "order": 3,
-          "pose": "huh",
+          "action": "emote_confused",
           "dialogueMale": "math.random() 生成 0-1 随机数。可以用于随机化粒子的初始速度、大小、颜色。",
           "dialogueFemale": "**math.random()** 生成随机数喵～在 **初始速度** 里用它，每个粒子速度都不一样～",
           "instruction": "切换到 **运动** 标签 → **粒子初始化** 分区 → **初始速度 X** 切换到表达式模式 → 输入 `math.random(-2, 2)`（-2 到 2 之间的随机数）",
@@ -478,7 +478,7 @@
         {
           "id": "ch44_s4_switch_to_curves",
           "order": 4,
-          "pose": "praise_the_sun",
+          "action": "emote_salute",
           "dialogueMale": "切换到变量与曲线标签。可以创建自定义曲线，在表达式中引用。",
           "dialogueFemale": "切到 **变量与曲线** 标签喵～可以画曲线图，然后在别的地方用～",
           "instruction": "点击 **变量与曲线** 标签",
@@ -488,7 +488,7 @@
         {
           "id": "ch44_s5_create_curve",
           "order": 5,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "点击添加曲线，命名为 size_curve。在曲线编辑器添加关键点，绘制一条先升后降的曲线。",
           "dialogueFemale": "点 **添加曲线** 喵～命名 `size_curve`，然后在曲线图上点几个点画条线～左边低右边高～",
           "instruction": "点击 **添加曲线** → 输入名称 `size_curve` → 确认 → 在曲线编辑器上双击添加关键点（左下角 0,0 → 中间 0.5,1 → 右下角 1,0，形成山峰形）",
@@ -498,7 +498,7 @@
         {
           "id": "ch44_s6_use_curve",
           "order": 6,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "dialogueMale": "在广告牌大小字段，切换到表达式模式，输入 `0.2 * variable.size_curve`，引用刚创建的曲线。",
           "dialogueFemale": "回到 **外观与纹理** 标签喵～在 **广告牌大小** 表达式里输入 `0.2 * variable.size_curve`，就能用那条曲线～",
           "instruction": "切换到 **外观与纹理** 标签 → **纹理** 分区 → **广告牌大小** 表达式 → 输入 `0.2 * variable.size_curve`",
@@ -508,7 +508,7 @@
         {
           "id": "ch44_s7_common_variables",
           "order": 7,
-          "pose": "bow",
+          "action": "emote_bow",
           "dialogueMale": "常用变量：variable.particle_age（年龄）、variable.particle_lifetime（总寿命）、variable.particle_random_1/2/3/4（随机数）。",
           "dialogueFemale": "记几个常用变量喵：**variable.particle_age** = 粒子年龄，**variable.particle_lifetime** = 粒子总寿命，**variable.particle_random_X** = 每个粒子的固定随机数～",
           "instruction": "理解常用变量（无需操作）：particle_age / particle_lifetime 用于做寿命比例计算；particle_random_1/2/3/4 每个粒子生成时固定，适合需要一致性的随机（如初始颜色）",
@@ -528,7 +528,7 @@
         {
           "id": "ch45_s1_what_we_learned",
           "order": 1,
-          "pose": "thinking_2",
+          "action": "emote_thinking",
           "dialogueMale": "第七幕学了：粒子基础（发射器/寿命/外观）、运动（速度/加速度/阻力/颜色）、纹理（UV/动画/朝向/旋转）、碰撞与事件（碰撞/触发器/事件节点）、曲线与表达式（Molang/曲线/变量）。",
           "dialogueFemale": "第七幕学完啦喵～粒子系统是最复杂的模块，但你已经掌握核心了～",
           "instruction": "回顾内容（无需操作）：8 个标签页的作用、最小可见粒子配置、运动物理、纹理动画、碰撞交互、事件系统、Molang 表达式、曲线编辑",
@@ -538,7 +538,7 @@
         {
           "id": "ch45_s2_minimum_product",
           "order": 2,
-          "pose": "crossed_arms",
+          "action": "emote_pointing",
           "dialogueMale": "最小成品：创建一个火焰效果粒子 → 发射器稳定发射 → 粒子向上飞再下落 → 红黄渐变色 → 随寿命缩小 → 接触地面消失。",
           "dialogueFemale": "最小成品喵：做一个火焰粒子～向上飞、红黄色、会缩小、落地消失～",
           "instruction": "理解最小成品（无需操作）：组合本幕学到的所有技术，做一个完整的粒子特效",
@@ -548,7 +548,7 @@
         {
           "id": "ch45_s3_8_tabs_summary",
           "order": 3,
-          "pose": "bow",
+          "action": "emote_bow",
           "dialogueMale": "8 个标签页总结：文件（新建/保存）、发射器（速率/形状）、时间（寿命）、运动（速度/碰撞）、外观（纹理/颜色）、事件（触发器）、曲线（变量）、预览（调试）。",
           "dialogueFemale": "记住 8 个标签喵：**文件** = 管理，**发射器** = 怎么发射，**时间** = 活多久，**运动** = 怎么动，**外观** = 长啥样，**事件** = 干啥事，**曲线** = 高级控制，**预览** = 看效果～",
           "instruction": "理解工作流（无需操作）：通常顺序是 文件创建 → 发射器配置 → 时间设置 → 外观调整 → 运动物理 → 预览调试 → 事件和曲线（高级）",
@@ -572,7 +572,7 @@
         {
           "id": "ch45_s4_next_chapter",
           "order": 4,
-          "pose": "tada_1",
+          "action": "emote_tada",
           "dialogueMale": "下一幕：音频系统。学习添加声音、音乐、空间音效。",
           "dialogueFemale": "下一幕是 **音频系统** 喵～学怎么给场景加声音、音乐、3D 音效～",
           "instruction": "准备进入下一幕（无需操作）",

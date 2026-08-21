@@ -1423,3 +1423,37 @@ Added Addon API 2.0 and hot-plugin Dashboard panel registration, lifecycle-safe 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 37: 完成 FSR 教程引导覆盖层 API
+
+**Date**: 2026-08-21
+**Task**: 完成 FSR 教程引导覆盖层 API
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+新增 Dashboard 稳定面板导航、实时控件锚点解析和 addon 根层覆盖层槽位；补齐失败隔离、输入穿透、结构及二进制兼容测试，并通过 Gradle 9.7.0 完整构建。游戏内人工冒烟未执行，已记录在归档任务中。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `629bdc7c` | (see git log) |
+| `fdd3224` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
