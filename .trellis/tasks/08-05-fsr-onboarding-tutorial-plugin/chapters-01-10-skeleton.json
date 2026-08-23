@@ -26,9 +26,11 @@
           },
           "instruction": "按键盘主键盘区的 **数字键 0**（最上排，不是小键盘的 0）",
           "userWillSee": "屏幕中央弹出一个深色大面板，左侧竖排按钮，右侧内容区，顶部工具栏",
-          "hint": "如果没反应，确认你在游戏内（不是暂停菜单 Esc），且没有其他面板占用输入",
+          "hint": "如果没反应，确认你在游戏内（不是暂停菜单 Esc），且没有其他面板占用输入；键位被改过的话，去 Minecraft 设置 → 按键设置 的 BBS mod 分类查看当前绑定",
           "dialogueMale": "先把工作台打开。数字键 0 是整个 BBS 的总入口，记住它就够了。",
-          "dialogueFemale": "第一步超简单喵～按一下 **0**，工作台就跳出来啦～"
+          "dialogueFemale": "第一步超简单喵～按一下 **0**，工作台就跳出来啦～",
+          "panel": "",
+          "anchor": ""
         },
         {
           "id": "ch01_s2_nine_panels",
@@ -46,13 +48,16 @@
               "图形计算器（Graph，图表图标）",
               "插件（Plugins，处理器图标）"
             ],
-            "source": "UIDashboard.java:311-319 registerPanel() 调用"
+            "source": "UIDashboard.java:311-319 registerPanel() 调用",
+            "note": "已对照源码核实：第 10 个 Sandbox 面板（UIDebugPanel）仅在 FabricLoader.isDevelopmentEnvironment() 时注册，玩家环境左栏只有这 9 个"
           },
           "instruction": "用鼠标依次悬停在左侧每个图标按钮上，停留 1 秒，读出弹出的工具提示名称",
           "userWillSee": "从上到下显示：伪装、影片、模型方块、粒子、模型编辑器、纹理管理器、音频编辑器、图形计算器、插件",
           "hint": "这 9 个面板是 FSR 的全部核心模块，今天先认识名字，后面逐个深入",
           "dialogueMale": "左侧九个按钮就是九个编辑器。现在不用记功能，只要知道它们各自在哪。",
-          "dialogueFemale": "左边这排小图标是九个编辑器喵～先把鼠标挨个停上去认认脸就好啦～"
+          "dialogueFemale": "左边这排小图标是九个编辑器喵～先把鼠标挨个停上去认认脸就好啦～",
+          "panel": "",
+          "anchor": ""
         },
         {
           "id": "ch01_s3_switch_panel",
@@ -66,7 +71,9 @@
           "userWillSee": "右侧内容在伪装编辑器和影片编辑器之间切换，左侧当前选中的图标会高亮显示",
           "hint": "切换面板不会丢失任何数据，可以随时来回切",
           "dialogueMale": "面板之间可以随时切换，互不干扰。选中的图标会亮起来，这是你的位置指示。",
-          "dialogueFemale": "点一下就换一个编辑器喵～亮着的那个就是你现在待的地方哦～"
+          "dialogueFemale": "点一下就换一个编辑器喵～亮着的那个就是你现在待的地方哦～",
+          "panel": "morphing",
+          "anchor": "dashboard.panel_button.morphing"
         },
         {
           "id": "ch01_s4_f9_keybinds",
@@ -77,11 +84,13 @@
             "panel": "按键绑定列表",
             "source": "Keys.KEYBINDS = F9"
           },
-          "instruction": "在 Dashboard 打开的状态下，按键盘 **F9** 键",
-          "userWillSee": "弹出一个滚动列表，显示所有编辑器快捷键的当前绑定（按分类展开：camera/editor/film_controller/keyframes...）",
+          "instruction": "在 Dashboard 打开的状态下，按键盘 **F9** 键（默认）。如果没反应，说明这个键被改过：点右上角设置图标进按键绑定，就能查到它现在绑的是什么",
+          "userWillSee": "弹出一个滚动列表，按分类折叠展示所有编辑器快捷键的当前绑定（分类都是中文名，如 常规、仪表盘、影片控制器、关键帧编辑器 等）",
           "hint": "这是最重要的自查工具。所有快捷键都可以改，教程里说的「默认」按键，你按 F9 可以看到自己实际绑的是什么",
           "dialogueMale": "F9 列出当前所有编辑器快捷键。记不住键位时查它，比猜快得多。",
-          "dialogueFemale": "忘了快捷键就按 **F9** 喵～它会把所有键都摊开给你看～"
+          "dialogueFemale": "忘了快捷键就按 **F9** 喵～它会把所有键都摊开给你看～",
+          "panel": "",
+          "anchor": ""
         },
         {
           "id": "ch01_s5_taskbar_behavior",
@@ -92,11 +101,13 @@
             "setting": "dashboard.toggle_taskbar_auto_hide",
             "source": "Keys.dashboard.toggle_taskbar_auto_hide = Ctrl+S"
           },
-          "instruction": "按 **Ctrl + S**（Dashboard 内默认快捷键）",
-          "userWillSee": "左侧任务栏自动隐藏，鼠标移到左边缘时才显示；再按一次 Ctrl + S 恢复固定显示",
-          "hint": "自动隐藏模式适合小屏幕或需要更大工作区的场景",
+          "instruction": "点击 Dashboard 右上角的设置图标，在外观相关设置里找到 **自动隐藏仪表盘边框** 开关并点击，观察左侧任务栏的变化；熟练后也可用默认快捷键 **Ctrl + S** 切换",
+          "userWillSee": "切换时会弹出提示「已启用仪表盘自动隐藏」或「已关闭仪表盘自动隐藏」；启用后左侧任务栏自动隐藏，鼠标移到左边缘才显示",
+          "hint": "注意：编辑器里 Ctrl + S 同时也是「保存」快捷键，别把两者记混。自动隐藏适合截图、录制时腾出画面",
           "dialogueMale": "任务栏可以自动隐藏，用来腾出画面。截图和录制时有用，密集编辑时反而碍事。",
-          "dialogueFemale": "想要画面干净就让任务栏躲起来喵～不过正在忙着改东西的时候，还是让它待着吧～"
+          "dialogueFemale": "想要画面干净就让任务栏躲起来喵～不过正在忙着改东西的时候，还是让它待着吧～",
+          "panel": "",
+          "anchor": ""
         },
         {
           "id": "ch01_s6_tab_system",
@@ -107,11 +118,13 @@
             "tab": "影片 Tab",
             "source": "Keys.dashboard.new_tab = Ctrl+N"
           },
-          "instruction": "切换到影片面板 → 按 **Ctrl + N** 新建一个标签页 → 观察顶部出现 Tab 栏",
-          "userWillSee": "顶部出现标签栏，显示「影片 1」「影片 2」，可以点击切换或关闭（X 按钮）",
+          "instruction": "切换到影片面板 → 右键顶部标签栏 → 点击 **新标签页** → 观察标签栏的变化；熟练后也可按默认快捷键 **Ctrl + N**",
+          "userWillSee": "顶部标签栏多出一个新标签页，点击即可切换，点标签上的 X 关闭；右键标签还有关闭左侧/右侧/其他标签页等选项",
           "hint": "多标签系统允许同时编辑多个影片/模型，不用频繁打开关闭文件",
           "dialogueMale": "影片支持多标签页。同时开几部影片，比反复开关文件省事。",
-          "dialogueFemale": "影片可以开好几个标签页喵～来回切着看，超方便～"
+          "dialogueFemale": "影片可以开好几个标签页喵～来回切着看，超方便～",
+          "panel": "film",
+          "anchor": "dashboard.panel_button.film"
         },
         {
           "id": "ch01_s7_close_dashboard",
@@ -121,11 +134,13 @@
             "key": "数字键 0 或 F1（默认）",
             "source": "全局 0 或 dashboard.toggle F1"
           },
-          "instruction": "再按一次 **数字键 0**（或按 **F1**）关闭 Dashboard",
+          "instruction": "再按一次 **数字键 0**（或按 **F1**，均为默认）关闭 Dashboard",
           "userWillSee": "Dashboard 面板消失，回到正常游戏画面",
           "hint": "Dashboard 不会暂停游戏。0 是全局键（游戏内随时可按），F1 是 Dashboard 内快捷键（只在面板开着时有效）",
           "dialogueMale": "关闭方式和打开一样。工作台随手开关，不需要退出游戏。",
-          "dialogueFemale": "再按一下 **0** 就关掉啦～开开关关都很随意的喵～"
+          "dialogueFemale": "再按一下 **0** 就关掉啦～开开关关都很随意的喵～",
+          "panel": "",
+          "anchor": ""
         }
       ]
     },
@@ -150,11 +165,13 @@
               "Keys.java 编辑器"
             ]
           },
-          "instruction": "理解两套按键的区别（无需操作）：全局键在游戏内任何时候都能按，编辑器键只在 Dashboard 打开时有效",
-          "userWillSee": "（认知铺垫步骤）",
+          "instruction": "动手感受一次两套按键的区别：按 **数字键 0** 关闭 Dashboard，再按 **F9** —— 没反应，正常；再按 **数字键 0** 重新打开，按一次 **F9**（默认）—— 这次列表弹出来了",
+          "userWillSee": "面板关着时按 F9 毫无反应；面板开着再按，键位列表弹出。这就是两层按键最直观的区别",
           "hint": "这就是为什么 F4 在面板开/关时功能不同：全局 F4=录制视频，编辑器 F4=切换回放菜单",
           "dialogueMale": "按键分两层：全局键随时可用，编辑器键只在工作台里生效。分不清这一点，多数按键问题都会变成谜。",
-          "dialogueFemale": "按键是分两层的喵～一层在游戏里随时能按，一层只在工作台里管用，记住这个就不会乱啦～"
+          "dialogueFemale": "按键是分两层的喵～一层在游戏里随时能按，一层只在工作台里管用，记住这个就不会乱啦～",
+          "panel": "",
+          "anchor": ""
         },
         {
           "id": "ch02_s2_global_keys",
@@ -180,7 +197,9 @@
           "userWillSee": "显示所有全局快捷键及其绑定，可以在这里修改（会写入 MC 的 options.txt）",
           "hint": "全局键和 MC 原版键冲突时优先级较高，建议避免绑到 WASD/Esc/E 这些常用键",
           "dialogueMale": "全局键写在 Minecraft 自己的按键设置里，共十一个。它们不受工作台开关影响。",
-          "dialogueFemale": "全局键在原版的按键设置里喵～一共十一个，随时都能按哦～"
+          "dialogueFemale": "全局键在原版的按键设置里喵～一共十一个，随时都能按哦～",
+          "panel": "",
+          "anchor": ""
         },
         {
           "id": "ch02_s3_editor_categories",
@@ -207,11 +226,13 @@
             ],
             "total": 155
           },
-          "instruction": "按 **数字键 0** 打开 Dashboard → 按 **F9** 打开按键绑定列表 → 滚动查看所有分类",
-          "userWillSee": "16 个分类折叠面板，展开后显示每个快捷键的名称、当前绑定、说明",
-          "hint": "这 155 个键可以在 BBS 设置里改，改完会写入 config/bbs/keybinds.json",
+          "instruction": "按 **数字键 0** 打开 Dashboard → 按 **F9**（默认）打开按键绑定列表 → 只展开 **仪表盘** 这一个分类，随便看两三个绑定就行，不用全看",
+          "userWillSee": "列表共 16 个分类折叠着；展开仪表盘分类后，能看到每个快捷键的名称、当前绑定和一句用途说明",
+          "hint": "这 155 个键都可以在 BBS 设置里改成顺手的；分类名就是作用范围——哪个键没反应，先看它属于哪个分类",
           "dialogueMale": "编辑器键按面板分成十六类。同一个键在不同面板里可以是完全不同的功能。",
-          "dialogueFemale": "编辑器的键分了十六类喵～同一个键在不同面板里做的事可能完全不一样哦～"
+          "dialogueFemale": "编辑器的键分了十六类喵～同一个键在不同面板里做的事可能完全不一样哦～",
+          "panel": "",
+          "anchor": ""
         },
         {
           "id": "ch02_s4_conflict_keys",
@@ -227,11 +248,13 @@
               "0": "全局=开关Dashboard | 编辑器=recording_groups的transform"
             }
           },
-          "instruction": "理解键位冲突（无需操作）：同一个物理按键在 Dashboard 开/关时触发不同功能",
-          "userWillSee": "（认知铺垫步骤）",
-          "hint": "教程后面涉及这些键时，会明确说明「Dashboard 关闭时按 F6」这样的前提条件",
+          "instruction": "轻量自查（就一个动作）：按 **F9**（默认）打开键位列表，展开 **仪表盘** 分类，找到绑定在 **F5** 上的「切换 IK 与物理调试叠加层」这一项",
+          "userWillSee": "你会看到 F5 被 BBS 占用了——而游戏里 F5 本来是用来切视角的：同一个键，面板开/关时分属两层，这就是「键位冲突」",
+          "hint": "以后遇到某个键没反应或行为怪异，先想到「可能撞键了」：确认 Dashboard 是开还是关，再按 F9 查这个键现在绑的是什么",
           "dialogueMale": "所谓冲突，多半不是坏了，而是你按的时机不同。工作台开着和关着，按键归属就换了一层。",
-          "dialogueFemale": "感觉按键打架的时候先别急喵～很可能只是工作台开着还是关着的差别啦～"
+          "dialogueFemale": "感觉按键打架的时候先别急喵～很可能只是工作台开着还是关着的差别啦～",
+          "panel": "",
+          "anchor": ""
         },
         {
           "id": "ch02_s5_rebind_demo",
@@ -242,10 +265,12 @@
             "demo": "修改一个不常用的键（如 pixels.tool_eraser）"
           },
           "instruction": "按 **数字键 0** → 点击 Dashboard 右上角的设置图标 → 进入 **UI 按键绑定** → 展开 **像素编辑器** 分类 → 点击某个快捷键的按键显示框 → 按一个新键（建议小键盘 1）",
-          "userWillSee": "该快捷键的绑定改为小键盘 1；改动写入 config/bbs/keybinds.json，下次打开像素编辑器时生效",
-          "hint": "设置里这一项的真实名称是「UI 按键绑定」，共 16 个分类；改键即时生效，不需要重启",
+          "userWillSee": "该快捷键的绑定改为小键盘 1；改动立即保存，之后打开像素编辑器时就是用新键，无需重启游戏",
+          "hint": "设置里这一项的真实名称是「UI 按键绑定」，共 16 个分类；改完无需重启，之后打开对应面板就能用上新键",
           "dialogueMale": "编辑器键可以自己改。改动写进配置文件，重开游戏依然有效。",
-          "dialogueFemale": "不喜欢的键位可以自己换喵～换完会记下来，下次打开还是新键哦～"
+          "dialogueFemale": "不喜欢的键位可以自己换喵～换完会记下来，下次打开还是新键哦～",
+          "panel": "",
+          "anchor": "dashboard.settings"
         },
         {
           "id": "ch02_s6_categories_meaning",
@@ -272,11 +297,13 @@
             },
             "source": "keybinds.config.*.title / tooltip"
           },
-          "instruction": "在 **UI 按键绑定** 里依次展开 16 个分类，读每个分类的说明文字",
+          "instruction": "在 **UI 按键绑定** 里挑一个你感兴趣的分类展开，读它的一句话说明，体会「分类名 = 生效范围」。以后哪个键不生效，先回来看它的分类",
           "userWillSee": "每个分类都有中文名与一句作用说明，明确告诉你这组键在哪个面板里才生效",
           "hint": "分类名就是「作用域」：看到「关键帧编辑器」就知道那些键只在关键帧面板里管用，这比死记键位有效得多",
           "dialogueMale": "每个分类都写清了适用范围。遇到键不生效，先看它属于哪一类。",
-          "dialogueFemale": "每一类都写了自己管哪个面板喵～键没反应时先看看分类，八成就找到原因啦～"
+          "dialogueFemale": "每一类都写了自己管哪个面板喵～键没反应时先看看分类，八成就找到原因啦～",
+          "panel": "",
+          "anchor": ""
         }
       ]
     },
@@ -298,11 +325,13 @@
             "panel": "伪装（Morphing）",
             "source": "BBSModClient.java:984 GLFW_KEY_B"
           },
-          "instruction": "按键盘 **B** 键",
+          "instruction": "点击左侧 **伪装（人形图标）** 面板按钮（若 Dashboard 还没开，先按主键盘区 **数字键 0**）。熟练后可直接按全局键 **B**（默认）一步到位",
           "userWillSee": "Dashboard 自动打开并切换到伪装面板；左侧显示形态分类树，右侧显示编辑器",
-          "hint": "B = Body（身体），容易记忆。如果 Dashboard 已打开，按 B 只会切换到伪装面板",
-          "dialogueMale": "B 键直达伪装面板。它会顺手打开工作台，不用先按 0。",
-          "dialogueFemale": "按 **B** 就直接进伪装啦喵～连工作台都帮你一起打开哦～"
+          "hint": "B 是全局键（默认）：面板没开时按下会打开 Dashboard 并切到伪装，面板已开时只切换面板。想改绑去 Minecraft 设置 → 按键设置 的 BBS mod 分类查看",
+          "dialogueMale": "点左侧人形按钮进伪装。用顺了以后，B 键也能一步到位。",
+          "dialogueFemale": "点左边的小人图标就进伪装啦喵～等顺手了，按一下 **B** 也是一样的哦～",
+          "panel": "morphing",
+          "anchor": "morphing.palette"
         },
         {
           "id": "ch03_s2_categories",
@@ -325,7 +354,9 @@
           "userWillSee": "从上到下显示：最近使用的形态、模型、生物(动物)、生物(中立)、生物(敌对)、生物(杂项)、粒子、杂项",
           "hint": "分类可以折叠/展开，点击左侧三角图标",
           "dialogueMale": "左侧是形态分类。先认清有哪几类，再去挑具体形态。",
-          "dialogueFemale": "左边是形态的分类喵～先看看有哪些类，再慢慢挑～"
+          "dialogueFemale": "左边是形态的分类喵～先看看有哪些类，再慢慢挑～",
+          "panel": "morphing",
+          "anchor": "morphing.palette_list"
         },
         {
           "id": "ch03_s3_pick_mob",
@@ -336,11 +367,13 @@
             "picker": "选取生物...",
             "source": "forms.editors.mob.pick_entity"
           },
-          "instruction": "展开 **生物 (动物)** 分类 → 点击任意生物（如 minecraft:pig）",
-          "userWillSee": "右侧编辑器切换为该生物的配置界面，显示「生物」标签；按 F5 切到第三人称可以看到你变成了猪",
+          "instruction": "展开 **生物 (动物)** 分类 → 点击任意生物（比如猪）完成变身 → 按 **数字键 0** 关闭 Dashboard → 按 **F5** 切到第三人称",
+          "userWillSee": "点击后右侧编辑器切换为该生物的配置界面，显示「生物」标签；关闭面板后按 F5 切第三人称，就能看到自己变成了猪。注意：Dashboard 开着时 F5 是 BBS 的调试键，想切视角必须先关面板",
           "hint": "变身后移动速度、碰撞箱、生命值显示会跟随该生物的设置",
-          "dialogueMale": "选一只生物就完成了第一次变身。按 F5 切第三人称，确认它真的生效了。",
-          "dialogueFemale": "随便挑一只生物就变身成功啦喵～按 **F5** 看看自己现在的样子～"
+          "dialogueMale": "选一只生物就完成了第一次变身。关上面板，F5 切第三人称确认它真的生效了。",
+          "dialogueFemale": "随便挑一只生物就变身成功啦喵～关掉面板再按 **F5**，看看自己现在的样子～",
+          "panel": "morphing",
+          "anchor": "morphing.palette_list"
         },
         {
           "id": "ch03_s4_editor_tabs",
@@ -362,7 +395,9 @@
           "userWillSee": "标签栏显示：常规（碰撞箱/光照/显示）、生物（选取生物）、姿势（骨骼旋转滑块）、IK 链、物理骨链、骨骼约束、动作",
           "hint": "不同形态类型的标签不一样：生物有「生物」标签，模型有「姿势」标签，方块只有「常规」+「方块」",
           "dialogueMale": "右侧标签是这个形态的全部可调项。不同形态类型，标签数量不一样。",
-          "dialogueFemale": "右边这些标签就是能调的东西喵～不同形态的标签不一样多哦～"
+          "dialogueFemale": "右边这些标签就是能调的东西喵～不同形态的标签不一样多哦～",
+          "panel": "morphing",
+          "anchor": "morphing.palette_editor"
         },
         {
           "id": "ch03_s5_general_tab",
@@ -382,7 +417,9 @@
           "userWillSee": "你的角色变成半透明（50% 不透明度），其他玩家也能看到这个效果",
           "hint": "可见性 0 = 完全透明（隐身但碰撞箱还在），1 = 完全不透明",
           "dialogueMale": "常规标签管形态的整体属性。可见性调到一半，就是半透明。",
-          "dialogueFemale": "常规标签管整体效果喵～把可见性拉到一半，就变成半透明啦～"
+          "dialogueFemale": "常规标签管整体效果喵～把可见性拉到一半，就变成半透明啦～",
+          "panel": "morphing",
+          "anchor": "morphing.palette_editor"
         },
         {
           "id": "ch03_s6_demorph",
@@ -393,11 +430,13 @@
             "label": "取消伪装",
             "source": "BBSModClient.java:977 + morphing.demorph"
           },
-          "instruction": "按键盘 **句号键 .**（在斜杠 / 旁边）",
+          "instruction": "按键盘 **句号键 .**（默认，在斜杠 / 旁边；全局键，不用打开面板）",
           "userWillSee": "角色恢复默认皮肤外观，伪装编辑器右侧清空",
-          "hint": "取消伪装是即时的，不需要打开 Dashboard。这个键在拍片时非常常用",
+          "hint": "取消伪装是即时的，不需要打开 Dashboard。这个键在拍片时非常常用；若按了没反应，去 Minecraft 设置 → 按键设置 的 BBS mod 分类查看当前绑定",
           "dialogueMale": "句号键取消伪装。这是最常用的退出键，值得先记住。",
-          "dialogueFemale": "按句号键就变回自己啦喵～这个键很常用，记牢哦～"
+          "dialogueFemale": "按句号键就变回自己啦喵～这个键很常用，记牢哦～",
+          "panel": "morphing",
+          "anchor": "morphing.demorph"
         },
         {
           "id": "ch03_s7_recent",
@@ -411,7 +450,9 @@
           "userWillSee": "最近使用列表显示你刚才应用过的形态，点击即可快速切回",
           "hint": "最近使用列表自动记录，不需要手动保存。最多显示最近 10 个",
           "dialogueMale": "最近使用列表会留下你用过的形态。反复切换时不必重新翻分类。",
-          "dialogueFemale": "用过的形态会留在最近列表里喵～下次直接点一下就切回去啦～"
+          "dialogueFemale": "用过的形态会留在最近列表里喵～下次直接点一下就切回去啦～",
+          "panel": "morphing",
+          "anchor": "morphing.palette_list"
         }
       ]
     },
@@ -436,7 +477,9 @@
           "userWillSee": "变成 Steve 3D 模型，右侧出现「姿势」标签（之前生物没有这个标签）",
           "hint": "只有带骨骼的模型才有姿势标签。player/steve_bends 支持弯曲，效果更好",
           "dialogueMale": "模型形态才有姿势标签。生物形态没有，这是两者的关键差别。",
-          "dialogueFemale": "换成模型才会出现姿势标签喵～生物形态是没有的哦～"
+          "dialogueFemale": "换成模型才会出现姿势标签喵～生物形态是没有的哦～",
+          "panel": "morphing",
+          "anchor": "morphing.palette_list"
         },
         {
           "id": "ch04_s2_pose_tab",
@@ -458,7 +501,9 @@
           "userWillSee": "显示骨骼树：Head/Body/Left arm/Right arm/Left leg/Right leg，每个骨骼有 Rotation X/Y/Z 滑块",
           "hint": "这就是 FK（正向动力学）：你直接旋转每个关节，末端跟着动",
           "dialogueMale": "姿势标签左侧是骨骼树。每根骨骼都有三个旋转轴。",
-          "dialogueFemale": "左边是骨头列表喵～每根骨头都能绕三个方向转～"
+          "dialogueFemale": "左边是骨头列表喵～每根骨头都能绕三个方向转～",
+          "panel": "morphing",
+          "anchor": "morphing.palette_editor"
         },
         {
           "id": "ch04_s3_rotate_head",
@@ -470,10 +515,12 @@
             "source": "pose.rotate"
           },
           "instruction": "选中 **Head** 骨骼 → 拖动 **Rotation Y** 滑块左右移动",
-          "userWillSee": "头部实时左右转动（第三人称视角 F5 下清晰可见）",
+          "userWillSee": "头部实时左右转动（想看清楚就先按 0 关闭面板，再按 F5 切第三人称；面板开着时 F5 是 BBS 的调试键，不切视角）",
           "hint": "Y 轴 = 左右转，X 轴 = 前后仰，Z 轴 = 翻滚。单位是角度",
           "dialogueMale": "先从头部开始。拖动滑块时看着角色，建立数值和动作的直觉。",
-          "dialogueFemale": "先从头开始转喵～一边拖一边看角色，很快就有感觉啦～"
+          "dialogueFemale": "先从头开始转喵～一边拖一边看角色，很快就有感觉啦～",
+          "panel": "morphing",
+          "anchor": "morphing.palette_editor"
         },
         {
           "id": "ch04_s4_apply_to_children",
@@ -483,11 +530,13 @@
             "button": "应用至子集",
             "source": "pose.context.apply"
           },
-          "instruction": "选中 **Body** → 设置 Rotation Y = 45 → 右键骨骼名 → **应用至子集**",
+          "instruction": "选中 **Body** → 把 **Rotation Y** 滑块拖到约 45 → 右键骨骼名 → **应用至子集**",
           "userWillSee": "Body 及其所有子骨骼（手臂/腿）一起旋转 45 度",
           "hint": "应用至子集会把当前骨骼的旋转传递给所有子骨骼，做整体转身很方便",
           "dialogueMale": "骨骼是有层级的。作用到子集，等于连带它下面的所有骨骼一起转。",
-          "dialogueFemale": "骨头是一层套一层的喵～作用到子集，下面的手脚就跟着一起转啦～"
+          "dialogueFemale": "骨头是一层套一层的喵～作用到子集，下面的手脚就跟着一起转啦～",
+          "panel": "morphing",
+          "anchor": "morphing.palette_editor"
         },
         {
           "id": "ch04_s5_copy_paste_pose",
@@ -498,11 +547,13 @@
             "paste": "粘贴姿势",
             "source": "pose.context.copy/paste"
           },
-          "instruction": "调好一个姿势 → 右键任意骨骼 → **拷贝姿势** → 按 **.** 取消伪装 → 重新变身 → 右键骨骼 → **粘贴姿势**",
+          "instruction": "调好一个姿势 → 右键任意骨骼 → **拷贝姿势** → 按 **句号键 .**（默认）取消伪装 → 在形态列表里重新双击同一个形态 → 右键骨骼 → **粘贴姿势**。哪一步没成功就重做那一步，拷贝的内容不会丢",
           "userWillSee": "姿势立即恢复到拷贝时的状态",
           "hint": "拷贝姿势是剪贴板操作，关闭 Dashboard 也不会丢失，可以跨形态粘贴（如果骨骼名匹配）",
           "dialogueMale": "姿势可以整套拷贝粘贴。这是最省事的复用手段，不必重新调一遍。",
-          "dialogueFemale": "姿势能整套复制粘贴喵～不用每次都重新摆啦～"
+          "dialogueFemale": "姿势能整套复制粘贴喵～不用每次都重新摆啦～",
+          "panel": "morphing",
+          "anchor": "morphing.palette_editor"
         },
         {
           "id": "ch04_s6_reset",
@@ -516,7 +567,9 @@
           "userWillSee": "所有骨骼旋转回到 (0, 0, 0)，恢复默认 T-pose",
           "hint": "重置姿势只影响旋转，不影响碰撞箱/可见性等常规设置",
           "dialogueMale": "调乱了就重置。回到默认姿势，比逐个骨骼归零快。",
-          "dialogueFemale": "调乱了别慌喵～一键重置就回到最初的样子啦～"
+          "dialogueFemale": "调乱了别慌喵～一键重置就回到最初的样子啦～",
+          "panel": "morphing",
+          "anchor": "morphing.palette_editor"
         }
       ]
     },
@@ -540,7 +593,9 @@
           "userWillSee": "（认知铺垫步骤）",
           "hint": "预设保存的是完整状态：模型 + 姿势 + IK + 物理 + 所有设置",
           "dialogueMale": "刚才那套姿势，取消伪装就没了。这就是需要预设的原因。",
-          "dialogueFemale": "刚刚辛苦摆的姿势，一取消伪装就不见了喵～所以要学会保存啦～"
+          "dialogueFemale": "刚刚辛苦摆的姿势，一取消伪装就不见了喵～所以要学会保存啦～",
+          "panel": "",
+          "anchor": ""
         },
         {
           "id": "ch05_s2_save_preset",
@@ -551,10 +606,12 @@
             "source": "presets.save"
           },
           "instruction": "变成 player/steve → 调整姿势 → 右键形态列表中的 **player/steve** → **保存为预设...** → 输入名称（如 my_pose）→ 确认",
-          "userWillSee": "弹出输入框，确认后预设保存到 config/bbs/models/<category>/my_pose.json",
+          "userWillSee": "弹出「输入预设 ID：」输入框，确认后预设就存进你的形态库，随时能在形态列表里找回",
           "hint": "预设 ID 只能包含小写字母、数字、下划线，不能有空格或中文",
           "dialogueMale": "把调好的形态存成预设。命名要能让你几天后还认得出来。",
-          "dialogueFemale": "把喜欢的形态存成预设喵～名字取得清楚点，以后才找得到哦～"
+          "dialogueFemale": "把喜欢的形态存成预设喵～名字取得清楚点，以后才找得到哦～",
+          "panel": "morphing",
+          "anchor": "morphing.palette_list"
         },
         {
           "id": "ch05_s3_load_preset",
@@ -564,11 +621,13 @@
             "button": "查看预设...",
             "source": "presets"
           },
-          "instruction": "按 **.** 取消伪装 → 按 **B** 打开伪装 → 右键形态列表空白处 → **查看预设...** → 双击刚保存的 my_pose",
+          "instruction": "按 **句号键 .**（默认）取消伪装 → 点击左侧 **伪装** 面板按钮（或按全局键 **B**，默认）→ 右键形态列表空白处 → **查看预设...** → 双击刚保存的 my_pose",
           "userWillSee": "瞬间恢复到保存时的模型和姿势",
           "hint": "预设是跨分类的，可以在任何位置加载",
           "dialogueMale": "预设可以随时读回来，连姿势一起。这是复用的核心动作。",
-          "dialogueFemale": "预设随时能读回来喵～连姿势都一起回来啦，超省事～"
+          "dialogueFemale": "预设随时能读回来喵～连姿势都一起回来啦，超省事～",
+          "panel": "morphing",
+          "anchor": "morphing.palette_list"
         },
         {
           "id": "ch05_s4_preset_folder",
@@ -579,10 +638,12 @@
             "source": "presets.open"
           },
           "instruction": "右键形态列表空白处 → **打开预设文件夹...**",
-          "userWillSee": "系统文件管理器打开 config/bbs/models/ 目录，可以看到按分类存放的 .json 预设文件",
+          "userWillSee": "系统文件管理器打开 BBS 存放预设的文件夹，里面是按分类整理的 .json 预设文件",
           "hint": "预设文件可以手动编辑（JSON格式），也可以分享给其他人",
           "dialogueMale": "预设是磁盘上的文件。知道它们在哪，才能备份和分享。",
-          "dialogueFemale": "预设其实是电脑上的文件喵～知道位置就能备份，也能发给朋友啦～"
+          "dialogueFemale": "预设其实是电脑上的文件喵～知道位置就能备份，也能发给朋友啦～",
+          "panel": "morphing",
+          "anchor": "morphing.palette_list"
         },
         {
           "id": "ch05_s5_hotkey",
@@ -596,7 +657,9 @@
           "userWillSee": "该形态绑定了快捷键；关闭 Dashboard 后在游戏里按小键盘 1 直接切换成这个形态",
           "hint": "别绑 0 / B / 句号 / F4 / F6 这些已占用的全局键；F7 / F8 / F9 也已被编辑器占用，小键盘最安全",
           "dialogueMale": "常用形态绑一个键。之后在游戏里一按就切，不必打开面板。",
-          "dialogueFemale": "常用的形态绑个键喵～以后在游戏里一按就变身，帅气～"
+          "dialogueFemale": "常用的形态绑个键喵～以后在游戏里一按就变身，帅气～",
+          "panel": "morphing",
+          "anchor": "morphing.palette_editor"
         },
         {
           "id": "ch05_s6_share_export",
@@ -612,7 +675,9 @@
           "userWillSee": "分享形态生成可传播的形态数据；拷贝命令得到一条 /bbs morph 指令可粘到聊天栏或命令方块；导出模型在 models 目录生成 .bbs.json",
           "hint": "拷贝命令这条在做地图或服务器时很有用：把形态直接写进命令方块",
           "dialogueMale": "分享、命令、导出是三条不同出口。分享给人，命令进指令，导出成文件。",
-          "dialogueFemale": "有三种带走的方式喵～分享给朋友、变成命令、或者存成文件～"
+          "dialogueFemale": "有三种带走的方式喵～分享给朋友、变成命令、或者存成文件～",
+          "panel": "morphing",
+          "anchor": "morphing.palette_list"
         }
       ]
     },
@@ -645,11 +710,11 @@
             ],
             "source": "forms.editors.*.title"
           },
-          "instruction": "理解形态不止一种（无需操作）：BBS 有 12 类形态，各有专属编辑器标签",
+          "instruction": "理解形态不止一种（无需操作）：除了模型和生物，还有方块、物品、文字标签、广告牌等好几类，接下来两章会挨个上手",
           "userWillSee": "（认知铺垫步骤）",
           "hint": "选对类型能省下大量工作量：想做悬浮文字用「文字标签」，别用模型去拼字母",
-          "dialogueMale": "形态有十二类，不只是换模型。每一类都有自己的专属标签。",
-          "dialogueFemale": "形态有十二种喵～不是只能换模型哦，每种都有自己的调法～"
+          "dialogueMale": "形态不止模型和生物两类。每一类都有自己的专属标签。",
+          "dialogueFemale": "形态有好多种喵～不是只能换模型哦，接下来两章挨个试～"
         },
         {
           "id": "ch06_s2_model_bends",
@@ -664,7 +729,7 @@
             ],
             "source": "forms.categories.models"
           },
-          "instruction": "按 **B** → 展开 **模型** → 分别双击 **player/steve** 和 **player/steve_bends**，各自切到「姿势」标签对比骨骼树",
+          "instruction": "点击左侧 **伪装** 面板按钮（或按全局键 **B**，默认）→ 展开 **模型** → 分别双击 **player/steve** 和 **player/steve_bends**，各自切到「姿势」标签对比骨骼树",
           "userWillSee": "steve_bends 的骨骼树多出弯曲相关骨骼，手臂和身体可以做出弯折效果；普通 steve 只能整段旋转",
           "hint": "要做柔软动作、IK、物理骨链，优先选 _bends 变体",
           "dialogueMale": "带弯曲的模型骨骼更多，能做出弯折。普通模型只能整段旋转。",
@@ -693,7 +758,7 @@
             "button": "从您所看向的生物创建形态",
             "source": "morphing.from_mob"
           },
-          "instruction": "关闭 Dashboard，在世界里把准星对准一只生物 → 按 **B** 打开伪装 → 点击 **从您所看向的生物创建形态**",
+          "instruction": "关闭 Dashboard，在世界里把准星对准一只生物 → 按 **B**（默认全局键，作用等同左侧的伪装面板按钮）打开伪装 → 点击 **从您所看向的生物创建形态**",
           "userWillSee": "直接生成该生物的形态并应用，连它当前的装备/变种（如染色羊）都会带上",
           "hint": "这是最快的取材方式，比在列表里翻找快得多",
           "dialogueMale": "对着生物直接生成形态最省事，连它的装备和变种都会带上。",
@@ -709,7 +774,7 @@
           },
           "instruction": "在生物形态下切到 **姿势** 标签 → 旋转任意骨骼",
           "userWillSee": "生物的骨骼可以像模型一样被摆姿势，原版动画会与手动姿势叠加",
-          "hint": "如果想完全接管动作、屏蔽原版动画，用「固定」（pose.context.fix）",
+          "hint": "如果想完全接管动作、屏蔽原版动画，用右键菜单里的「固定」开关——下一步马上教",
           "dialogueMale": "生物也能摆姿势。注意它的原版动画会和你的姿势叠加。",
           "dialogueFemale": "生物也能摆姿势喵～不过它自己的动画会和你的叠在一起哦～"
         },
@@ -762,9 +827,9 @@
             "picker": "打开选择器",
             "source": "forms.editors.block.*"
           },
-          "instruction": "在伪装里新建/选择一个 **方块** 形态 → 切到 **方块** 标签 → 点击 **选择方块...** 或 **打开选择器**",
+          "instruction": "在伪装面板的形态列表里找一个方块类的形态（先翻翻 **杂项** 分类）：应用后切到 **方块** 标签 → 点击 **选择方块...** 或 **打开选择器**。若你的形态库里暂时没有这类形态，本步只看说明即可，跳过不影响后面阅读",
           "userWillSee": "弹出方块选择器；选定后你变成一个悬浮方块，没有「姿势」标签",
-          "hint": "方块和物品形态没有骨骼，只能整体位移/旋转/缩放",
+          "hint": "伪装面板没有「新建形态」入口，特殊形态要从形态列表里找。方块和物品形态没有骨骼，只能整体位移/旋转/缩放",
           "dialogueMale": "方块形态没有姿势标签。它不是骨骼模型，只是一个方块。",
           "dialogueFemale": "方块形态是没有姿势标签的喵～因为它本来就没有骨头呀～"
         },
@@ -789,7 +854,7 @@
             ],
             "source": "forms.editors.item.picker.*"
           },
-          "instruction": "选择 **物品** 形态 → 切到 **物品** 标签 → 点击 **选择物品...** → 依次试用 **从手中获取** / **从快捷栏获取** / **从准星所指位置获取**",
+          "instruction": "选择 **物品** 形态（找不到就翻翻 **杂项** 分类；没有这类形态可跳过实操只看说明）→ 切到 **物品** 标签 → 点击 **选择物品...** → 依次试用 **从手中获取** / **从快捷栏获取** / **从准星所指位置获取**",
           "userWillSee": "三种取材方式分别从主手、快捷栏、准星指向的容器或掉落物取得物品；还可设置数量、名称、NBT",
           "hint": "NBT 栏可以做出附魔光效、自定义名称的物品形态",
           "dialogueMale": "物品有三种取材方式：主手、快捷栏、准星所指。选顺手的那个。",
@@ -803,7 +868,7 @@
             "section": "物品变换",
             "source": "forms.editors.item.transforms"
           },
-          "instruction": "在物品形态下找到 **物品变换** 区域 → 调整其中的位移与旋转",
+          "instruction": "在物品形态下找到 **物品变换** 区域 → 调整其中的位移与旋转（比如转个 45°，看物品斜过来）",
           "userWillSee": "物品相对自身锚点被移动和旋转，可做出握持、悬浮、倾斜等效果",
           "hint": "物品变换独立于常规变换，方便微调朝向而不动整体位置",
           "dialogueMale": "物品变换决定它相对锚点的位置。握持、悬浮、倾斜都靠它。",
@@ -825,7 +890,7 @@
             ],
             "source": "forms.editors.label.*"
           },
-          "instruction": "选择 **文字标签** 形态 → 在 **文字标签** 栏输入文字 → 调整 **锚点**、勾选 **沿锚点对齐** → 设置 **背景** 与 **阴影颜色**",
+          "instruction": "选择 **文字标签** 形态（入口同本章开头；没有这类形态就只看说明）→ 在 **文字标签** 栏输入文字 → 调整 **锚点**、勾选 **沿锚点对齐** → 设置 **背景** 与 **阴影颜色**",
           "userWillSee": "空中出现你输入的文字；锚点决定文字以哪个点为基准对齐，背景与阴影让文字在复杂场景里更清晰",
           "hint": "做标题、名牌、字幕板时用它，比拼模型省事得多",
           "dialogueMale": "文字标签的锚点决定对齐基准。背景和阴影是为了在复杂场景里还看得清。",
@@ -868,7 +933,7 @@
           },
           "instruction": "在广告牌形态下点击 **编辑裁剪...** → 在弹出的裁剪编辑器里框选贴图的一部分 → 再试 **调整裁剪**",
           "userWillSee": "只显示贴图被框选的区域；配合 UV 偏移可在一张图集上切换不同图案",
-          "hint": "把多个特效画在一张图集里，用裁剪切换，比准备很多张贴图更省资源",
+          "hint": "把多个特效画在一张图集里，用裁剪切换，比准备很多张贴图更省资源；没有广告牌形态的话，本步看说明即可",
           "dialogueMale": "裁剪让你只显示贴图的一部分。配合偏移，一张图集能当很多张用。",
           "dialogueFemale": "裁剪能只显示图的一小块喵～一张图当好几张用，划算～"
         },
@@ -909,7 +974,7 @@
             ],
             "source": "forms.editors.trail.*"
           },
-          "instruction": "选择 **拖影** 形态 → 设置 **长度** → 勾选 **循环** → 关闭 Dashboard 后快速移动",
+          "instruction": "选择 **拖影** 形态（先翻翻 **杂项** 分类；没有这类形态可跳过实操只看说明）→ 设置 **长度** → 勾选 **循环** → 关闭 Dashboard 后快速移动",
           "userWillSee": "身后拉出一条拖尾轨迹，长度决定残留多久，循环让轨迹首尾相接",
           "hint": "做刀光、飞行尾迹、魔法轨迹用它",
           "dialogueMale": "拖影在身后留下轨迹。长度决定残留时间，循环让轨迹首尾相接。",
@@ -923,7 +988,7 @@
             "tab": "拉伸",
             "source": "forms.editors.extruded.title"
           },
-          "instruction": "选择 **拉伸** 形态 → 指定一张贴图 → 观察它被挤出厚度",
+          "instruction": "选择 **拉伸** 形态（找不到这类形态就只看说明）→ 给它选一张贴图（操作参考广告牌的 **选择纹理...**）→ 关闭面板后绕着它走一圈，观察侧面的厚度",
           "userWillSee": "平面贴图被挤压成有厚度的立体块，边缘可见侧面",
           "hint": "适合把 2D 图标做成立体徽章、招牌这类物件",
           "dialogueMale": "拉伸把平面贴图挤出厚度，边缘能看到侧面。",
@@ -946,7 +1011,7 @@
             ],
             "source": "forms.editors.sound.*"
           },
-          "instruction": "选择 **声音** 形态 → 点击 **选择音频...** 挑一个音频 → 设置 **音量** / **音高** / **半径** → 点 **试听**",
+          "instruction": "选择 **声音** 形态（找不到这类形态就只看说明）→ 点击 **选择音频...** 挑一个音频 → 设置 **音量** / **音高** / **半径** → 点 **试听**",
           "userWillSee": "以该形态所在位置为中心播放 3D 音效，半径之外完全听不到；试听可即时确认效果",
           "hint": "半径是「发射范围，超出该距离即完全静音」，不是音量大小",
           "dialogueMale": "声音形态是三维音源。半径之外完全听不到，试听可以立刻确认。",
@@ -991,7 +1056,7 @@
             ],
             "source": "forms.editors.sound.reflection*"
           },
-          "instruction": "勾选 **启用反射** → 调整 **反射次数** 与 **反射衰减** → 分别开关 **方块反射** / **实体反射** / **空气吸收**",
+          "instruction": "勾选 **启用反射** → 关闭面板，找个封闭空间（如洞穴）走动听回声。其余反射参数（次数、衰减、吸收等）先保持默认，等做场景时再细调",
           "userWillSee": "在洞穴或封闭空间里出现回声；反射次数越多回声层次越丰富，衰减决定每次反射保留多少响度",
           "hint": "室内场景开反射能显著提升沉浸感，但反射次数过高会增加计算量",
           "dialogueMale": "反射制造回声。次数决定层次，衰减决定每次还剩多少响度。",
@@ -1014,7 +1079,7 @@
             ],
             "source": "forms.editors.sound_cone.* + sound.inner_angle/outer_angle"
           },
-          "instruction": "选择 **圆锥声音** 形态 → 设置 **内锥角** / **外锥角** / **外锥增益** → 勾选 **显示辅助图形**",
+          "instruction": "选择 **圆锥声音** 形态（找不到这类形态就只看说明）→ 设置 **内锥角** / **外锥角** / **外锥增益** → 勾选 **显示辅助图形**",
           "userWillSee": "世界里画出可视化的声音圆锥；内锥角以内为全增益，外锥之外按外锥增益衰减",
           "hint": "做喇叭、定向广播、角色说话的朝向感用圆锥声音；辅助图形只在编辑时显示",
           "dialogueMale": "圆锥声音有方向性。内锥全增益，外锥之外按增益衰减。",
@@ -1028,7 +1093,7 @@
             "tab": "原版粒子",
             "source": "forms.editors.vanilla_particle / forms.categories.particles"
           },
-          "instruction": "选择 **原版粒子** 形态 → 从列表挑一个 Minecraft 原版粒子类型",
+          "instruction": "选择 **原版粒子** 形态（先翻翻 **粒子** 分类；没有就只看说明）→ 从列表挑一个 Minecraft 原版粒子类型",
           "userWillSee": "该位置持续发射所选的原版粒子（如火焰、烟雾、心形）",
           "hint": "原版粒子零配置、开箱可用；需要完全自定义时才去用「粒子」面板做 snowstorm 方案",
           "dialogueMale": "原版粒子直接借用 Minecraft 自带效果，不需要自己配置。",
@@ -1102,7 +1167,7 @@
             "field": "链长",
             "source": "forms.editors.model.ik.enabled / chain_length"
           },
-          "instruction": "选中右手末端骨骼 → 勾选 **启用 IK** → 把 **链长** 设为 2",
+          "instruction": "选中右手末端骨骼（steve_bends 里叫 Right forearm，就是第一章让你贴头顶的那条小臂末端）→ 勾选 **启用 IK** → 把 **链长** 设为 2",
           "userWillSee": "该骨骼进入 IK 模式，参与解算的上游骨骼数量等于链长（2 = 小臂 + 大臂）",
           "hint": "链长决定「往上追几节骨头」：2 通常对应小臂+大臂，3 会把肩也带进来",
           "dialogueMale": "链长决定参与解算的骨骼数量。手臂通常是 2，也就是小臂加大臂。",
@@ -1116,7 +1181,7 @@
             "field": "目标: %s",
             "source": "forms.editors.model.ik.target"
           },
-          "instruction": "在 **目标** 一栏指定 IK 的目标（骨骼或附件）→ 移动该目标",
+          "instruction": "看示范：给链条指定 **目标** 后移动它，末端骨骼会追着目标走。目标可以是骨骼或附件（附件相当于挂在世界里的空锚点，后面用到时再细讲）；怎么建目标、怎么拖动，后面的章节会反复练，这里先认清效果即可",
           "userWillSee": "末端骨骼追着目标走，大臂小臂的角度自动计算，姿势自然连贯",
           "hint": "这就是 IK 的核心用法：手贴墙、握剑柄、抓栏杆都靠它",
           "dialogueMale": "指定目标后，末端会追着它走，中间关节自动算。这就是 IK 的价值。",
@@ -1173,7 +1238,7 @@
           "uiElements": {
             "problem": "肘部朝向不可控"
           },
-          "instruction": "在已启用 IK 的手臂上来回移动目标，观察肘部的朝向",
+          "instruction": "接上一章的示范场景：在已启用 IK 的手臂上演示来回移动目标，重点观察肘部的朝向（跳过了上一章实操的话，本步看说明即可）",
           "userWillSee": "手的位置正确，但肘部可能朝向奇怪的方向（向外翻或向内折）",
           "hint": "IK 只保证末端到位，中间关节往哪弯是不唯一的——这就需要极向量来指定",
           "dialogueMale": "手的位置对了，肘部却可能朝向奇怪的方向。这是 IK 的经典问题。",
@@ -1191,7 +1256,7 @@
             ],
             "source": "forms.editors.model.ik.pole / pole_target / pole_angle"
           },
-          "instruction": "启用 **极向量** → 指定 **极向量目标** → 调整 **极角**",
+          "instruction": "【进阶选读】启用 **极向量** → 指定 **极向量目标**（一般选链条垂直方向附近的骨骼当参照，让肘部有明确的朝向）→ 调整 **极角**，看肘部绕手臂轴转动",
           "userWillSee": "肘部朝向被约束到极向量所指的方向；调整极角可让肘部绕链轴旋转",
           "hint": "极向量决定「膝盖/肘朝哪边弯」，是 IK 看起来自然与否的关键",
           "dialogueMale": "极向量专治肘部朝向。指定方向后，肘就固定往那边弯。",
@@ -1233,7 +1298,7 @@
             "field": "柔软度",
             "source": "forms.editors.model.ik.softness"
           },
-          "instruction": "把目标移到接近手臂极限的距离 → 逐步增大 **柔软度**",
+          "instruction": "【进阶选读】把目标移到接近手臂极限的距离 → 逐步增大 **柔软度**，对比临近极限时的过渡变化",
           "userWillSee": "柔软度为 0 时接近极限会出现突然绷直的硬转折；增大后临近极限的过渡变得平滑",
           "hint": "柔软度专治「快伸直时啪一下弹住」的生硬感",
           "dialogueMale": "柔软度处理接近极限时的绷直感。加大它，过渡就不再突然。",
@@ -1249,7 +1314,7 @@
           },
           "instruction": "把 **权重** 从 1 逐步降到 0，同时观察姿势变化",
           "userWillSee": "权重 1 时完全由 IK 主导；降低后 IK 与原有 FK 姿势按比例混合；为 0 时 IK 不起作用",
-          "hint": "权重可以打关键帧，用来做 IK 的淡入淡出（如手慢慢抬起去扶墙）",
+          "hint": "权重是 IK 与 FK 姿势的混合比例；让权重随时间变化做淡入淡出（如手慢慢抬起去扶墙）要用到关键帧，学到关键帧后再回来玩",
           "dialogueMale": "权重是 IK 和 FK 的混合比例。1 全交给 IK，0 等于关掉。",
           "dialogueFemale": "权重就是 IK 说话的分量喵～1 全听它的，0 就当没开～"
         },

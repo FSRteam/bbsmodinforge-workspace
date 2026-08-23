@@ -139,6 +139,14 @@ compile alone is insufficient evidence for Mixin or render correctness.
   source-level guards and clean client launches are verified, but final acceptance still needs a human
   click on the lower-left X/Y/Z navigation axis and `Follow curve -> Edit offset keyframes`, followed by
   checking that no new crash report is created.
+- Ground-crack camera anchoring fix: the migrated form stack is camera-relative while camera rotation
+  remains in `RenderSystem.getModelViewMatrix()`. `CracksVolume.queue` now snapshots
+  `modelView * formMatrix` before deriving its VIEW-space origin/up/tangent uniforms, matching the
+  shader's inverse-projection depth reconstruction. `check` and `build` passed, the refreshed run JAR
+  has SHA-256 `9F5C786AEB44095A710652517E25B64F806FBA7D427195540200EAEB689FBD03`, and a fresh client launch
+  reached API READY/client initialization without a new crash report, Mixin failure, or crack-shader
+  uniform error. Final visual acceptance still requires rotating and translating the camera around a
+  fixed in-world crack effect.
 
 ## Rollback Points
 

@@ -1,7 +1,7 @@
 {
   "_meta": {
     "purpose": "300 步教程的章节骨架；每章限定可引用的真实 UI 文案域",
-    "totalChapters": 52,
+    "totalChapters": 53,
     "totalSteps": 304,
     "labelSource": "new/src/client/resources/assets/bbs/assets/strings/zh_cn.json",
     "labelTotal": 1987,
@@ -39,7 +39,8 @@
         "chapters": 5,
         "steps": 20
       }
-    }
+    },
+    "revisionNote": "2026-08-23 content audit: inserted ch46_export_basics (video export basics was silently dropped from the original plan); orders of former ch46-ch52 shifted to ch47-ch53. Skeleton step ids keep their original chNN prefixes on purpose."
   },
   "chapters": [
     {
@@ -590,17 +591,28 @@
       "order": 46,
       "id": "ch46",
       "stage": "导出",
+      "titleZh": "视频导出基础：FFmpeg 自检、第一支视频与导出参数",
+      "labelDomains": [
+        "video_export"
+      ],
+      "availableLabels": 94,
+      "plannedSteps": 6,
+      "status": "skeleton"
+    },
+    {
+      "id": "ch47",
+      "stage": "导出",
       "titleZh": "批量导出队列",
       "labelDomains": [
         "video_export"
       ],
       "availableLabels": 94,
       "plannedSteps": 4,
-      "status": "skeleton"
+      "status": "skeleton",
+      "order": 47
     },
     {
-      "order": 47,
-      "id": "ch47",
+      "id": "ch48",
       "stage": "导出",
       "titleZh": "素材导入与格式转换",
       "labelDomains": [
@@ -608,11 +620,11 @@
       ],
       "availableLabels": 27,
       "plannedSteps": 4,
-      "status": "skeleton"
+      "status": "skeleton",
+      "order": 48
     },
     {
-      "order": 48,
-      "id": "ch48",
+      "id": "ch49",
       "stage": "系统",
       "titleZh": "设置总览：外观/性能/录制",
       "labelDomains": [
@@ -620,11 +632,11 @@
       ],
       "availableLabels": 258,
       "plannedSteps": 5,
-      "status": "skeleton"
+      "status": "skeleton",
+      "order": 49
     },
     {
-      "order": 49,
-      "id": "ch49",
+      "id": "ch50",
       "stage": "系统",
       "titleZh": "主题与皮肤系统",
       "labelDomains": [
@@ -632,11 +644,11 @@
       ],
       "availableLabels": 41,
       "plannedSteps": 4,
-      "status": "skeleton"
+      "status": "skeleton",
+      "order": 50
     },
     {
-      "order": 50,
-      "id": "ch50",
+      "id": "ch51",
       "stage": "系统",
       "titleZh": "插件管理与热重载",
       "labelDomains": [
@@ -644,11 +656,11 @@
       ],
       "availableLabels": 44,
       "plannedSteps": 5,
-      "status": "skeleton"
+      "status": "skeleton",
+      "order": 51
     },
     {
-      "order": 51,
-      "id": "ch51",
+      "id": "ch52",
       "stage": "系统",
       "titleZh": "实体选择器与图形计算器",
       "labelDomains": [
@@ -657,11 +669,11 @@
       ],
       "availableLabels": 8,
       "plannedSteps": 3,
-      "status": "skeleton"
+      "status": "skeleton",
+      "order": 52
     },
     {
-      "order": 52,
-      "id": "ch52",
+      "id": "ch53",
       "stage": "系统",
       "titleZh": "音频/语言编辑器与教程录制选项",
       "labelDomains": [
@@ -670,7 +682,8 @@
       ],
       "availableLabels": 294,
       "plannedSteps": 3,
-      "status": "skeleton"
+      "status": "skeleton",
+      "order": 53
     }
   ]
 }

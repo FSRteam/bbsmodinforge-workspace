@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/new/backend/external-addon-integration-contract.md", "reason": "3.4.4 holds the anchor contract this task extends: explicit registration at the construction site, no tooltip/L10n fallback, per-call recalculation, and the regression coverage the host promises."}
+{"file": ".trellis/tasks/archive/2026-08/08-21-fsr-guided-tour-overlay-api/design.md", "reason": "Original design rationale for the anchor mechanism, including why scheme A (explicit registration) was chosen over key reverse-lookup."}
+{"file": ".trellis/tasks/08-21-tutorial-guided-mode-slice/prd.md", "reason": "The consumer that exposed the gap; its coverage table and the ch04/ch05 findings define which anchors actually matter."}
+{"file": ".trellis/spec/new/backend/quality-guidelines.md", "reason": "Host-side code standards and forbidden patterns."}

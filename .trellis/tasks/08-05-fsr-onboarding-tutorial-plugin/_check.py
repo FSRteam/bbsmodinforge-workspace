@@ -33,7 +33,9 @@ chapters = skel["chapters"]
 errors = []
 warnings = []
 
-REQUIRED = ("id", "order", "pose", "instruction", "userWillSee")
+# "pose" became "action" when the static poses were replaced by gesture
+# animations; this list was not updated with the data at the time.
+REQUIRED = ("id", "order", "action", "instruction", "userWillSee")
 
 seen_ids = set()
 for c in chapters:

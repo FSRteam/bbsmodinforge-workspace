@@ -1457,3 +1457,36 @@ Added Addon API 2.0 and hot-plugin Dashboard panel registration, lifecycle-safe 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 38: fs 2.5 上游增量同步到 FSR 完成
+
+**Date**: 2026-08-23
+**Task**: fs 2.5 上游增量同步到 FSR 完成
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+独立 worktree new-fs25-sync（分支 codex/sync-fs-8d99d77f-to-fsr，基点 497c4284）完成 fs 770c0e7c6..8d99d77fe 共 38 提交的增量同步：B 组 8 修复全部落地（034257e7/771d9bb5/e69ebb77），C1 六项落地（26bb5012 + 名牌基线已有），追加箱盖 b352c985c（cafbcdc1）、blend 逐命令重置 70274c5cb（8bae57a9，复核纠正）、旧 IK 链 classic 迁移 72744b984（dd0e0d97）、ru_ru typo 7d35fd494（72d6d208）；0d11b2327 物品谓词全家及 C2 UX 项推迟（disposition.md 逐项记录）。全量 build 真实 exit 0；mod_version 保持 0.0.11。终 commit 72d6d208。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `72d6d208` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

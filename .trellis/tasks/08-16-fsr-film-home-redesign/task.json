@@ -3,7 +3,7 @@
   "name": "fsr-film-home-redesign",
   "title": "FSR 影片首页重设计（banner + 新闻 + 阿雪绘制单 + 影片网格）",
   "description": "",
-  "status": "planning",
+  "status": "completed",
   "dev_type": null,
   "scope": null,
   "package": null,
@@ -11,7 +11,7 @@
   "creator": "snowstar_II",
   "assignee": "snowstar_II",
   "createdAt": "2026-08-16",
-  "completedAt": null,
+  "completedAt": "2026-08-23",
   "branch": "fsr-film-home-redesign",
   "base_branch": "codex/new-local-backup-20260727",
   "worktree_path": ".worktrees/fsr-film-home",
@@ -26,6 +26,6 @@
     "new/src/client/java/mchorse/bbs_mod/ui/film/UIFilmPanel.java",
     "new/src/main/java/mchorse/bbs_mod/film/Film.java"
   ],
-  "notes": "P0 已完成（commit 98d08163，check 全绿）：UIFilmHomePanel 首页、UICardGrid、FILM_META 元数据管线、updated_at 保存戳、l10n。待做：P1 首帧缩略图、P2 新闻/绘制单内容区。",
+  "notes": "已完成并经实机多轮验证：影片首页（banner/新闻条/广告轮播/卡片网格/卡片大小滑杆）、FILM_META 元数据管线、updated_at 保存戳、Markdown 详情（可拖选复制+远程图片）、封面走 ScreenshotRecorder 导出分辨率管线（被动静默）。实现于 new/ 仓库分支 fsr-film-home-redesign（worktree .worktrees/fsr-film-home），最新 016f6023+。",
   "meta": {}
 }
