@@ -16,8 +16,9 @@ API 已分叉），而是**逐提交语义移植**：以 fs 每个提交的 diff
      FSR 已有 `UseItemActionClip`+`InteractionActionSemantics`（07-17 体系）。**决策：保留 FSR
      的 action clip 体系作为录制载体，fs 的模型谓词/姿态渲染层（`ItemUsePose`、谓词驱动）作为
      渲染侧增强合入**，即谓词与姿态在回放时由 FSR 的 clip 状态驱动，而不是再造一套
-     ReplayItemUse。本次先移植不依赖该决策的项，`0d11b2327` 全家（及其 C2 依赖项）若在本次
-     时间盒内无法完整调和，则整体推迟并记录——半套体系比没有更糟。
+     ReplayItemUse。2026-08-24 收尾时已按该决策完成整链：保留 FSR clip/InteractionActionSemantics
+     作为动作载体，将 fs 的 ItemPredicateDonor、ItemUsePose、ReplayItemUse、第一/第三人称姿态、
+     松开动作与进食效果接入渲染/播放层，并按 NeoForge 1.21.1 Mojmap 修正目标类型与方法。
   2. 伤害控制：`eb6609dca` 的语义（恢复必达终点、必然触发）以补丁形式落到 FSR 的
      DamageControl/ActionManager 上，不引入 fs 的六文件重排。
 - **Mixin**：fs 侧 mixin（CameraInvoker/ParticleManagerInvoker/LivingEntityMixin 等）需按

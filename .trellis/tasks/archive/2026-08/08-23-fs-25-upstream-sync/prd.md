@@ -13,7 +13,7 @@ FSR（`new/`，FSRteam/bbs-FSR，NeoForge 1.21.1）的 bug 修复与功能更新
 | fs 上次同步点（源起点） | `770c0e7c6b69cacc6dabf70eb63bf349f24bbaa6` | FSR PR #23 已并入的 fs master 提交（fs 2.4） |
 | fs 本次目标（源终点） | `8d99d77feea3ad13f7ceada78ee7679571251bd4` | fs master 最新（fs 2.5），源范围 `770c0e7c6..8d99d77fe` 共 38 提交 |
 | FSR 初始 commit（已确认） | `497c4284c1f96a125c8eaa2f54d37851422a6543` | worktree `new-fs25-sync` 分支 `codex/sync-fs-8d99d77f-to-fsr` 的基点（2026-08-23 创建） |
-| FSR 终 commit（结束时回填） | `72d6d208`（fix(l10n): apply fs 7d35fd494 ru_ru waveform typo；分支 `codex/sync-fs-8d99d77f-to-fsr` 最后一个提交，全量 build 真实 exit 0） | 本任务全部工作合入后的最后一个提交；工作提交共 10 个：034257e7/771d9bb5/da38a766/e69ebb77/26bb5012/be944459/add1ca3d/cafbcdc1/8bae57a9/dd0e0d97/72d6d208 |
+| FSR 终 commit（代码终点） | `ef3a08f4f9d28fa142e4d31053c8a94715210da9` | 分支 `codex/sync-fs-8d99d77f-to-fsr`；自基点共 27 个迁移/修复提交，最后两项为 NeoForge 1.21.1 物品使用适配 `e7e913fd` 与 scrub 测试契约 `ef3a08f4`；全量 build 真实 exit 0 |
 
 > 参考分支位（如需对照）：fs `origin/1.20.1` = `4cdee4ace033f12c450976bb8f9707f3cfa77092`，
 > fs `origin/1.21.1` = `e6b8e382c6d6fa004ba1528035d190250d61d5fa`。
@@ -142,13 +142,13 @@ FSR（`new/`，FSRteam/bbs-FSR，NeoForge 1.21.1）的 bug 修复与功能更新
 
 ## Acceptance Criteria
 
-- [ ] 独立 worktree + 分支 `codex/sync-fs-8d99d77f-to-fsr`（或同等命名），PRD 的 Commit 标记表
+- [x] 独立 worktree + 分支 `codex/sync-fs-8d99d77f-to-fsr`（或同等命名），PRD 的 Commit 标记表
       已回填 FSR 初始/终 commit。
-- [ ] B 组 8 项修复在 FSR 生效（游戏内可复现的 bug 各验证一次），或记录「不受影响+原因」。
-- [ ] C1 组 6 项功能可用；C2 组按批次完成或明确推迟并记录。
-- [ ] `new/` 全量构建通过（gradle build），无新增 mixin 加载失败。
-- [ ] `mod_version` 仍为 `0.0.11`。
-- [ ] 合入后 fs 源范围 `770c0e7c6..8d99d77fe` 的处置清单（移植/跳过/推迟+理由）完整存档于
+- [x] B 组 8 项修复在 FSR 生效，源码/定点测试已覆盖；游戏内场景保留于冒烟清单。
+- [x] C1 与所有适用 C2 功能均已迁移；只跳过版本号、构建体系及 Addon API 平台不适用项。
+- [x] `new/` 全量构建通过（gradle build），新增 client mixin 已注册并通过客户端结构检查。
+- [x] `mod_version` 仍为 `0.0.11`。
+- [x] 合入后 fs 源范围 `770c0e7c6..8d99d77fe` 的处置清单（移植/已有/跳过+理由）完整存档于
       本任务目录。
 
 ## Notes

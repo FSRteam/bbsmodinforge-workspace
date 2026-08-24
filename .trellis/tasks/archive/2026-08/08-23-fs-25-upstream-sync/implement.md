@@ -36,23 +36,29 @@
 - [x] `26d35e664` 演员名牌 → 复核确认基线已有，无需移植
 - [x] `b352c985c` 回放时箱子盖打开（2026-08-23 移植；仅需动作片段时长机制，不依赖物品使用体系）
 
-### C2 决策批（时间盒内做，做不完整批推迟）
-- [x] `0d11b2327` 全家 + 依赖链（92b84ed15/c09434984/cca571c4e/237b369ab）→ **整批推迟**
-      （与 FSR InteractionActionSemantics 两套体系需专项调和，design.md 既定决策；见 disposition.md）
-- [x] `72744b984` 旧链 classic 迁移 → **已移植**（ModelIKIO defaultClassic）
-- [x] `c03c64247` IK 面板骨骼角色圆点 → **推迟**（UIBoneTreeList 已分叉 547/394 行，纯 UX，单开任务）
-- [x] 其余 C2 UX 项（33ad09b37/04ba1dab4/8034c677b/fc6a3c637/e720f97ec/0a93fb98b/5437b9118/
-      e506e27cc/772847c5a/ea3a356a6）→ **推迟/跳过**（disposition.md 逐项记录）
+### C2 完整迁移批（2026-08-24 用户要求不再推迟）
+- [x] `0d11b2327` + `92b84ed15` + `c09434984` + `cca571c4e` + `237b369ab`：物品谓词、第三/第一人称姿态、松开动作、进食粒子音效（8b1ccf41/49113fe9/29ce8157/e7e913fd）
+- [x] `72744b984` 旧链 classic 迁移（dd0e0d97）
+- [x] `c03c64247` IK 面板骨骼角色圆点（6081cd6b）
+- [x] `33ad09b37` 拖动暂停与预览图标自动隐藏（840b215e）
+- [x] `04ba1dab4` 轨道颜色/命名全局持久（6261057b）
+- [x] `8034c677b` per-limb 展开状态与插帧跟随（d8629491）
+- [x] `fc6a3c637` 每条 curated 轨道安全图标（e0463091）
+- [x] `e720f97ec` 模型轨道 picker（66482934/ae721c19）
+- [x] `0a93fb98b` 数值 preset、`5437b9118` 文件对话框、`e506e27cc` 设置分类与分辨率行（4e5a340c）
+- [x] `772847c5a` 原版粒子表单预览（70b2c0ad）
+- [x] `ea3a356a6` 仍按平台不适用跳过：FSR 已采用独立 Addon API 2，不移植 fs Fabric 入口代码
 
 ### 测试契约对齐（本会话新增）
 - [x] `KeyframeInteractionTest`：基线 497c4284（splitter）加 `moveToFront(splitter)` 未更新标记
 - [x] `BBSUiLifecycleSourceTest`：e69ebb77 的 `startRecording(film,index,cursor,true)` 4 参调用未更新标记
 
 ### 收尾
-- [x] 全量构建：`build-fs25-final.log` BUILD SUCCESSFUL（6m19s，80 tasks，PowerShell 真实 exit 0）
-- [x] 分批提交：add1ca3d（测试对齐）/ cafbcdc1（箱盖）/ 8bae57a9（blend）/ dd0e0d97（IK）/ 72d6d208（l10n）
+- [x] 定点验证：compileJava/compileClientJava、InteractionActions、FilmEditorMigration、ReplayKeyframeConsistency、IkPhysicsConsistency、ParticleRuntimeConsistency、ClientStructuralRegistration 全部真实执行并通过
+- [x] 全量构建：2026-08-24 `gradlew.bat build --no-daemon --console=plain` BUILD SUCCESSFUL（6m25s，80 tasks，40 executed，PowerShell 真实 exit 0）
+- [x] 最终适配提交：e7e913fd（NeoForge 1.21.1 物品使用映射）/ ef3a08f4（关键帧 scrub 测试契约）
 - [x] 处置清单（38 提交逐项）→ research/disposition.md（含游戏内冒烟清单 15 项）
-- [x] 回填 prd.md Commit 标记表 FSR 终 commit `72d6d208`
+- [x] 回填 prd.md Commit 标记表 FSR 终 commit（最终文档提交后写入）
 - [x] root 仓库提交 trellis 记录
 
 ## 验证命令

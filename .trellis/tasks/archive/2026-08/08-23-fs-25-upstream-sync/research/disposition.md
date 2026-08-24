@@ -1,7 +1,7 @@
 # fs 2.5 → FSR 处置清单（源范围 770c0e7c6..8d99d77fe，38 提交）
 
 处置时间：2026-08-23。FSR 侧：worktree `new-fs25-sync`，分支 `codex/sync-fs-8d99d77f-to-fsr`。
-标记：✅ 已移植 · 🔁 已有等价 · ⏭️ 跳过 · ⏸️ 推迟
+标记：✅ 已移植 · 🔁 已有等价 · ⏭️ 跳过
 
 | fs 提交 | 主题 | 处置 | FSR 落点 / 理由 |
 |---|---|---|---|
@@ -25,23 +25,23 @@
 | 4fba216e6 | maven 发布项目名修复 | ⏭️ | FSR 构建体系不同，无此问题 |
 | 7d35fd494 | 翻译修正（ru_ru 键） | ✅ 已应用（复核纠正） | FSR 实有 19 语言 strings，typo 存在；ru_ru.json「адио→аудио」已改 |
 | 70274c5cb | Text 形态背景透明度 | ✅ 已移植（复核纠正） | FSR flush() 与 fs 修复前同构（blend 循环前一次 + clearRenderState 关混合）；已加 resetBlend() 逐命令重置（flush 循环 + GroupCommand child） |
-| 0d11b2327 | 物品模型谓词（弓弯/盾挡）体系 | ⏸️ 推迟 | 与 FSR 的 UseItemActionClip/InteractionActionSemantics（07-17 体系）是两套实现，按 design.md 调和决策需「FSR clip 载体 + fs 渲染层合入」的专项设计；连同依赖链整体推迟 |
-| 92b84ed15 | 第三人称用物品手臂姿态 | ⏸️ 推迟 | 依赖 0d11b2327（VanillaArmPoses/ProceduralAnimator） |
-| c09434984 | 第一人称手部用物品动画 | ⏸️ 推迟 | 依赖 0d11b2327（LivePlayerItemUse + 2 mixin） |
-| cca571c4e | 松开物品作为动作片段 | ⏸️ 推迟 | 依赖 0d11b2327，且与 FSR InteractionActionSemantics 需决定接/并 |
-| 237b369ab | 回放进食粒子与音效 | ⏸️ 推迟 | 依赖 0d11b2327（ItemUseEffects） |
+| 0d11b2327 | 物品模型谓词（弓弯/盾挡）体系 | ✅ 8b1ccf41 + 29ce8157 + e7e913fd | 以 FSR UseItemActionClip/InteractionActionSemantics 为动作载体，新增 ItemPredicateDonor、ReplayItemUse、ItemUsePose 并完成 NeoForge 映射适配 |
+| 92b84ed15 | 第三人称用物品手臂姿态 | ✅ 49113fe9 | VanillaArmPoses 接入 ProceduralAnimator，按回放使用状态驱动第三人称手臂 |
+| c09434984 | 第一人称手部用物品动画 | ✅ 8b1ccf41 + e7e913fd | LivePlayerItemUse 与 LivingEntity/LocalPlayer client mixin 接入第一人称使用状态 |
+| cca571c4e | 松开物品作为动作片段 | ✅ 8b1ccf41 | ReleaseUseItemActionClip、UI clip 注册及 LivingEntity release 注入已接入现有 InteractionActionSemantics |
+| 237b369ab | 回放进食粒子与音效 | ✅ 8b1ccf41 + e7e913fd | ItemUseEffects 按 ReplayItemUse 播放进食粒子、声音和 burp 音效，完成 NeoForge API 适配 |
 | b352c985c | 回放时箱子盖打开 | ✅ 已移植（2026-08-23） | 新增 actions/ContainerLid（blockEvent(1,1/0) + 双箱两半 + 末影箱，声音复刻 ChestBlockEntity 语义）；SuperFakePlayer 增 openLids/wantedLids/wantLidOpen/flushLids/getIfPresent；ActionClip 增 applyRange 钩子（每覆盖 tick 触发，先于频率门，apply 拆出 isEnabledInRange）；InteractBlockActionClip.applyRange（duration>1 且有权限时 wantLidOpen）；ActionRecorder 跟踪 interactClip（containerMenu≠inventoryMenu 期间按 tick 增长）；ActionPlayer 循环后 flushLids + stop() teardown 首步关全部盖。fs 依赖的物品使用体系并不需要——只依赖动作片段时长机制 |
-| c03c64247 | IK 面板骨骼角色圆点 | ⏸️ 推迟 | FSR UIBoneTreeList 已分叉（547 行 vs fs 基线 394 行，157 处差异），markers/laneX/图例机制需逐块调和，纯 UX 增强，单开任务 |
+| c03c64247 | IK 面板骨骼角色圆点 | ✅ 6081cd6b | UIBoneTreeList 与 UIModelIKFormPanel 增加骨骼角色标记和图例，保留 FSR classic-solver 分叉 |
 | 72744b984 | 旧 IK 链迁移默认 classic | ✅ 已移植（2026-08-23） | FSR ModelIKIO.fromData 与 fs 修复前同构；无 "chains" 包装的扁平旧数据读入时 defaultClassic=true（redesign 前数据按旧求解器姿态），首次保存写显式 classic；javadoc 补版本标记说明 |
-| 33ad09b37 | 拖动暂停 + 预览图标自动隐藏 | ⏸️ 推迟 | C2 编辑器 UX 批 |
-| 04ba1dab4 | 轨道颜色/命名全局持久 | ⏸️ 推迟 | C2（ValueTrackStyles 177 行 + overlay 面板） |
-| 8034c677b | per-limb 箭头跨页存活 | ⏸️ 推迟 | C2 |
-| fc6a3c637 | 每条轨道都有图标 | ⏸️ 推迟 | C2 |
-| e720f97ec | 模型轨道 picker 选择 | ⏸️ 推迟 | C2（UIModelPicker） |
-| 0a93fb98b | 数值字段同值 preset | ⏸️ 推迟 | C2（UINumericInput） |
-| 5437b9118 | 设置路径用文件对话框 | ⏸️ 推迟 | C2，需与 FSR 已有 UIFFMpegPath（08-17）合流而非并存 |
-| e506e27cc | 设置分类重排 + 分辨率单滑条 | ⏸️ 推迟 | C2（18 语言 200+ 行 strings 重排，成本高） |
-| 772847c5a | 形态编辑器渲染原版粒子 | ⏸️ 推迟 | C2（VanillaParticleScene + 3 mixin 需按 NeoForge 1.21.1 对位） |
+| 33ad09b37 | 拖动暂停 + 预览图标自动隐藏 | ✅ 840b215e | 拖动播放头自动暂停，预览图标按设置自动隐藏 |
+| 04ba1dab4 | 轨道颜色/命名全局持久 | ✅ 6261057b | ValueTrackStyles 与轨道样式覆盖层持久化命名、颜色和稳定 filter key |
+| 8034c677b | per-limb 箭头跨页存活 | ✅ d8629491 | 按 replay 保存 per-limb 展开集合，并在换页和插帧时恢复 |
+| fc6a3c637 | 每条轨道都有图标 | ✅ e0463091 | curated 轨道统一提供安全图标 |
+| e720f97ec | 模型轨道 picker 选择 | ✅ 66482934 + ae721c19 | 新增 UIModelPicker 并清理旧 picker 导入，模型轨道使用表单选择器 |
+| 0a93fb98b | 数值字段同值 preset | ✅ 4e5a340c | UINumericInput 增加角度/系数 preset 同值操作 |
+| 5437b9118 | 设置路径用文件对话框 | ✅ 4e5a340c | UIFileDialogs 与导出目录/路径行接入系统文件选择，兼容 FSR 现有 ffmpeg 设置 |
+| e506e27cc | 设置分类重排 + 分辨率单滑条 | ✅ 4e5a340c | 设置页分类、分辨率行和旧设置迁移已落地，使用 FSR en/zh 文案 |
+| 772847c5a | 形态编辑器渲染原版粒子 | ✅ 70b2c0ad | VanillaParticleScene、ParticleEngine/Camera accessor 与粒子 mixin 已按 NeoForge 1.21.1 对位 |
 | ea3a356a6 | fs 自有 addon 客户端入口/事件层级 | ⏭️ | FSR addon API 2 为另一体系，只吸收「订阅者异常可见」思想（另行评估） |
 
 ## 版本分支独有项（不在 38 之内，附记）
