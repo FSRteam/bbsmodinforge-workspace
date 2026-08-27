@@ -384,6 +384,40 @@ window framebuffer does not draw the private framebuffer into it. Define which
 consumer receives overlays, when the copy happens, and whether presentation is
 full-screen or owned by a UI region.
 
+### Isolated secondary world-render passes
+
+An off-screen viewport is a cross-layer boundary between the game renderer,
+vanilla camera state, entity-relative model math, fog hooks, and the UI texture
+consumer. A second framebuffer alone is not an independent view. Define the
+ownership of the camera and context before adding another pass:
+
+```text
+secondary source pose -> secondary Camera.setup(level, entity, ...) ->
+GameRenderer.mainCamera reference -> world/entity render context -> private framebuffer -> UI
+```
+
+- Bind every newly allocated camera with `Camera.setup(level, entity, ...)`
+  before fog, Sodium, or entity hooks can inspect it. A camera with a null
+  entity can crash in `ClientHooks.onFogRender`.
+- Swap the renderer's camera reference to a dedicated `Camera` instance for
+  the whole secondary pass. Do not mutate the main camera and then attempt to
+  reconstruct it from live values after rendering.
+- Compute model/entity positions from the secondary render context and its
+  camera. Do not use the main preview's saved view/projection matrices as a
+  fallback for a secondary draw.
+- Restore the renderer camera reference, entity-dispatcher camera, culling
+  bookkeeping, framebuffer, projection, and model-view state in one `finally`
+  block. The restoration must run when a renderer or shader throws.
+- A secondary preview is optional UI. If its render pass fails, disable only
+  that preview and keep the main client alive; retain the original failure in a
+  render-thread log for diagnosis.
+
+Regression coverage must include source checks for the dedicated camera swap and
+the `Camera.setup` call, plus a client smoke test that toggles the secondary view
+while the main camera moves. The smoke test should prove that the secondary
+entity stays in the position produced by its own camera context, not merely that
+the secondary texture was allocated.
+
 ---
 
 ## GPU Publication Is Not Consumer Verification
