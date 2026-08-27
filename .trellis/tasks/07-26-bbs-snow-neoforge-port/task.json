@@ -30,7 +30,8 @@
     "07-26-bbs-snow-s9-fluid-form",
     "07-26-bbs-snow-s10-integration",
     "08-02-bbs-snow-rc-fixes",
-    "08-03-bbs-snow-upstream-sync"
+    "08-03-bbs-snow-upstream-sync",
+    "08-25-bbs-snow-replay-keyframe-splitter"
   ],
   "parent": null,
   "relatedFiles": [],

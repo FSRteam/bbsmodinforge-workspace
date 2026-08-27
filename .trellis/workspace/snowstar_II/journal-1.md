@@ -1490,3 +1490,36 @@ Added Addon API 2.0 and hot-plugin Dashboard panel registration, lifecycle-safe 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 39: 移植 BFX Light 到最新 FSR
+
+**Date**: 2026-08-27
+**Task**: 移植 BFX Light 到最新 FSR
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+将 VFXLIGHTS master 快照保留在 bfx-light/TEMP/VFXLIGHTS，并迁移可验证的灯光表单、关键帧值、逐帧光源 API 和 BBSFSR NeoForge 客户端注册层；依赖 new-fs25-sync 最新 FSR JAR 快照，按 Fabric 官方映射迁移原则人工复核；bfx-light clean build 与 check 通过。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `054b475` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 38
-- **Last Active**: 2026-08-23
+- **Total Sessions**: 39
+- **Last Active**: 2026-08-27
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1492 | Active |
+| `journal-1.md` | ~1525 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 39 | 2026-08-27 | 移植 BFX Light 到最新 FSR | `054b475` | `codex/bootstrap-trellis-workspace` |
 | 38 | 2026-08-23 | fs 2.5 上游增量同步到 FSR 完成 | `72d6d208` | `codex/bootstrap-trellis-workspace` |
 | 37 | 2026-08-21 | 完成 FSR 教程引导覆盖层 API | `629bdc7c`, `fdd3224` | `codex/bootstrap-trellis-workspace` |
 | 36 | 2026-08-18 | BBS-PoseCurve 1.21.1 BBSFSR 迁移 | `a5d028f` | `codex/bootstrap-trellis-workspace` |

@@ -361,7 +361,7 @@
           "action": "emote_pointing",
           "dialogueMale": "按右 Shift 打开回放列表。",
           "dialogueFemale": "按 **右 Shift**（默认）喵！会弹出一个左列表、右属性的回放面板哟～",
-          "instruction": "在 Film 面板内，按 **右 Shift**（默认，「打开回放」键；另有 F4 同效）→ 弹出覆盖层面板；键位可按 F9 查看",
+          "instruction": "在 Film 面板内，按 **右 Shift**（默认，「打开回放」键）→ 弹出覆盖层面板；键位可按 F9 查看",
           "userWillSee": "屏幕中央弹出覆盖层面板，标题 **回放**：左侧是回放列表，右侧是选中回放的属性面板；新建回放要在列表上点右键（见下一步）",
           "hint": "这个面板可以快速切换编辑哪个回放，也可以右键新建或管理回放",
           "uiElements": {
