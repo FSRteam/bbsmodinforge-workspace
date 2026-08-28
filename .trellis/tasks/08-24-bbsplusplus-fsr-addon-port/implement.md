@@ -91,3 +91,34 @@
 - 最新 `new-fs25-sync` 依赖下 `compileJava` 与 `build` 通过；发布 JAR SHA-256 为 `C4463FB85D1971536AF3A43E72676DA90F9185A13F7C56B36E9339DA5B762167`，测试 `runs/client/mods` 已同步该 JAR 和 FS 2.5 BBS JAR。
 - 2026-08-27：真实客户端回归时发现 `runs/client/mods` 中的旧 BBS++ JAR 会与开发 classpath 重复加载，导致已移除的 `ModelFormRendererMixin` 继续生效。验证期间暂时移出重复 JAR 后，源码版本完成 BBS++ 初始化、Pose/Model/Extruded Form Mixin、资源重载和 ItemSpray/Video Form 注册；测试目录随后恢复最新 JAR。
 - 2026-08-27：`new-fs25-sync` 基线下，当前源码 `compileJava` 与 `build` 通过；最新 JAR SHA-256 为 `C4463FB85D1971536AF3A43E72676DA90F9185A13F7C56B36E9339DA5B762167`。
+
+## 2026-08-27 Structure/VFX Follow-up
+
+- 修复结构功能漏注册：`bbs:structure` 通过 `RegisterFormsEvent` 注册，`StructureForm` 通过 `RegisterFormCategoriesEvent` 进入 BBS 表单选择器。
+- 修复结构棒漏注册：改用 NeoForge `DeferredRegister` 注册 `bbs:structure_stick`，并在 `BuildCreativeModeTabContentsEvent` 中加入 `bbs:main` 创造模式物品栏。
+- 补齐结构棒模型、贴图、声音和中英文语言键；加入基础 NeoForge 框选、线框预览和本地 `.nbt` 导出桥。
+- 将 AAA 粒子、Iris 光影曲线、BBS-VFX 选区和 IRLights 投影注入拆成独立可选 Mixin 配置；当前目标为 `new-fs25-sync` 的 NeoForge 类名。
+
+## 2026-08-28 AAA/ShaderCurves Verification
+
+- AAA 粒子完整性确认：对照上游 2.6.3，表单字段、FormArchitect 注册、Extra 分类、渲染器、编辑面板、特效选择器、AAA_EFFECT 关键帧、四个动态输入、四个触发器、循环/起止帧/智能定格/速度/缩放、模型方块源跟踪、时间轴寻帧、X-Ray 透深度和资源重载清理链路均已保留。
+- 使用本地 `aaa-particles-neoforge-1.21.1-2.2.0.jar`（内置 Architectury 13.0.8）进行真实客户端验证：`AAAParticleForm` 已注册，`bbsplusplus-aaa.mixins.json` 的四个注入均成功应用，Effekseer 原生库加载，外部 `config/bbs/assets/effeks/debug.efkefc` 成功解析并注入 AAA 注册表。客户端无 Mixin 致命错误；关闭阶段先清理 addon 发射器，再交给 AAA 关闭原生库。
+- AAA 稳定性修复：选择器打开文件夹改为非阻塞进程回调；客户端停止阶段清理所有 addon 发射器；`EffectDefinitionMixin` 的最终字段标注补齐。缺失 AAA 前置时主 addon 仍可启动并跳过 AAA 能力。
+- 光影曲线完整性修复：新增 NeoForge `IrisCompat`，光影曲线选择器的日月偏角与焦点条目改为由 Iris 存在性控制，不再错误依赖旧 `bbstools`。
+- 光影曲线 OpenGL 状态修复：焦点深度纹理事务保存/恢复活动纹理、纹理绑定、读写 FBO、清屏颜色；深度值有限性与 `[0,1]` 限幅；移除每帧 `glFinish`；客户端停止时释放临时纹理/FBO。
+- 使用本地 Complementary 光影包进行 Iris 组合启动验证：`ShaderCurvesMixin`、`IrisRenderingPipelineMixin`、`CelestialUniformsMixin`、`CenterDepthSamplerMixin`、`ShadowRendererMixin` 全部成功应用，Iris 管线创建完成，客户端正常退出且 Gradle 返回成功。由于当前显卡不适合长时间运行光影，太阳角度动画、阴影方向和拉焦视觉效果需在另一台支持光影的电脑做最终手动 smoke。
+- 最终 addon 构建：`clean build` 成功；发布 JAR `build/libs/BBS-PlusPlus-FSR-2.6.3-fsr.1.jar`，SHA-256 `F40C23AA4BB5A061D4A48FA053B52ABFC8A218E129971E370E5B29F6CAD3F39D`；JAR 不含 `fabric.mod.json`、`mchorse/bbs_mod/**` 或开发 smoke 类。
+
+## 2026-08-28 Curve Localization Follow-up
+
+- 修复曲线新增后轨道标题退回原始通道 ID 的问题：`UIKeyframeSheetMixin` 同时覆盖 FSR 的六参数和七参数构造器，对 `brightness`、`sun_rotation`、`weather`、`chroma_sky_color`、Iris `sun_path_rotation`、`center_depth` 以及 `curve.*` 动态参数统一使用本地化标题。
+- 新增 `CurveChannelNames`，动态 Iris 参数按当前语言查找，当前语言缺失时回退英语，最后才回退原始 ID；不依赖中文开关。
+- 内置 Iris 曲线显示为“太阳角度 / 阴影方向”和“焦点深度”，英文对应 `Sun Angle / Shadow Direction`、`Focus Depth`；基础 `sun_rotation` 显示为“太阳角度 / Sun Angle”。
+- `compileJava` 与 `build` 均通过；发布 JAR SHA-256 为 `0D9674B85EDABED873F1C0A7D8D8B8505B47BC27E35ABA99E466394FC7297B83`。未启动游戏，光影视觉效果留给支持光影的测试机验证。
+
+## 2026-08-28 Localization Audit Follow-up
+
+- 补齐模型、广告牌和挤出形态的 UV 控件语言键：`uv_transform`、U/V 偏移、U/V 缩放、统一缩放和 UV 旋转。
+- 补齐视频广告牌编辑器、视频选择器、视频预设、姿势参数刷，以及视频/UV 关键帧的中英文资源；视频关键帧标题按 `VideoBillboardForm` 上下文解析，避免 `width`、`loop` 等通用属性互相覆盖。
+- 恢复 UV 关键帧扩展注册和 `bbspp_uv_*` 中文兜底映射。源码扫描的可见字面量语言键审计结果为 `MISSING_VISIBLE_LITERAL_KEYS=0`；隐藏设置仅保留为内部配置，不计入可见 UI 审计。
+- `compileJava`、`build`、JSON 解析和 `git diff --check` 均通过；最新发布 JAR SHA-256 为 `B4D72FF3CC099B537AB69D8BFD404957A58291506595B43FEDB037E003DE21D6`。未启动游戏。

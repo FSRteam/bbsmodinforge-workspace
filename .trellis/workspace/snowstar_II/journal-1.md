@@ -1523,3 +1523,34 @@ Added Addon API 2.0 and hot-plugin Dashboard panel registration, lifecycle-safe 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 40: VFX Light FSR visual and editor completion
+
+**Date**: 2026-08-29
+**Task**: VFX Light FSR visual and editor completion
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+Compared TEMP/VFXLIGHTS with latest new-fs25-sync API, completed depth-aware fallback lighting, editor guides and grouped controls, added Ambient Air/Style panels and model-block stale-submission kill window, then passed clean build and JAR audit.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+(No commits - planning session)
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

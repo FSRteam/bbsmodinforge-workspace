@@ -18,6 +18,34 @@ cd /d D:\bbsinneoforge\bbsmodinforge\bbsmodinforge\new && ..\gradlew.bat build
 
 ## 执行顺序(与 prd.md §5 一致,分步可验证)
 
+### 步骤 0:修复 preview2 窗口缩放实体偏移(2026-08-28)
+
+状态：已实现并通过 `testFilmEditorMigration`；主工程 `jar` 已生成。等待游戏内验证不同窗口比例。
+
+**现象**:preview2(二级离屏 pass)在游戏窗口尺寸 ≠ 启动初始尺寸时,世界中实体与回放
+相对地形产生位置偏移;缩放回初始尺寸恢复。
+
+**根因(结构性)**:二级 pass 的投影矩阵由三处拼接——vanilla `getProjectionMatrix`
+(读 `Window.getWidth()`,该值会被 `WindowMixin` 在导出状态下覆盖成导出分辨率)+ 两个
+`ModifyArg` 事后修补(`onSetupFrustumProjection`/`onRenderProjection` 里调
+`fitSecondaryProjection` 改 m00)+ `onRenderProjection` 补设 `RenderSystem.setProjectionMatrix`。
+实体渲染走 `RenderSystem.getProjectionMatrix()`(BufferUploader),地形走 renderLevel 的
+投影参数——两条通道在窗口 resize / 导出状态翻转的帧序下可能拿到不同矩阵,实体即相对
+地形偏移。另外 `WindowDimensionsAccessor` 读的是 `Window.width/height`(屏幕坐标),
+与 vanilla `getWidth()` 返回的 `framebufferWidth/framebufferHeight`(像素)语义不一致,
+DPI 缩放 ≠100% 时造成 framebuffer2 分辨率错位 + 与 `resizeExtraFramebuffers` 每帧拉锯。
+
+**修复(简化,删码多于加码)**:
+1. `GameRendererMixin` 新增 `onGetProjectionMatrix`(`getProjectionMatrix` RETURN 注入):
+   二级 pass 时直接返回 `fitSecondaryProjection(base)`。单一注入点让 L1244 渲染投影、
+   L1265 `resetProjectionMatrix`(RenderSystem,实体通道)、L1270 frustum 全部同源同对象。
+2. 删除两个 `ModifyArg` 里的 secondary 分支(回归纯 ortho 职责)。
+3. `WindowDimensionsAccessor` 改读 `framebufferWidth/framebufferHeight`(与 vanilla
+   `getWidth()` 同语义,仍绕过导出覆盖)。
+
+验证:`cd new && gradlew.bat build`;用户实测 = 开 Ctrl+M 多视口,改窗口大小/比例,
+preview2 内实体与回放贴合地形不偏移,缩放回原尺寸也正常。
+
 ### 步骤 1:最小改动验证多通道渲染【最高风险,先单独验证】
 
 目标:不改 UI,只让 `BBSRendering` 每帧渲染两次世界(主画面 + 一台虚拟相机),
