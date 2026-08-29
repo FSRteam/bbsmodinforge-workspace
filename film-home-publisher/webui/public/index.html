@@ -361,12 +361,25 @@ function renderAds()
 		{
 			preview.innerHTML = "";
 
-			if (ad._blob || ad.image)
+			if (ad._blob)
 			{
 				const img = document.createElement("img");
 
-				img.src = ad._blob || ad.image;
+				img.src = ad._blob;
 				preview.appendChild(img);
+			}
+			else if (ad.image && /^https?:/i.test(ad.image))
+			{
+				const img = document.createElement("img");
+
+				img.src = ad.image;
+				preview.appendChild(img);
+			}
+			else if (ad.image)
+			{
+				/* Bundled client resource (film_home/… in the jar): the
+				 * browser cannot render it, and pushing keeps it as-is. */
+				preview.innerHTML = '<span class="empty">📦 本地资源图(打包在客户端内)<br>' + esc(ad.image) + '<br>推送时原样保留</span>';
 			}
 			else
 			{
@@ -605,12 +618,23 @@ function renderNews()
 		{
 			preview.innerHTML = "";
 
-			if (item._blob || item.image)
+			if (item._blob)
 			{
 				const img = document.createElement("img");
 
-				img.src = item._blob || item.image;
+				img.src = item._blob;
 				preview.appendChild(img);
+			}
+			else if (item.image && /^https?:/i.test(item.image))
+			{
+				const img = document.createElement("img");
+
+				img.src = item.image;
+				preview.appendChild(img);
+			}
+			else if (item.image)
+			{
+				preview.innerHTML = '<span class="empty" style="color:var(--muted);font-size:12px;text-align:center">📦 本地资源图(打包在客户端内)<br>' + esc(item.image) + '</span>';
 			}
 			else
 			{
