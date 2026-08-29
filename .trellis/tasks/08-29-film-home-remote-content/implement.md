@@ -34,4 +34,4 @@
 - [x] E2 端到端:mock(复用真实 worker.js)验证 WebUI→PUT ads/news→KV→GET 回读一致;图片 /api/upload→/img/<sha256>.png 字节一致;浏览器 GUI 验收广告/新闻页、4:3 裁切(300×200→267×200)、推送 toast、线上回填接口
 - [x] E3 spec 沉淀 `.trellis/spec/frontend/film-home-remote-content.md`(契约+回退顺序+工具链规则)
 - [x] E4 commit:worktree `79b33a0fc`(fsr-film-home-redesign)+ 外层仓库 film-home-publisher 与任务工件
-- [ ] E5 待用户:面板补 `fsrapi` CNAME 记录(见 README),之后把 WebUI 设置页与客户端 config remote.json 主用域切换生效
+- [x] E5 域名:通过 `PUT /accounts/{id}/workers/domains` 直接挂载 `fsrapi.twiap.studio`(自动建 DNS+证书),workers.dev 路由已停用;remote.json/webui 配置/README/deploy.mjs 均只保留自定义域

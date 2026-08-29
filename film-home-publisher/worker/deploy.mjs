@@ -3,11 +3,13 @@
  *
  * Usage (from the worker/ directory):
  *   node deploy.mjs --token <CF_API_TOKEN> [--seed-ads <file>] [--seed-news <file>]
+ *                   [--hostname <custom domain> --zone-id <zone id>]
  *
  * The token is also read from the CF_API_TOKEN environment variable or from
  * webui/config.local.json (cfApiToken). Credentials produced by the deploy
  * (worker URL, KV namespace id, admin token, token itself) are merged into
- * webui/config.local.json — that file is gitignored.
+ * webui/config.local.json — that file is gitignored. The workers.dev route
+ * is always disabled; content is served from the attached custom domain.
  */
 
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
@@ -139,21 +141,39 @@ async function main()
 	await api(token, "PUT", "/accounts/" + account.id + "/workers/scripts/" + SCRIPT_NAME, form);
 	console.log("[deploy] worker script uploaded:", SCRIPT_NAME);
 
-	/* 5. Enable the workers.dev subdomain route */
-	const subdomainInfo = await api(token, "GET", "/accounts/" + account.id + "/workers/subdomain");
+	/* 5. Custom domain: attach via API (auto-creates DNS + cert) and keep
+	 * the workers.dev route disabled (it is unreachable from CN networks).
+	 * Pass --hostname <host> --zone-id <id> to (re)attach; otherwise the
+	 * script runs on an existing attachment only. */
+	const hostname = arg("--hostname");
+	const zoneId = arg("--zone-id");
 
-	if (!subdomainInfo || !subdomainInfo.subdomain)
+	if (hostname && zoneId)
 	{
-		throw new Error("account has no workers.dev subdomain; enable it in the Cloudflare dashboard first");
+		await api(token, "PUT", "/accounts/" + account.id + "/workers/domains", {
+			zone_id: zoneId,
+			hostname,
+			service: SCRIPT_NAME,
+			environment: "production"
+		});
+		console.log("[deploy] custom domain attached:", hostname);
+	}
+
+	const attachments = await api(token, "GET", "/accounts/" + account.id + "/workers/domains");
+	const attachment = (attachments || []).find((d) => d.service === SCRIPT_NAME);
+
+	if (!attachment)
+	{
+		throw new Error("no custom domain attached to " + SCRIPT_NAME + "; pass --hostname <host> --zone-id <zone id> on first deploy");
 	}
 
 	await api(token, "POST", "/accounts/" + account.id + "/workers/scripts/" + SCRIPT_NAME + "/subdomain", {
-		enabled: true,
+		enabled: false,
 		previews_enabled: false
 	});
 
-	const workerUrl = "https://" + SCRIPT_NAME + "." + subdomainInfo.subdomain + ".workers.dev";
-	console.log("[deploy] worker URL:", workerUrl);
+	const workerUrl = "https://" + attachment.hostname;
+	console.log("[deploy] workers.dev route disabled; serving at:", workerUrl);
 
 	/* 6. Seed content when the KV keys don't exist yet */
 	for (const [key, fileArg, empty] of [["content:ads", "--seed-ads", { items: [] }], ["content:news", "--seed-news", { items: [] }]])

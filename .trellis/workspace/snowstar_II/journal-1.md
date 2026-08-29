@@ -1524,6 +1524,13 @@ Added Addon API 2.0 and hot-plugin Dashboard panel registration, lifecycle-safe 
 
 - None - task complete
 
+## 2026-08-29 影片首页远程内容(08-29-film-home-remote-content)
+
+- CF Worker `bbs-film-home` 部署完成(KV `bbs_film_home`,种子=jar 默认广告/新闻);`worker.test.mjs` 19/19。workers.dev 被 DNS 污染且按需求不保留:`PUT /accounts/{id}/workers/domains` 直接挂载 `fsrapi.twiap.studio`(自动建 DNS+证书,实测 200),workers.dev 路由已停用,唯一公开入口 `https://fsrapi.twiap.studio`。
+- `film-home-publisher/`:零依赖 Node 推送台(4:3 校验+居中裁切、Markdown 编辑/预览、草稿、线上回填)+ deploy/mock 脚本;推送链路经本地 mock(复用真实 worker.js)浏览器 GUI 验收。
+- 客户端(worktree fsr-film-home,`79b33a0fc`):远程 URL 链 + 磁盘缓存回退 + Source 状态;拉取中空数据显示 spinner;MarkdownBody 滚轮/滚动条/溢出拖动翻页;新闻与广告详情弹窗窗口自适应。`compileClientJava` + `testThemeCore` 通过。
+- 契约沉淀:`.trellis/spec/frontend/film-home-remote-content.md`。
+
 
 ## Session 40: VFX Light FSR visual and editor completion
 
@@ -1554,3 +1561,31 @@ Compared TEMP/VFXLIGHTS with latest new-fs25-sync API, completed depth-aware fal
 ### Next Steps
 
 - None - task complete
+
+## Session 41: Model block render-last option (Blockbuster port)
+
+**Date**: 2026-08-29
+**Task**: 08-29-model-block-render-last
+**Branch**: `codex/new-local-backup-20260727` (new/)
+
+### Summary
+
+Ported Blockbuster's model-block "Render last" option to BBS FSR as a redesigned frame-local queue: render-last blocks skip the vanilla BE pass, capture the dispatcher's pose stack, and replay far-to-near at NeoForge's AFTER_BLOCK_ENTITIES stage (the semantic equivalent of Blockbuster's ASM renderLastEntities hook, before the translucent terrain boundary).
+
+### Main Changes
+
+- `ModelProperties`: `renderLast` field + `render_last` persistence key (round-trips through the existing model-block form packet; old saves decode to false).
+- `ModelBlockRenderLastQueue` (new): begin at AFTER_ENTITIES (before the BE pass), defer in `ModelBlockEntityRenderer.render`, flush far-to-near at AFTER_BLOCK_ENTITIES, `release()` safety net at AFTER_LEVEL.
+- `ModelBlockEntityRenderer`: deferral branch + static `renderDeferred` replay through the captured pose; shadow stays on the immediate pass (order-independent vanilla buffer).
+- UI: `Render last` toggle in `UIModelBlockPanel` + `bbs.ui.model_blocks.render_last` en_us string.
+- **Bugfix after user test (morph disappeared)**: first cut replayed through the AFTER_BLOCK_ENTITIES event PoseStack, which is camera-relative WITHOUT the per-block translate the vanilla BE loop applies — every model drew at the camera origin. Fix: capture the dispatcher's current PoseStack at enqueue time so the replay uses the exact transform of the immediate path.
+
+### Testing
+
+- [OK] `compileJava compileClientJava`
+- [OK] full `gradlew build` (BUILD SUCCESSFUL 5m44s; jar `BBS_FSR_beta_v0.0.11.jar`) — needed `--project-cache-dir .gradle/codex-sound-jar-build` after the default neoForm cache got corrupted by interrupted runs.
+- [PENDING] user in-game retest of the pose-capture fix.
+
+### Status
+
+**In progress** — awaiting user visual retest.

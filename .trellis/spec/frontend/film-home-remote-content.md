@@ -49,8 +49,10 @@ WebUI (127.0.0.1, editor) --PUT/Bearer--> CF Worker (KV) <--GET-- client backgro
   `film-home-publisher/webui/config.local.json` (gitignored). The WebUI binds
   `127.0.0.1` and is the only component holding the admin token.
 - `remote.json` URLs accept a string or an array (fallback chain). Default
-  jar copy lists the custom domain first (`fsrapi.twiap.studio`), workers.dev
-  second. workers.dev is DNS-poisoned in CN — keep the custom domain entry.
+  jar copy points at the attached custom domain `fsrapi.twiap.studio` only —
+  the workers.dev route is disabled on deploy (unreachable in CN, and not
+  kept by product decision). `deploy.mjs` attaches domains via
+  `PUT /accounts/{id}/workers/domains` and disables workers.dev itself.
 - Ad images are 4:3 by design; the WebUI enforces the ratio (auto center-crop
   offered). Client slide height derives from width at 4:3.
 
