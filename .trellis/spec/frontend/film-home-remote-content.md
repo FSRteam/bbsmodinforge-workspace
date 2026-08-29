@@ -72,6 +72,15 @@ resize cascades, never in-place (see the `.resize()` idiom in UIFilmPanel).
 - Tier switches must not reset state: no `fill()` calls, carousel page,
   grid selection, search filter survive. T3 forces the list view and
   remembers `userGridMode`; leaving T3 restores it.
+- Toolbar rules (user-set): card-size slider + sort button are visible at
+  every width tier; the slider only hides with the list view (`setView`).
+  Collapsed tiers hide just the breadcrumb, shrink the search box
+  (`min(180, W-474)`) and park the section entry icons left of the slider.
+- Selection-driven buttons: grid/list consume clicks/keys before panel
+  hooks run, so `UIFilmHomePanel` overrides `childrenMouseClicked` /
+  `childrenKeyPressed` and refreshes dupe/rename/remove after each — don't
+  rely on `subMouseClicked` at panel level (never fires when a child
+  consumes), and don't call `updateActionButtons` only on refills.
 - T2/T3 collapse the ad board into a toolbar entry (`UIAdBoard` is an
   embeddable area-rendered element — reuse a fresh instance inside a
   `UIOverlayPanel`); the news strip does the same when the height collapses.
