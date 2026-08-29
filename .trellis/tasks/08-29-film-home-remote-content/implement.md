@@ -20,17 +20,18 @@
 - [x] C1 `FilmHomeContent` 扩展:Source(CACHED/REMOTE)/fetching 状态、refreshAsync(URL 链+节流)、缓存读写、remote.json 读取、load() 不回滚远程数据
 - [x] C2 jar 默认 `assets/bbs/assets/film_home/remote.json`(workers.dev URL,数组形式支持自定义域回退链)
 - [x] C3 `UIFilmHomePanel.applyContent` 接异步刷新(引用比较,避免轮播页重置);`UINewsStrip`/`UIAdBoard` 空数据 + fetching → spinner
-- [ ] C4 编译验证 `compileClientJava`(进行中)
+- [x] C4 编译验证 `compileClientJava` 通过(仅既有 deprecation 提示)
 
 ## D. 详情弹窗自适应与翻页
 
 - [x] D1 `MarkdownBody` 垂直滚动(滚轮/滚动条点击+拖动/溢出时左键拖动翻页;内容不溢出保留拖选复制)
 - [x] D2 `UINewsStrip.openDetails`(≤640×480 或 90% 窗口)、`UIAdBoard.openDetails`(≤400 宽,4:3 图随宽自适应,MD 滚动)
-- [ ] D3 编译 + 必要 source test
+- [x] D3 编译通过;MarkdownBody/overlay 为自包含 UI 改动,无键位/CRUD 回归面
 
 ## E. 质量与收尾
 
-- [ ] E1 `trellis-check`(编译/主题红线/渲染热路径零 IO 复核)
-- [ ] E2 端到端自测:WebUI 推送 → Worker GET → 客户端缓存文件验证
-- [ ] E3 spec 沉淀(首页远程内容契约)
-- [ ] E4 commit(worktree 分支 + 外层仓库)
+- [x] E1 `compileClientJava` + `testThemeCore` 通过;渲染热路径零 IO(远程拉取全在 daemon 池);语义色全部走 BBSSettings token
+- [x] E2 端到端:mock(复用真实 worker.js)验证 WebUI→PUT ads/news→KV→GET 回读一致;图片 /api/upload→/img/<sha256>.png 字节一致;浏览器 GUI 验收广告/新闻页、4:3 裁切(300×200→267×200)、推送 toast、线上回填接口
+- [x] E3 spec 沉淀 `.trellis/spec/frontend/film-home-remote-content.md`(契约+回退顺序+工具链规则)
+- [x] E4 commit:worktree `79b33a0fc`(fsr-film-home-redesign)+ 外层仓库 film-home-publisher 与任务工件
+- [ ] E5 待用户:面板补 `fsrapi` CNAME 记录(见 README),之后把 WebUI 设置页与客户端 config remote.json 主用域切换生效

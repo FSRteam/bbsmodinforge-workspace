@@ -10,6 +10,11 @@
 !/scripts/
 !/scripts/**
 
+!/film-home-publisher/
+!/film-home-publisher/**
+/film-home-publisher/webui/config.local.json
+/film-home-publisher/webui/data/
+
 !/.trellis/
 !/.trellis/**
 
