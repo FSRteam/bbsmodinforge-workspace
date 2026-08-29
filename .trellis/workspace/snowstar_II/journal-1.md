@@ -1536,6 +1536,7 @@ Added Addon API 2.0 and hot-plugin Dashboard panel registration, lifecycle-safe 
 - 客户端(worktree fsr-film-home,`9cac746a9`):宽度档 T0–T3(1000/700/480 GUI px)+ 高度档(700/480),每档 ±8px 迟滞带(严格 `<`,不切换带 [T-8,T+7]);独立 JVM 状态机模拟 24 项全过。切档零状态重置(轮播页码/选中/过滤保留),T3 强制列表并在退出时恢复 userGridMode。
 - T2/T3 广告板折叠成工具栏入口(UIAdBoard 直接嵌入 UIOverlayPanel);H<480 新闻条同样折叠。紧凑新闻单行卡(无缩略图,tag/标题/日期)。banner 改高度优先 contain,两侧纹理边缘列拉伸 + deepSurface 渐变,logo 任意窗宽完整可见。
 - 关键机制:relayout() 改 flex 后必须手动对子元素调 resize()(flex 只在 resize 级联生效)——此前内容到达时的重定位其实不生效,本次顺带修正。`compileClientJava` + themeCore/uiInputMailbox/uiMirrorDemand/filmEditor 全过;契约沉淀进 `.trellis/spec/frontend/film-home-remote-content.md`(响应式分档节)。
+- 用户实测反馈两轮修正(`c17c9b8ff`、`38e15bef6`):①选中影片后操作按钮不点亮——网格/列表消费点击导致面板收不到,覆写 `childrenMouseClicked/childrenKeyPressed` 后刷新;②卡片大小滑杆只跟视图(列表隐藏)、排序/滑杆任何档位常显,T2 只藏面包屑+缩搜索框;③按用户决定删掉窄栏的广告/新闻入口按钮,T2/T3 广告板和矮窗新闻条直接隐藏(早先的 overlay 入口设计回滚)。
 
 
 ## Session 40: VFX Light FSR visual and editor completion
