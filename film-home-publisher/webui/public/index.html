@@ -72,6 +72,7 @@ textarea.md { font-family: Consolas, "Cascadia Mono", monospace; font-size: 12.5
 	<nav>
 		<button data-tab="ads" class="active">广告</button>
 		<button data-tab="news">新闻</button>
+		<button data-tab="releases">版本发布</button>
 		<button data-tab="settings">设置</button>
 	</nav>
 </header>
@@ -97,6 +98,40 @@ textarea.md { font-family: Consolas, "Cascadia Mono", monospace; font-size: 12.5
 		</div>
 		<p class="hint">新闻正文使用 <b>Markdown</b>（支持标题/加粗/列表/引用/代码/链接/图片）。tag 决定首页徽标颜色：更新=蓝、公告=橙、教程=绿。</p>
 		<div id="newsList"></div>
+	</section>
+
+	<section id="tab-releases" style="display:none">
+		<div class="card">
+			<div class="head"><span class="title" id="releaseFormTitle">发布新版本</span><span class="spacer"></span>
+				<button class="btn" id="newRelease">新建</button></div>
+			<div class="row">
+				<label class="field"><span>版本号（如 0.0.12 或 0.0.13-beta.1）</span><input type="text" id="relVersion" placeholder="0.0.12"></label>
+				<label class="field" style="max-width:130px"><span>频道</span>
+					<select id="relChannel"><option value="stable">正式版</option><option value="preview">预览版</option></select></label>
+				<label class="field" style="max-width:170px"><span>更新日期</span><input type="date" id="relDate"></label>
+			</div>
+			<label class="field"><span>下载 URL（jar 直链，必须 https；自动安装与「前往下载」都用它）</span><input type="text" id="relUrl" placeholder="https://…"></label>
+			<div class="row">
+				<label class="field"><span>SHA-256（自动安装前校验，可留空=仅通知）</span><input type="text" id="relSha" placeholder="64 位十六进制"></label>
+				<div style="max-width:150px;align-self:end">
+					<button class="btn" id="relPickJar">从 jar 文件计算</button>
+					<input type="file" id="relJarFile" accept=".jar,.zip" style="display:none">
+				</div>
+			</div>
+			<label class="field" style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="relMandatory" style="width:auto"> 强制更新（弹窗不提供「跳过此版本」）</label>
+			<label class="field"><span>更新内容 Markdown（客户端弹窗展示）</span><textarea class="md" id="relNotes"></textarea></label>
+			<div class="row">
+				<button class="btn" id="relPreview">预览</button>
+				<button class="btn primary" id="releasePush">发布到线上</button>
+				<span class="statusline" id="relStatus"></span>
+			</div>
+			<div class="mdpreview" id="relMdPreview" style="display:none;margin-top:10px"></div>
+		</div>
+		<div class="card">
+			<div class="head"><span class="title">已发布版本（最多 20 条，超出请删除旧条目）</span><span class="spacer"></span>
+				<button class="btn" id="reloadReleases">刷新</button></div>
+			<div id="releaseList"></div>
+		</div>
 	</section>
 
 	<section id="tab-settings" style="display:none">
@@ -127,7 +162,7 @@ textarea.md { font-family: Consolas, "Cascadia Mono", monospace; font-size: 12.5
 "use strict";
 
 const $ = (sel) => document.querySelector(sel);
-const state = { ads: { items: [] }, news: { items: [] }, config: { workerUrl: "", adminToken: "" } };
+const state = { ads: { items: [] }, news: { items: [] }, releases: { releases: [] }, config: { workerUrl: "", adminToken: "" } };
 let saveTimer = null;
 
 function toast(message, kind)
@@ -890,19 +925,24 @@ async function checkHealth()
 
 /* ---------- wiring ---------- */
 
-document.querySelectorAll("nav button").forEach((button) =>
-{
-	button.addEventListener("click", () =>
+	document.querySelectorAll("nav button").forEach((button) =>
 	{
-		document.querySelectorAll("nav button").forEach((b) => b.classList.remove("active"));
-		button.classList.add("active");
-
-		for (const tab of ["ads", "news", "settings"])
+		button.addEventListener("click", () =>
 		{
-			$("#tab-" + tab).style.display = button.dataset.tab === tab ? "" : "none";
-		}
+			document.querySelectorAll("nav button").forEach((b) => b.classList.remove("active"));
+			button.classList.add("active");
+
+			for (const tab of ["ads", "news", "releases", "settings"])
+			{
+				$("#tab-" + tab).style.display = button.dataset.tab === tab ? "" : "none";
+			}
+
+			if (button.dataset.tab === "releases")
+			{
+				loadReleases();
+			}
+		});
 	});
-});
 
 $("#addAd").addEventListener("click", () =>
 {
@@ -961,6 +1001,299 @@ $("#pullNewsSettings").addEventListener("click", async () =>
 	const remote = await api("/api/current?type=news").catch((e) => ({ payload: null, error: e.message }));
 
 	$("#pullResult").textContent = remote.payload ? JSON.stringify(remote.payload, null, 2) : "拉取失败: " + (remote.error || remote.status);
+});
+
+/* ---------- releases tab ---------- */
+
+const MAX_RELEASES = 20;
+
+function parseVersion(v)
+{
+	const m = /^(\d+)\.(\d+)\.(\d+)(?:-beta\.(\d+))?$/.exec(String(v || "").trim());
+
+	return m ? [+m[1], +m[2], +m[3], m[4] === undefined ? Infinity : +m[4]] : null;
+}
+
+function compareVersions(a, b)
+{
+	const pa = parseVersion(a);
+	const pb = parseVersion(b);
+
+	if (!pa || !pb) return 0;
+
+	for (let i = 0; i < 4; i++)
+	{
+		if (pa[i] !== pb[i]) return pa[i] < pb[i] ? -1 : 1;
+	}
+
+	return 0;
+}
+
+function latestOf(list, channel)
+{
+	let best = null;
+
+	for (const release of list)
+	{
+		if (release.channel !== channel || release.revoked) continue;
+
+		if (!best || compareVersions(release.version, best.version) > 0) best = release;
+	}
+
+	return best;
+}
+
+let editingRelease = -1;
+
+function releaseFormFrom(release)
+{
+	$("#relVersion").value = release ? release.version || "" : "";
+	$("#relChannel").value = release ? release.channel || "stable" : "stable";
+	$("#relDate").value = release ? release.date || new Date().toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
+	$("#relUrl").value = release ? release.url || "" : "";
+	$("#relSha").value = release ? release.sha256 || "" : "";
+	$("#relMandatory").checked = release ? Boolean(release.mandatory) : false;
+	$("#relNotes").value = release ? release.notes || "" : "";
+	$("#relMdPreview").style.display = "none";
+	$("#releaseFormTitle").textContent = release ? "编辑版本 " + release.version + (release.channel === "preview" ? "（预览）" : "（正式）") : "发布新版本";
+	$("#releasePush").textContent = release ? "保存修改" : "发布到线上";
+	editingRelease = release ? state.releases.releases.indexOf(release) : -1;
+}
+
+async function pushReleases()
+{
+	if (state.releases.releases.length > MAX_RELEASES)
+	{
+		toast("版本列表超过 " + MAX_RELEASES + " 条，请先删除旧条目", "bad");
+
+		return;
+	}
+
+	try
+	{
+		const result = await api("/api/releases", {
+			method: "PUT",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ releases: state.releases.releases })
+		});
+
+		toast("已推送版本列表：" + result.body, "ok");
+		renderReleases();
+	}
+	catch (e)
+	{
+		toast("推送失败: " + e.message, "bad");
+	}
+}
+
+function renderReleases()
+{
+	const list = $("#releaseList");
+
+	list.innerHTML = "";
+
+	const releases = state.releases.releases;
+	const latestStable = latestOf(releases, "stable");
+	const latestPreview = latestOf(releases, "preview");
+
+	releases.forEach((release, index) =>
+	{
+		const isLatest = release === latestStable || release === latestPreview;
+		const card = document.createElement("div");
+
+		card.className = "card";
+		card.style.marginBottom = "8px";
+
+		const badges = [];
+
+		badges.push('<span class="badge ' + (release.channel === "preview" ? "bad" : "ok") + '">' + (release.channel === "preview" ? "预览版" : "正式版") + "</span>");
+
+		if (release.revoked) badges.push('<span class="badge bad">已撤回</span>');
+		if (release.mandatory && !release.revoked) badges.push('<span class="badge bad">强制更新</span>');
+		if (isLatest && !release.revoked) badges.push('<span class="badge ok">当前推送</span>');
+		if (release.sha256) badges.push('<span class="badge ok">校验 ✓</span>');
+
+		card.innerHTML = `
+			<div class="head" style="margin-bottom:4px"><span class="title" style="color:var(--text)">v${esc(release.version)}</span>${badges.join("")}
+				<span class="spacer"></span>${esc(release.date || "")}</div>
+			<div class="statusline" style="margin-bottom:6px">${esc(release.url || "（无下载链接）")}</div>
+			${release.revoked && release.revokedReason ? '<div class="statusline" style="color:var(--bad)">撤回原因：' + esc(release.revokedReason) + "</div>" : ""}
+			<div style="margin-top:6px">
+				<button class="iconbtn" data-act="edit">编辑</button>
+				${release.revoked
+					? '<button class="iconbtn" data-act="restore">恢复推送</button>'
+					: '<button class="iconbtn" data-act="revoke" style="color:var(--warn)">撤回</button>'}
+				<button class="iconbtn" data-act="del" style="color:var(--bad)">删除</button>
+			</div>`;
+
+		card.addEventListener("click", async (e) =>
+		{
+			const act = e.target.dataset && e.target.dataset.act;
+
+			if (!act) return;
+
+			if (act === "edit")
+			{
+				releaseFormFrom(release);
+				window.scrollTo({ top: 0, behavior: "smooth" });
+			}
+
+			if (act === "revoke")
+			{
+				const reason = prompt("撤回原因（会显示给已安装该版本的玩家，可留空）：") || "";
+
+				release.revoked = true;
+				release.revokedReason = reason;
+				await pushReleases();
+			}
+
+			if (act === "restore")
+			{
+				release.revoked = false;
+				release.revokedReason = "";
+				await pushReleases();
+			}
+
+			if (act === "del")
+			{
+				if (!confirm("删除版本 v" + release.version + "？")) return;
+
+				state.releases.releases.splice(index, 1);
+				await pushReleases();
+			}
+		});
+
+		list.appendChild(card);
+	});
+
+	$("#relStatus").textContent = releases.length + "/" + MAX_RELEASES + " 条 · 正式最新 " + (latestStable ? "v" + latestStable.version : "无") + " · 预览最新 " + (latestPreview ? "v" + latestPreview.version : "无");
+}
+
+async function loadReleases()
+{
+	try
+	{
+		const remote = await api("/api/releases");
+
+		if (remote.payload && Array.isArray(remote.payload.releases))
+		{
+			state.releases = { releases: remote.payload.releases.map((r) => ({ ...r })) };
+		}
+		else
+		{
+			toast("拉取版本列表失败: HTTP " + remote.status, "bad");
+		}
+	}
+	catch (e)
+	{
+		toast("拉取版本列表失败: " + e.message, "bad");
+	}
+
+	renderReleases();
+}
+
+$("#newRelease").addEventListener("click", () => releaseFormFrom(null));
+$("#reloadReleases").addEventListener("click", loadReleases);
+
+$("#releasePush").addEventListener("click", async () =>
+{
+	const version = $("#relVersion").value.trim();
+	const url = $("#relUrl").value.trim();
+	const sha = $("#relSha").value.trim();
+
+	if (!parseVersion(version))
+	{
+		toast("版本号格式应为 0.0.12 或 0.0.13-beta.1", "bad");
+
+		return;
+	}
+
+	if (url && !url.startsWith("https://"))
+	{
+		toast("下载 URL 必须 https", "bad");
+
+		return;
+	}
+
+	if (sha && !/^[a-f0-9]{64}$/.test(sha.toLowerCase()))
+	{
+		toast("SHA-256 应为 64 位十六进制", "bad");
+
+		return;
+	}
+
+	const release = {
+		version,
+		channel: $("#relChannel").value,
+		date: $("#relDate").value,
+		url,
+		sha256: sha.toLowerCase(),
+		notes: $("#relNotes").value,
+		mandatory: $("#relMandatory").checked,
+		revoked: false,
+		revokedReason: ""
+	};
+
+	const dupe = state.releases.releases.findIndex((r) => r.version === version && r.channel === release.channel && state.releases.releases.indexOf(r) !== editingRelease);
+
+	if (dupe >= 0)
+	{
+		toast("已存在同频道同版本号的条目", "bad");
+
+		return;
+	}
+
+	if (editingRelease >= 0 && editingRelease < state.releases.releases.length)
+	{
+		release.revoked = state.releases.releases[editingRelease].revoked;
+		release.revokedReason = state.releases.releases[editingRelease].revokedReason;
+		state.releases.releases[editingRelease] = release;
+	}
+	else
+	{
+		state.releases.releases.push(release);
+	}
+
+	await pushReleases();
+	releaseFormFrom(null);
+});
+
+$("#relPreview").addEventListener("click", () =>
+{
+	const pane = $("#relMdPreview");
+	const show = pane.style.display === "none";
+
+	pane.style.display = show ? "" : "none";
+	if (show) pane.innerHTML = renderMarkdown($("#relNotes").value) || "<p>（空）</p>";
+});
+
+$("#relPickJar").addEventListener("click", () => $("#relJarFile").click());
+$("#relJarFile").addEventListener("change", async () =>
+{
+	if (!$("#relJarFile").files.length) return;
+
+	const file = $("#relJarFile").files[0];
+
+	if (file.size > 120 * 1024 * 1024)
+	{
+		toast("文件超过 120MB，不支持计算", "bad");
+
+		return;
+	}
+
+	try
+	{
+		const buffer = await file.arrayBuffer();
+		const digest = await crypto.subtle.digest("SHA-256", buffer);
+		const hex = Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
+
+		$("#relSha").value = hex;
+		toast("SHA-256 已填入（" + file.name + "）", "ok");
+	}
+	catch (e)
+	{
+		toast("计算失败: " + e.message, "bad");
+	}
 });
 
 loadAll();

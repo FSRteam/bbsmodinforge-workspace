@@ -246,6 +246,59 @@ async function handleApi(request, response, url)
 		}
 	}
 
+	if (path === "/api/releases" && request.method === "GET")
+	{
+		try
+		{
+			const result = await workerFetch(config, "/api/version");
+
+			return sendJson(response, 200, { status: result.status, payload: result.status === 200 ? JSON.parse(result.body) : null });
+		}
+		catch (e)
+		{
+			return sendJson(response, 200, { status: 0, payload: null, error: String(e.message) });
+		}
+	}
+
+	if (path === "/api/releases" && request.method === "PUT")
+	{
+		const raw = (await readBody(request, 1024 * 1024)).toString("utf8");
+
+		try
+		{
+			const parsed = JSON.parse(raw);
+
+			if (!parsed || !Array.isArray(parsed.releases))
+			{
+				return sendJson(response, 400, { error: 'expected {"releases":[...]}' });
+			}
+		}
+		catch (e)
+		{
+			return sendJson(response, 400, { error: "malformed json: " + e.message });
+		}
+
+		try
+		{
+			const result = await workerFetch(config, "/api/releases", {
+				method: "PUT",
+				headers: { "Authorization": "Bearer " + (config.adminToken || ""), "Content-Type": "application/json" },
+				body: raw
+			});
+
+			if (result.status === 401)
+			{
+				return sendJson(response, 401, { error: "admin token rejected by worker (401)" });
+			}
+
+			return sendJson(response, result.status === 200 ? 200 : 502, { ok: result.status === 200, status: result.status, body: result.body });
+		}
+		catch (e)
+		{
+			return sendJson(response, 502, { error: String(e.message) });
+		}
+	}
+
 	if (path === "/api/drafts" && request.method === "GET")
 	{
 		const type = url.searchParams.get("type") === "news" ? "news" : "ads";

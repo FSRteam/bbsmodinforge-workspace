@@ -1531,6 +1531,13 @@ Added Addon API 2.0 and hot-plugin Dashboard panel registration, lifecycle-safe 
 - 客户端(worktree fsr-film-home,`79b33a0fc`):远程 URL 链 + 磁盘缓存回退 + Source 状态;拉取中空数据显示 spinner;MarkdownBody 滚轮/滚动条/溢出拖动翻页;新闻与广告详情弹窗窗口自适应。`compileClientJava` + `testThemeCore` 通过。
 - 契约沉淀:`.trellis/spec/frontend/film-home-remote-content.md`。
 
+## 2026-08-30 FSR 版本推送(08-30-fsr-version-update-push)
+
+- 全链路交付:Worker `content:releases`(PUT 校验 ≤20 条/semver/https/sha256,GET /api/version 裸列表)+ WebUI「版本发布」页(发布/撤回含原因/恢复/编辑/删除,jar 文件 crypto.subtle 算 sha256)+ 客户端 `mchorse.bbs_mod.update` 包(FSRUpdates 检查器/UIUpdateOverlayPanel/UpdateInstaller 自动安装)。
+- 客户端决策顺序:撤回警告 > 本地更新静默 > 跳过版本静默(跳过=下一版本再提醒)> 弹窗;缓存兜底数据不自动弹窗。自动安装仅 production+https+带 sha256,哈希不符即删除不装;换 jar = 运行中 jar 改名 `.pre-update` + 下载就位 + 重启提示,启动时清扫备份。设置分类 `fsr_updates`(开关/频道/频率/手动检查+状态行,UIValueMap 身份注册)。
+- 测试:worker.test 35/35;FSRUpdatesSourceTest(版本比较数学 + 决策顺序源级断言)进 filmEditorTest runner;浏览器 GUI 验收发布/撤回/恢复全过;真链路冒烟通过。
+- **事故**:部署时 deploy.mjs seed 探测经 `api()`(解 `payload.result`)读 KV values 裸值端点得 undefined → 误判 key 缺失 → 覆盖线上 ads/news 为空。已从客户端缓存恢复(3+3 条),seed 改裸 fetch 探测(200 跳过/404 才种/其他中止)。教训已沉淀进 spec(deploy seed guard 节)。
+
 ## 2026-08-29 影片首页响应式分档(08-29-film-home-responsive-layout)
 
 - 客户端(worktree fsr-film-home,`9cac746a9`):宽度档 T0–T3(1000/700/480 GUI px)+ 高度档(700/480),每档 ±8px 迟滞带(严格 `<`,不切换带 [T-8,T+7]);独立 JVM 状态机模拟 24 项全过。切档零状态重置(轮播页码/选中/过滤保留),T3 强制列表并在退出时恢复 userGridMode。

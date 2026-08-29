@@ -93,6 +93,37 @@ resize cascades, never in-place (see the `.resize()` idiom in UIFilmPanel).
 - Entry tooltips reuse existing lang keys (`…home.ads`, `…home.news`) — no
   new strings per tier.
 
+## Version update push (releases)
+
+Same worker + toolchain, third content type: `content:releases` in KV,
+`GET /api/version` (public, max-age=300) serves `{"releases":[…]}` raw —
+**all selection logic lives client-side** (FSRUpdates), the worker only
+validates on `PUT /api/releases` (Bearer): semver-subset versions
+(`\d+\.\d+\.\d+(-beta\.\d+)?`), https-only download URLs, optional 64-hex
+sha256, ≤20 entries, (version,channel) unique.
+
+- Client decision order (FSRUpdates.apply): **revoked warning first — it
+  outranks the "local newer → silent" rule by design**; then up-to-date
+  silence; then skipped-version silence (skip = remind at the NEXT version);
+  then popup. Cached fallback data never auto-popups, only fresh fetches and
+  manual checks.
+- Auto-install (UpdateInstaller) is gated on production + https + sha256;
+  hash mismatch fails closed (delete download, no swap). Swap = rename
+  running jar to `*.jar.pre-update` → move verified download into place →
+  restart prompt; startup sweeps stale `.pre-update` backups.
+- WebUI "版本发布" tab edits the release array in place and PUTs the whole
+  list; revoked entries keep their reason for installed-user warnings.
+
+### Deploy seed guard (learned the hard way 2026-08-30)
+
+The CF KV **values** endpoint returns the raw stored value, not the usual
+`{success, result}` envelope. `api()` in deploy.mjs returns `payload.result`,
+so probing existence through it yields `undefined` even when the key exists —
+an early deploy consequently seeded empty content over live ads/news (restored
+from the client disk cache). Rule: probe KV values with a raw fetch
+(200 = exists/never touch, 404 = seed, anything else = abort loudly), and
+never route the values endpoint through envelope-decoding helpers.
+
 ## Verification checklist
 
 - `node worker/worker.test.mjs` (19 checks) and `node worker/deploy.mjs` for

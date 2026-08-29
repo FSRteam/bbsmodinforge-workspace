@@ -175,16 +175,25 @@ async function main()
 	const workerUrl = "https://" + attachment.hostname;
 	console.log("[deploy] workers.dev route disabled; serving at:", workerUrl);
 
-	/* 6. Seed content when the KV keys don't exist yet */
+	/* 6. Seed content when the KV keys don't exist yet. The values endpoint
+	 * answers with the raw stored value (no {success,result} envelope), so
+	 * probe it directly: 200 = exists (never touch), 404 = missing (seed),
+	 * anything else = ambiguous — abort the seed instead of risking a
+	 * destructive overwrite of live content. */
 	for (const [key, fileArg, empty] of [["content:ads", "--seed-ads", { items: [] }], ["content:news", "--seed-news", { items: [] }]])
 	{
-		const existing = await api(token, "GET", "/accounts/" + account.id + "/storage/kv/namespaces/" + namespace.id + "/values/" + key)
-			.catch(() => null);
+		const probe = await fetch("https://api.cloudflare.com/client/v4/accounts/" + account.id + "/storage/kv/namespaces/" + namespace.id + "/values/" + key, { headers: { "Authorization": "Bearer " + token } });
 
-		if (existing != null)
+		if (probe.status === 200)
 		{
 			console.log("[deploy] KV", key, "already present, left untouched");
+
 			continue;
+		}
+
+		if (probe.status !== 404)
+		{
+			throw new Error("[deploy] cannot verify KV " + key + " (HTTP " + probe.status + ") — refusing to seed over unknown state");
 		}
 
 		const seedFile = arg(fileArg);

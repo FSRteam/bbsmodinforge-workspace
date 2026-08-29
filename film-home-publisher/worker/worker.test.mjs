@@ -115,6 +115,50 @@ check("ads persisted", (await run(null, request("GET", "/api/ads"))).status === 
 check("bad json 400", (await run(null, request("PUT", "/api/ads", "not json", auth))).status === 400);
 check("missing items 400", (await run(null, request("PUT", "/api/news", json({ nope: 1 }), auth))).status === 400);
 
+/* Releases push + serve */
+const sha = "a".repeat(64);
+
+response = await run(null, request("GET", "/api/version"));
+
+check("empty version 200 releases[]", response.status === 200 && (await response.json()).releases.length === 0);
+check("version cache header", response.headers.get("Cache-Control") === "public, max-age=300");
+
+const goodRelease =
+{
+	version: "0.0.12",
+	channel: "stable",
+	date: "2026-08-30",
+	url: "https://example.com/BBS_FSR.jar",
+	sha256: sha,
+	notes: "# 更新\n- 修复",
+	mandatory: false,
+	revoked: false,
+	revokedReason: ""
+};
+
+response = await run(null, request("PUT", "/api/releases", json({ releases: [goodRelease] }), auth));
+
+check("releases put 200", response.status === 200);
+check("releases unauth 401", (await run(null, request("PUT", "/api/releases", json({ releases: [] }), { "Content-Type": "application/json" }))).status === 401);
+check("releases bad json 400", (await run(null, request("PUT", "/api/releases", "nope", auth))).status === 400);
+check("releases missing array 400", (await run(null, request("PUT", "/api/releases", json({ nope: 1 }), auth))).status === 400);
+check("releases bad version 400", (await run(null, request("PUT", "/api/releases", json({ releases: [{ ...goodRelease, version: "v0.0.12" }] }), auth))).status === 400);
+check("releases bad channel 400", (await run(null, request("PUT", "/api/releases", json({ releases: [{ ...goodRelease, channel: "beta" }] }), auth))).status === 400);
+check("releases http url 400", (await run(null, request("PUT", "/api/releases", json({ releases: [{ ...goodRelease, url: "http://example.com/x.jar" }] }), auth))).status === 400);
+check("releases bad sha 400", (await run(null, request("PUT", "/api/releases", json({ releases: [{ ...goodRelease, sha256: "zz" }] }), auth))).status === 400);
+check("releases bad date 400", (await run(null, request("PUT", "/api/releases", json({ releases: [{ ...goodRelease, date: "tomorrow" }] }), auth))).status === 400);
+check("releases duplicate 400", (await run(null, request("PUT", "/api/releases", json({ releases: [goodRelease, { ...goodRelease }] }), auth))).status === 400);
+check("releases over cap 400", (await run(null, request("PUT", "/api/releases", json({ releases: Array.from({ length: 21 }, (_, i) => ({ ...goodRelease, version: "0.1." + i })) }), auth))).status === 400);
+
+response = await run(null, request("GET", "/api/version"));
+
+let served = await response.json();
+
+check("releases served", response.status === 200 && served.releases.length === 1 && served.releases[0].version === "0.0.12");
+check("releases normalized defaults", (await run(null, request("PUT", "/api/releases", json({ releases: [{ version: "0.0.13-beta.1", channel: "preview" }] }), auth))).status === 200);
+served = await (await run(null, request("GET", "/api/version"))).json();
+check("releases defaults filled", served.releases[0].mandatory === false && served.releases[0].revoked === false && served.releases[0].sha256 === "" && served.releases[0].date === "");
+
 /* Image push + serve */
 const bytes = new Uint8Array([137, 80, 78, 71, 1, 2, 3]);
 
