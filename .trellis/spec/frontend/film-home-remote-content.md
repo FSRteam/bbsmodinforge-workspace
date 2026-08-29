@@ -56,6 +56,32 @@ WebUI (127.0.0.1, editor) --PUT/Bearer--> CF Worker (KV) <--GET-- client backgro
 - Ad images are 4:3 by design; the WebUI enforces the ratio (auto center-crop
   offered). Client slide height derives from width at 4:3.
 
+## Responsive layout tiers
+
+`UIFilmHomePanel.relayout()` is the single layout control point; it runs on
+window resizes AND on content changes (sections appearing), so it must end by
+calling `resize()` on the repositioned children — flex changes only apply on
+resize cascades, never in-place (see the `.resize()` idiom in UIFilmPanel).
+
+- Two axes: `widthTier` T0–T3 (W≥1000 / ≥700 / ≥480 / else) drives section
+  collapsing; `heightStep` (H<700 → banner 96, H<480 → banner 64 + news
+  collapsed to a toolbar entry) only shrinks the banner on wide-short windows.
+- Every boundary carries a ±8px hysteresis band (strict-less: the no-switch
+  band is `[T-8, T+7]`; shrinking switches at T-9, growing at T+8). State
+  machine verified standalone — don't "simplify" it to plain threshold tests.
+- Tier switches must not reset state: no `fill()` calls, carousel page,
+  grid selection, search filter survive. T3 forces the list view and
+  remembers `userGridMode`; leaving T3 restores it.
+- T2/T3 collapse the ad board into a toolbar entry (`UIAdBoard` is an
+  embeddable area-rendered element — reuse a fresh instance inside a
+  `UIOverlayPanel`); the news strip does the same when the height collapses.
+- Banner renders height-priority contain (logo must stay whole on any
+  width — the old width-cover crop sliced through it); empty sides extend
+  the texture's outer pixel columns and fade into `deepSurface`. Bottom
+  readability gradient + accent hairline stay.
+- Entry tooltips reuse existing lang keys (`…home.ads`, `…home.news`) — no
+  new strings per tier.
+
 ## Verification checklist
 
 - `node worker/worker.test.mjs` (19 checks) and `node worker/deploy.mjs` for
