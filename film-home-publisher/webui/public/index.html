@@ -274,14 +274,45 @@ async function pickImage(file)
 	});
 
 	const size = await measure(dataURL);
-	const extMap = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp", "image/gif": "gif" };
+	const compressed = await compressToPNG(dataURL);
 
-	return { dataURL, w: size.w, h: size.h, mime: file.type || "image/png", ext: extMap[file.type] || "png" };
+	return { dataURL: compressed.dataURL, w: compressed.w, h: compressed.h, mime: "image/png", ext: "png" };
 }
 
 function ratioOK(w, h)
 {
 	return Math.abs(w / h - TARGET_RATIO) <= TARGET_RATIO * 0.01;
+}
+
+/* Client display sizes are small (slide ~200px, detail ~360px), and the
+ * in-game decoder is PNG-only — so uploads are downscaled to 800×600 and
+ * re-encoded as PNG. This alone turns multi-MB source art into a few
+ * hundred KB without visible loss in game. */
+const MAX_IMAGE_W = 800;
+const MAX_IMAGE_H = 600;
+
+function compressToPNG(dataURL)
+{
+	return new Promise((resolve, reject) =>
+	{
+		const image = new Image();
+
+		image.onload = () =>
+		{
+			const scale = Math.min(1, MAX_IMAGE_W / image.naturalWidth, MAX_IMAGE_H / image.naturalHeight);
+			const canvas = document.createElement("canvas");
+
+			canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+			canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+
+			const ctx = canvas.getContext("2d");
+
+			ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+			resolve({ dataURL: canvas.toDataURL("image/png"), w: canvas.width, h: canvas.height });
+		};
+		image.onerror = () => reject(new Error("图片解码失败"));
+		image.src = dataURL;
+	});
 }
 
 function centerCrop4x3(dataURL)
@@ -306,14 +337,15 @@ function centerCrop4x3(dataURL)
 				ch = Math.round(w / TARGET_RATIO);
 			}
 
+			const scale = Math.min(1, MAX_IMAGE_W / cw, MAX_IMAGE_H / ch);
 			const canvas = document.createElement("canvas");
 
-			canvas.width = cw;
-			canvas.height = ch;
+			canvas.width = Math.max(1, Math.round(cw * scale));
+			canvas.height = Math.max(1, Math.round(ch * scale));
 
 			const ctx = canvas.getContext("2d");
 
-			ctx.drawImage(image, Math.round((w - cw) / 2), Math.round((h - ch) / 2), cw, ch, 0, 0, cw, ch);
+			ctx.drawImage(image, Math.round((w - cw) / 2), Math.round((h - ch) / 2), cw, ch, 0, 0, canvas.width, canvas.height);
 			resolve(canvas.toDataURL("image/png"));
 		};
 		image.onerror = () => reject(new Error("解码失败"));
