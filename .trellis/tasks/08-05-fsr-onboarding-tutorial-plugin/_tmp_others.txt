@@ -1,0 +1,227 @@
+=== skins_themes (41 labels)
+  bbs.config.multiskin.multithreaded                             多线程处理
+  bbs.config.multiskin.multithreaded-comment                     用于切换多线程处理多皮肤，这能够在处理时间较长的情况下解决卡顿
+  bbs.config.multiskin.title                                     多重皮肤
+  bbs.config.multiskin.tooltip                                   与多重皮肤功能相关的选项
+  bbs.config.refreshed.dashboard_auto_hide_taskbar               自动隐藏仪表盘边框
+  bbs.config.refreshed.dashboard_auto_hide_taskbar-comment       指针离开底栏后隐藏活动面板和底栏；将指针移到屏幕底边即可重新显示。
+  bbs.config.refreshed.dashboard_taskbar_hide_delay              仪表盘隐藏延迟（毫秒）
+  bbs.config.refreshed.dashboard_taskbar_hide_delay-comment      指针离开仪表盘栏后等待多长时间再隐藏整个仪表盘界面。
+  bbs.config.refreshed.film_editor_layout_transition_enabled     平滑编辑器切换
+  bbs.config.refreshed.film_editor_layout_transition_enabled-comment 切换摄像机、回放和行为编辑器时，平滑过渡面板尺寸与位置。
+  bbs.config.refreshed.show_tooltips                             显示工具提示
+  bbs.config.refreshed.show_tooltips-comment                     显示或隐藏 BBS 界面中的悬停工具提示。
+  bbs.config.refreshed.text_entry_open_anim                      窗口打开动画
+  bbs.config.refreshed.text_entry_open_anim-comment              打开弹窗面板时播放入场动画。
+  bbs.config.refreshed.title                                     Refreshed
+  bbs.config.refreshed.tooltip                                   Refreshed 界面行为与动画开关
+  bbs.config.refreshed.tooltip_style                             工具提示样式
+  bbs.config.refreshed.tooltip_style-comment                     跟随当前主题，或强制使用暗色/亮色工具提示。
+  bbs.config.refreshed.vertical_lines_timeline                   时间线竖线
+  bbs.config.refreshed.vertical_lines_timeline-comment           将时间线标尺刻度延伸到关键帧编辑区域。
+  bbs.config.skins.accent_follows_theme                          强调色跟随主题
+  bbs.config.skins.accent_follows_theme-comment                  启用时强调色取自当前主题；禁用后使用个性化里自选的主要颜色。
+  bbs.config.skins.motion_easing                                 动画插值
+  bbs.config.skins.motion_easing-comment                         点开插值选择器，为所有主题的界面动画选择插值模式。
+  bbs.config.skins.motion_enabled                                界面动画
+  bbs.config.skins.motion_enabled-comment                        启用当前主题定义的界面动画。
+  bbs.config.skins.motion_speed                                  动画速度
+  bbs.config.skins.motion_speed-comment                          调整界面动画的播放速度。
+  bbs.config.skins.theme_id                                      主题
+  bbs.config.skins.theme_id-comment                              当前 UI 主题的 id。填主题文件夹名：dark、light，或放在 config/bbs/assets/themes/ 下的主题。
+  bbs.config.skins.title                                         皮肤
+  bbs.config.skins.tooltip                                       主题、皮肤与界面动画设置
+  bbs.ui.skins.broken                                            主题“%s”加载失败，已回退到 dark（详见日志）
+  bbs.ui.skins.export_template                                   导出模板主题
+  bbs.ui.skins.exported                                          模板已导出到 themes/%s
+  bbs.ui.skins.open_folder                                       打开主题文件夹
+  bbs.ui.skins.pick_title                                        主题
+  bbs.ui.skins.reload                                            重载主题
+  bbs.ui.skins.select                                            浏览…
+  bbs.ui.skins.source_builtin                                    内置
+  bbs.ui.skins.source_external                                   外部
+
+=== plugins (44 labels)
+  bbs.ui.plugins.action.disable                                  禁用
+  bbs.ui.plugins.action.enable                                   启用
+  bbs.ui.plugins.action.install                                  安装
+  bbs.ui.plugins.action.reinstall                                重新安装
+  bbs.ui.plugins.action.reload                                   重载
+  bbs.ui.plugins.action.uninstall                                卸载
+  bbs.ui.plugins.action.update                                   更新为 %s
+  bbs.ui.plugins.auto_apply                                      自动应用
+  bbs.ui.plugins.auto_apply_tooltip                              启用后，稳定的文件新增、替换和删除会自动应用，无需手动重新扫描。
+  bbs.ui.plugins.detail.api                                      API
+  bbs.ui.plugins.detail.capabilities                             能力
+  bbs.ui.plugins.detail.changelog                                更新日志
+  bbs.ui.plugins.detail.dependencies                             依赖
+  bbs.ui.plugins.detail.generation                               代次
+  bbs.ui.plugins.detail.installed_version                        已安装版本
+  bbs.ui.plugins.detail.kind                                     类型
+  bbs.ui.plugins.detail.last_change                              最近变更
+  bbs.ui.plugins.detail.last_error                               最近错误
+  bbs.ui.plugins.detail.not_installed                            未安装
+  bbs.ui.plugins.detail.sha256                                   SHA-256
+  bbs.ui.plugins.detail.side                                     运行端
+  bbs.ui.plugins.detail.state                                    状态
+  bbs.ui.plugins.detail.version                                  版本
+  bbs.ui.plugins.empty                                           还没有已安装的热插件。
+可将插件 JAR 放到：
+%s
+  bbs.ui.plugins.install_browse                                  安装插件…
+  bbs.ui.plugins.install_failed                                  插件安装失败
+  bbs.ui.plugins.install_invalid                                 所选文件不是有效的 BBS 插件。
+  bbs.ui.plugins.open_folder                                     打开插件目录
+  bbs.ui.plugins.rescan                                          重新扫描
+  bbs.ui.plugins.runtime_offline                                 热插件运行时未启动。
+  bbs.ui.plugins.state.active                                    运行中
+  bbs.ui.plugins.state.disabled                                  已禁用
+  bbs.ui.plugins.state.discovered                                已发现
+  bbs.ui.plugins.state.draining                                  排空中
+  bbs.ui.plugins.state.failed                                    失败
+  bbs.ui.plugins.state.incompatible                              不兼容
+  bbs.ui.plugins.state.logically_unloaded                        已卸载
+  bbs.ui.plugins.state.preparing                                 准备中
+  bbs.ui.plugins.state.reload_pending                            等待重载
+  bbs.ui.plugins.state.restart_required                          需要重启
+  bbs.ui.plugins.state.staged                                    已暂存
+  bbs.ui.plugins.state.unloading                                 卸载中
+  bbs.ui.plugins.state.validated                                 已校验
+  bbs.ui.plugins.title                                           插件
+
+=== selectors (6 labels)
+  bbs.ui.selectors.context.add                                   添加实体选择器
+  bbs.ui.selectors.context.remove                                移除该实体选择器
+  bbs.ui.selectors.entity_id                                     实体 ID
+  bbs.ui.selectors.name_tag                                      名称标签
+  bbs.ui.selectors.nbt                                           NBT
+  bbs.ui.selectors.title                                         实体选择器
+
+=== graph (2 labels)
+  bbs.ui.graph.help                                              点击此按钮，跳转到文档页面，了解以下图形计算器的功能。
+  bbs.ui.graph.tooltip                                           图形计算器
+
+=== utility (36 labels)
+  bbs.ui.language.credits                                        翻译：Chunk7 | 如果您在任何整合包中见到本内容，说明此整合包盗用了本翻译
+  bbs.ui.language.pick                                           选择语言...
+  bbs.ui.language.pick.title                                     语言
+  studio.ui.language.editor.context.copy_key                     复制键
+  studio.ui.language.editor.context.copy_original                复制原文
+  studio.ui.language.editor.context.mark_completed               标记为已完成
+  studio.ui.language.editor.context.unmark_completed             取消标记为已完成
+  studio.ui.language.editor.copy                                 将翻译后的字符串复制为 JSON
+  studio.ui.language.editor.folder                               打开语言编辑器文件夹...
+  studio.ui.language.editor.missing                              仅显示缺失（未翻译）的字符串
+  studio.ui.language.editor.paste                                粘贴复制的 JSON 字符串...
+  studio.ui.language.editor.paste-description                    粘贴 JSON 将替换当前的语言字符串。 §5重要§r：为了安全起见，请先进行备份，因为给定的 JSON §i可能§会会替换您的进度。
+  studio.ui.language.editor.reference                            更改参考语言...
+  studio.ui.language.editor.reference-title                      选择参考语言
+  studio.ui.language.editor.save                                 将编辑后的字符串保存到语言编辑器文件夹
+  studio.ui.language.editor.title                                语言编辑器（%s）
+  studio.ui.utility.analyze_lang                                 分析
+  studio.ui.utility.audio                                        音频
+  studio.ui.utility.compile_lang                                 编译
+  studio.ui.utility.compile_lang-description                     语言文件已编译到导出文件夹。您是否要打开它？
+  studio.ui.utility.execute_default_commands                     执行默认命令
+  studio.ui.utility.lang                                         语言字符串
+  studio.ui.utility.lang_editor                                  打开语言编辑器...
+  studio.ui.utility.open_audio_editor                            打开音频编辑器...
+  studio.ui.utility.open_audio_folder                            音频
+  studio.ui.utility.open_folder                                  打开文件夹...
+  studio.ui.utility.open_game_folder                             游戏
+  studio.ui.utility.open_models_folder                           模型
+  studio.ui.utility.reload                                       重新加载
+  studio.ui.utility.reload_lang                                  语言
+  studio.ui.utility.reload_models                                模型
+  studio.ui.utility.reload_sounds                                声音
+  studio.ui.utility.reload_terrain                               地形
+  studio.ui.utility.reload_textures                              纹理
+  studio.ui.utility.resize                                       调整窗口大小
+  studio.ui.utility.title                                        实用工具面板
+
+=== credits (13 labels)
+  bbs.ui.supporters.cc                                           内容创作者
+  bbs.ui.supporters.community                                    社区（中文）
+  bbs.ui.supporters.community_link                               https://u.chunk7.icu/c-bbs
+  bbs.ui.supporters.donate                                       在爱发电上捐赠
+  bbs.ui.supporters.donate_link                                  https://afdian.com/a/McHorse
+  bbs.ui.supporters.early_access                                 Early Access - 尝鲜体验支持者
+  bbs.ui.supporters.gratitude                                    感谢慷慨的粉丝捐赠，BBS 模组才能得以实现！
+  bbs.ui.supporters.super_supporters                             Super Supporters - 超级支持者
+  bbs.ui.supporters.title                                        支持者
+  bbs.ui.supporters.tutorials                                    教程
+  bbs.ui.supporters.tutorials_link                               https://space.bilibili.com/472615413/channel/collectiondetail?sid=3647570
+  bbs.ui.supporters.wiki                                         Wiki（英文）
+  bbs.ui.supporters.wiki_link                                    https://github.com/mchorse/bbs-mod-wiki/wiki/
+
+=== dashboard (31 labels)
+  bbs.ui.dashboard.auto_hide_disabled                            已关闭仪表盘自动隐藏
+  bbs.ui.dashboard.auto_hide_enabled                             已启用仪表盘自动隐藏
+  bbs.ui.dashboard.category                                      仪表盘
+  bbs.ui.dashboard.context.toggle_visibility                     切换仪表盘是否可见
+  bbs.ui.dashboard.keys.toggle_auto_hide                         切换仪表盘自动隐藏
+  bbs.ui.dashboard.keys.toggle_debug                             切换 IK 与物理调试叠加层
+  bbs.ui.dashboard.optifine_ew-description                       重要：BBS mod 不支持使用 OptiFine！OptiFine 可能会破坏 BBS mod 的特定功能，风险自负！
+
+作为替代，请安装 Sodium 和 Iris。
+  bbs.ui.dashboard.optifine_ew-title                             检测到 OptiFine！
+  bbs.ui.panels.context.copy                                     拷贝
+  bbs.ui.panels.context.open                                     打开文件夹
+  bbs.ui.panels.context.paste                                    粘贴...
+  bbs.ui.panels.keys.open_data_list                              打开数据管理器
+  bbs.ui.panels.keys.open_new_tab                                打开新标签页
+  bbs.ui.panels.keys.toggle_chalkboard                           切换黑板
+  bbs.ui.panels.modals.add                                       输入名称：
+  bbs.ui.panels.modals.add_folder                                输入新文件夹的名称：
+  bbs.ui.panels.modals.add_folder-title                          添加文件夹
+  bbs.ui.panels.modals.dupe                                      输入复制后的新名称：
+  bbs.ui.panels.modals.empty                                     值不允许为空！
+  bbs.ui.panels.modals.remove                                    您确定要移除吗？
+  bbs.ui.panels.modals.remove_folder                             您确定要移除此文件夹吗？只有空文件夹可以移除！
+  bbs.ui.panels.modals.remove_folder-title                       移除此文件夹
+  bbs.ui.panels.modals.rename                                    输入新名称：
+  bbs.ui.panels.modals.rename_folder                             输入选定文件夹的新名称：
+  bbs.ui.panels.modals.rename_folder-title                       重命名此文件夹
+  bbs.ui.panels.particles                                        粒子
+  bbs.ui.panels.saved-notification                               %s 已保存！
+  bbs.ui.panels.tabs.context.close_left                          关闭左侧标签页
+  bbs.ui.panels.tabs.context.close_others                        关闭其他标签页
+  bbs.ui.panels.tabs.context.close_right                         关闭右侧标签页
+  bbs.ui.panels.tabs.new_tab                                     新标签页
+
+=== general (30 labels)
+  bbs.ui.transforms.alternate_invert                             交替反转
+
+选择多根骨骼时，每隔一根（第 2、4 根……）的旋转会反向。例如第 1 根骨骼沿 X 轴旋转 +90°，第 2 根会旋转 -90°。按手动选择顺序生效。
+  bbs.ui.transforms.combined                                     组合操控器
+  bbs.ui.transforms.context.copy                                 拷贝变换
+  bbs.ui.transforms.context.copy_world                           复制世界变换
+  bbs.ui.transforms.context.paste                                粘贴变换
+  bbs.ui.transforms.context.paste_rotation                       粘贴旋转
+  bbs.ui.transforms.context.paste_scale                          粘贴缩放
+  bbs.ui.transforms.context.paste_translation                    粘贴平移
+  bbs.ui.transforms.context.paste_world                          粘贴世界变换
+  bbs.ui.transforms.context.reset                                重置变换
+  bbs.ui.transforms.context.switch_global                        切换至全局
+  bbs.ui.transforms.context.switch_local                         切换局部坐标系
+  bbs.ui.transforms.editing                                      编辑中...
+  bbs.ui.transforms.keys.category                                变换
+  bbs.ui.transforms.keys.hide_gizmo                              隐藏 Gizmo（按住）
+  bbs.ui.transforms.keys.mirror_edit                             切换镜像编辑
+  bbs.ui.transforms.keys.toggle_axes                             切换 XYZ 坐标轴
+  bbs.ui.transforms.keys.toggle_fix                              切换肢体固定 (0 / 1)
+  bbs.ui.transforms.mirror_edit                                  镜像编辑
+
+启用后，编辑某根骨骼时，会实时将改动镜像到其左右侧对应骨骼，即使对应骨骼未被选中，也能无需同时选择两侧即可保持姿势对称。
+  bbs.ui.transforms.rotate                                       旋转
+  bbs.ui.transforms.rotate2                                      旋转（第二个）
+  bbs.ui.transforms.scale                                        缩放
+  bbs.ui.transforms.space.global                                 全局
+  bbs.ui.transforms.space.local                                  局部
+  bbs.ui.transforms.target.all                                   全部轴
+  bbs.ui.transforms.target.screen                                屏幕
+  bbs.ui.transforms.target.sphere                                球体
+  bbs.ui.transforms.target.view                                  视角
+  bbs.ui.transforms.translate                                    平移
+  bbs.ui.transforms.uniform_scale                                切换统一缩放
+

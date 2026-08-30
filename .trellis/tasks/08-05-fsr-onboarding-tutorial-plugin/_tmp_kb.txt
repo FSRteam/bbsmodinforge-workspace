@@ -1,0 +1,349 @@
+{
+ "dashboard": [
+  {
+   "id": "data_manager",
+   "category": "dashboard",
+   "combo": "N",
+   "glfw": [
+    "GLFW_KEY_N"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.PANELS_KEYS_OPEN_DATA_MANAGER"
+  },
+  {
+   "id": "new_tab",
+   "category": "dashboard",
+   "combo": "Ctrl + N",
+   "glfw": [
+    "GLFW_KEY_N",
+    "GLFW_KEY_LEFT_CONTROL"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.PANELS_KEYS_OPEN_NEW_TAB"
+  },
+  {
+   "id": "toggle",
+   "category": "dashboard",
+   "combo": "F1",
+   "glfw": [
+    "GLFW_KEY_F1"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.DASHBOARD_CONTEXT_TOGGLE_VISIBILITY"
+  },
+  {
+   "id": "toggle_debug",
+   "category": "dashboard",
+   "combo": "F5",
+   "glfw": [
+    "GLFW_KEY_F5"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.DASHBOARD_KEYS_TOGGLE_DEBUG"
+  },
+  {
+   "id": "toggle_taskbar_auto_hide",
+   "category": "dashboard",
+   "combo": "Ctrl + S",
+   "glfw": [
+    "GLFW_KEY_S",
+    "GLFW_KEY_LEFT_CONTROL"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.DASHBOARD_KEYS_TOGGLE_AUTO_HIDE"
+  },
+  {
+   "id": "utility_panel",
+   "category": "dashboard",
+   "combo": "F6",
+   "glfw": [
+    "GLFW_KEY_F6"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.UTILITY_TITLE"
+  }
+ ],
+ "world": [
+  {
+   "id": "cycle_panels",
+   "category": "world",
+   "combo": "Tab",
+   "glfw": [
+    "GLFW_KEY_TAB"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.WORLD_KEYS_CYCLE_PANELS"
+  }
+ ],
+ "camera": [
+  {
+   "id": "add_at_cursor",
+   "category": "camera",
+   "combo": "Shift + A",
+   "glfw": [
+    "GLFW_KEY_A",
+    "GLFW_KEY_LEFT_SHIFT"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.CAMERA_TIMELINE_CONTEXT_ADD_AT_CURSOR"
+  },
+  {
+   "id": "add_at_tick",
+   "category": "camera",
+   "combo": "Alt + A",
+   "glfw": [
+    "GLFW_KEY_A",
+    "GLFW_KEY_LEFT_ALT"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.CAMERA_TIMELINE_CONTEXT_ADD_AT_TICK"
+  },
+  {
+   "id": "add_on_top",
+   "category": "camera",
+   "combo": "Shift + Alt + A",
+   "glfw": [
+    "GLFW_KEY_A",
+    "GLFW_KEY_LEFT_SHIFT",
+    "GLFW_KEY_LEFT_ALT"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.CAMERA_TIMELINE_CONTEXT_ADD_ON_TOP"
+  },
+  {
+   "id": "clip_cut",
+   "category": "camera",
+   "combo": "Alt + C",
+   "glfw": [
+    "GLFW_KEY_C",
+    "GLFW_KEY_LEFT_ALT"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.CAMERA_TIMELINE_CONTEXT_CUT"
+  },
+  {
+   "id": "clip_duration",
+   "category": "camera",
+   "combo": "M",
+   "glfw": [
+    "GLFW_KEY_M"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.CAMERA_TIMELINE_CONTEXT_SHIFT_DURATION"
+  },
+  {
+   "id": "clip_enable",
+   "category": "camera",
+   "combo": "J",
+   "glfw": [
+    "GLFW_KEY_J"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.CAMERA_TIMELINE_KEYS_ENABLED"
+  },
+  {
+   "id": "clip_layer_down",
+   "category": "camera",
+   "combo": "Alt + ↓",
+   "glfw": [
+    "GLFW_KEY_DOWN",
+    "GLFW_KEY_LEFT_ALT"
+   ],
+   "repeatable": true,
+   "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_CLIPS_LAYER_DOWN"
+  },
+  {
+   "id": "clip_layer_up",
+   "category": "camera",
+   "combo": "Alt + ↑",
+   "glfw": [
+    "GLFW_KEY_UP",
+    "GLFW_KEY_LEFT_ALT"
+   ],
+   "repeatable": true,
+   "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_CLIPS_LAYER_UP"
+  },
+  {
+   "id": "clip_select_after",
+   "category": "camera",
+   "combo": "Ctrl + 句号 .",
+   "glfw": [
+    "GLFW_KEY_PERIOD",
+    "GLFW_KEY_LEFT_CONTROL"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_EDITOR_SELECT_AFTER"
+  },
+  {
+   "id": "clip_select_all",
+   "category": "camera",
+   "combo": "Ctrl + A",
+   "glfw": [
+    "GLFW_KEY_A",
+    "GLFW_KEY_LEFT_CONTROL"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_CLIPS_SELECT_ALL"
+  },
+  {
+   "id": "clip_select_before",
+   "category": "camera",
+   "combo": "Ctrl + 逗号 ,",
+   "glfw": [
+    "GLFW_KEY_COMMA",
+    "GLFW_KEY_LEFT_CONTROL"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_EDITOR_SELECT_BEFORE"
+  },
+  {
+   "id": "clip_select_track",
+   "category": "camera",
+   "combo": "Ctrl + Shift + A",
+   "glfw": [
+    "GLFW_KEY_A",
+    "GLFW_KEY_LEFT_CONTROL",
+    "GLFW_KEY_LEFT_SHIFT"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_CLIPS_SELECT_TRACK"
+  },
+  {
+   "id": "clip_select_track_after",
+   "category": "camera",
+   "combo": "Ctrl + Shift + 句号 .",
+   "glfw": [
+    "GLFW_KEY_PERIOD",
+    "GLFW_KEY_LEFT_CONTROL",
+    "GLFW_KEY_LEFT_SHIFT"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_CLIPS_SELECT_TRACK_AFTER"
+  },
+  {
+   "id": "clip_select_track_before",
+   "category": "camera",
+   "combo": "Ctrl + Shift + 逗号 ,",
+   "glfw": [
+    "GLFW_KEY_COMMA",
+    "GLFW_KEY_LEFT_CONTROL",
+    "GLFW_KEY_LEFT_SHIFT"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_CLIPS_SELECT_TRACK_BEFORE"
+  },
+  {
+   "id": "clip_shift",
+   "category": "camera",
+   "combo": "Shift + S",
+   "glfw": [
+    "GLFW_KEY_S",
+    "GLFW_KEY_LEFT_SHIFT"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.CAMERA_TIMELINE_CONTEXT_SHIFT"
+  },
+  {
+   "id": "fade_in",
+   "category": "camera",
+   "combo": "逗号 ,",
+   "glfw": [
+    "GLFW_KEY_COMMA"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_EDITOR_FADE_IN"
+  },
+  {
+   "id": "fade_out",
+   "category": "camera",
+   "combo": "句号 .",
+   "glfw": [
+    "GLFW_KEY_PERIOD"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_EDITOR_FADE_OUT"
+  },
+  {
+   "id": "flight",
+   "category": "camera",
+   "combo": "F",
+   "glfw": [
+    "GLFW_KEY_F"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_MODES_FLIGHT"
+  },
+  {
+   "id": "jump_backward",
+   "category": "camera",
+   "combo": "↓",
+   "glfw": [
+    "GLFW_KEY_DOWN"
+   ],
+   "repeatable": true,
+   "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_EDITOR_JUMP_BACKWARD"
+  },
+  {
+   "id": "jump_forward",
+   "category": "camera",
+   "combo": "↑",
+   "glfw": [
+    "GLFW_KEY_UP"
+   ],
+   "repeatable": true,
+   "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_EDITOR_JUMP_FORWARD"
+  },
+  {
+   "id": "looping",
+   "category": "camera",
+   "combo": "L",
+   "glfw": [
+    "GLFW_KEY_L"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_MODES_LOOPING"
+  },
+  {
+   "id": "looping_set_max",
+   "category": "camera",
+   "combo": "右方括号 ]",
+   "glfw": [
+    "GLFW_KEY_RIGHT_BRACKET"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_LOOPING_SET_MAX"
+  },
+  {
+   "id": "looping_set_min",
+   "category": "camera",
+   "combo": "左方括号 [",
+   "glfw": [
+    "GLFW_KEY_LEFT_BRACKET"
+   ],
+   "repeatable": false,
+   "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_LOOPING_SET_MIN"
+  },
+  {
+   "id": "next_clip",
+   "category": "camera",
+   "combo": "Shift + →",
+   "glfw": [
+    "GLFW_KEY_RIGHT",
+    "GLFW_KEY_LEFT_SHIFT"
+   ],
+   "repeatable": true,
+   "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_EDITOR_NEXT_CLIP"
+  },
+  {
+   "id": "prev_clip",
+   "category": "camera",
+   "combo": "Shift + ←",
+   "glfw": [
+    "GLFW_KEY_LEFT",
+    "GLFW_KEY_LEFT_SHIFT"
+   ],
+   "repeatable": true,
+   "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_EDITOR_PREV_CLIP"
+  }
+ ]
+}

@@ -1,0 +1,2 @@
+{"file": ".trellis/tasks/08-13-wr-film-no-frame-rootcause/research/jstack-hang-2026-08-13.txt", "reason": "Verify the fix actually addresses the evidenced lock chain: no native backend call may run while holding WebRtcCoordinator.lock or the BBSWebRemoteClient monitor."}
+{"file": ".trellis/spec/frontend/web-browser-client-architecture.md", "reason": "Check browser-side changes keep the ns module contract and WebTest exports add-only; new modules synced in index.html, build.gradle webRuntimeScripts, and webTest require."}

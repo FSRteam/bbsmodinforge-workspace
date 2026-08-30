@@ -1,0 +1,530 @@
+{
+  "_meta": {
+    "purpose": "ch23-ch27 骨架（第四幕：调度 —— 从一个人到一场戏）",
+    "labelSource": "ui-domains.json",
+    "keybindSource": "keybinds-verified.json",
+    "chapterTarget": "每章 1000+ 字",
+    "status": "skeleton_in_progress"
+  },
+  "chapters": [
+    {
+      "id": "ch23_recording_groups",
+      "order": 23,
+      "titleZh": "录制组：只录你想录的",
+      "labelDomains": [
+        "film_replays",
+        "film_core"
+      ],
+      "steps": [
+        {
+          "id": "ch23_s1_problem",
+          "order": 1,
+          "action": "emote_thinking",
+          "dialogueMale": "录制会同时记下位置、旋转、姿势。如果只想改位置，其他保持不变，怎么办。",
+          "dialogueFemale": "录制的时候什么都会记下来喵～但如果你只想改位置、不想动姿势呢？",
+          "instruction": "理解痛点（无需操作）：通过底部工具栏的 **录制回放...** 按钮或快捷键右 Alt（默认）开始录制后，角色的**位置、旋转、姿势**都会被记录；如果你只想重新走一遍路、不想改姿势，录完姿势也会被新数据覆盖",
+          "userWillSee": "（认知铺垫步骤）",
+          "hint": "这就是录制组存在的理由：让你选择「只录哪些通道」"
+        },
+        {
+          "id": "ch23_s2_open_record_picker",
+          "order": 2,
+          "action": "emote_pointing",
+          "dialogueMale": "点底部工具栏的球形录制按钮，弹出录制组选择器。熟练后按右 Alt 也一样。",
+          "dialogueFemale": "点底部那排中间的 **录制回放...** 球形按钮喵！这次不会直接开始录，而是弹出一个选择面板～不想点的话，按 **右 Alt**（默认）也一样哟～",
+          "instruction": "在 Film 面板内、选中一个回放的情况下，点击 Film 面板底部中央预览工具栏的 **录制回放...** 按钮（球形图标，悬停提示同名）→ 弹出录制组选择器。熟练后可用快捷键：右 Alt 或 Ctrl + R（均为默认）；键位可在游戏内按 F9 查看，也可在设置中修改",
+          "userWillSee": "屏幕中央弹出覆盖层面板，标题 **录制**，副标题 **选择要录制的关键帧组：**，底部一排 10 个图标按钮",
+          "hint": "这个面板就是录制组选择器；每个图标对应一个组，点击后立即开始录制",
+          "uiElements": {
+            "title": "录制",
+            "description": "选择要录制的关键帧组：",
+            "source": "UIRecordOverlayPanel.java:35-42 + UIKeys.FILM_CONTROLLER_RECORD_TITLE / RECORD_DESCRIPTION"
+          }
+        },
+        {
+          "id": "ch23_s3_groups_overview",
+          "order": 3,
+          "action": "emote_confused",
+          "dialogueMale": "10 个图标，对应 10 种录制模式。鼠标悬停查看名称。",
+          "dialogueFemale": "看这一排图标喵！每个都代表一种录制模式，把鼠标放上去看看名字～",
+          "instruction": "依次把鼠标悬停在 10 个图标上，读出弹出的工具提示",
+          "userWillSee": "10 个工具提示依次是：**所有组** / **左摇杆** / **右摇杆** / **扳机** / **附加 1** / **附加 2** / **仅位置** / **仅旋转** / **位置 + 旋转** / **变换**",
+          "hint": "这些名称来自游戏手柄术语（左摇杆/右摇杆/扳机）+ 通用分组（附加 1/2）+ 语义组（仅位置/仅旋转/变换）",
+          "uiElements": {
+            "groups": {
+              "所有组": "录制所有通道（等同于不选、直接开始）",
+              "左摇杆": "GROUP_LEFT_STICK",
+              "右摇杆": "GROUP_RIGHT_STICK",
+              "扳机": "GROUP_TRIGGERS",
+              "附加 1": "GROUP_EXTRA1",
+              "附加 2": "GROUP_EXTRA2",
+              "仅位置": "GROUP_POSITION（X/Y/Z 坐标）",
+              "仅旋转": "GROUP_ROTATION（偏航/俯仰）",
+              "位置 + 旋转": "GROUP_POSITION + GROUP_ROTATION 组合",
+              "变换": "GROUP_TRANSFORM（条件性出现，仅当回放有变换轨道时显示）"
+            },
+            "source": "UIRecordOverlayPanel.java:46-55 + ReplayKeyframes.GROUP_* 常量"
+          }
+        },
+        {
+          "id": "ch23_s4_try_position_only",
+          "order": 4,
+          "action": "emote_salute",
+          "dialogueMale": "点击「仅位置」图标，开始录制。移动，但不要改变视角。再点球形按钮停止。",
+          "dialogueFemale": "点 **仅位置** 那个图标（四个箭头）喵！然后只走路、别转视角，录完再点一下那个球形按钮呐～",
+          "instruction": "在录制组选择器里点击 **仅位置**（图标：四个方向箭头）→ 开始录制后用 WASD 移动、**不转动鼠标视角** → 走几步后再点击 **录制回放...** 按钮（或再按右 Alt，默认）停止",
+          "userWillSee": "录制过程中左上角显示 **正在录制 仅位置**；停止后回放时间轴只有 X/Y/Z 三条轨道新增了关键帧，**偏航/俯仰轨道保持原样**",
+          "hint": "这就是录制组的核心用途：精确控制录制范围，保护不想改的通道"
+        },
+        {
+          "id": "ch23_s5_numeric_shortcuts",
+          "order": 5,
+          "action": "emote_pointing",
+          "dialogueMale": "打开选择器后不点图标，直接按数字键，可快速选组。",
+          "dialogueFemale": "还有更快的办法喵！选择器弹出来后，直接按数字键 **1~9** 或字母 **R**，不用点图标哟～",
+          "instruction": "再次打开录制组选择器（点 **录制回放...** 按钮或按右 Alt）→ 不点图标，直接按键盘数字键 **7**（对应 **仅位置**）；数字映射为默认设置，可按 F9 查看",
+          "userWillSee": "面板立即关闭并开始录制 **仅位置**，左上角显示 **正在录制 仅位置**",
+          "hint": "数字键映射：1=所有组、2=左摇杆、3=右摇杆、4=扳机、5=附加1、6=附加2、7=仅位置、8=仅旋转、9=位置+旋转、0=变换、R=外部录制",
+          "uiElements": {
+            "shortcuts": {
+              "1": "所有组",
+              "2": "左摇杆",
+              "3": "右摇杆",
+              "4": "扳机",
+              "5": "附加 1",
+              "6": "附加 2",
+              "7": "仅位置",
+              "8": "仅旋转",
+              "9": "位置 + 旋转",
+              "0": "变换",
+              "R": "外部录制"
+            },
+            "source": "UIRecordOverlayPanel.java:90-103 注册 Keys.RECORDING_GROUP_* 到对应图标 clickItself()"
+          }
+        },
+        {
+          "id": "ch23_s6_practical_use",
+          "order": 6,
+          "action": "emote_tada",
+          "dialogueMale": "实战场景：录完姿势后发现站位不对，用「仅位置」重录走位，姿势不受影响。",
+          "dialogueFemale": "想象这个场景喵：你录了个超帅的姿势，但发现角色站歪了～这时候用 **仅位置** 重录位置，姿势完全不会被碰！",
+          "instruction": "试验完整流程：先打开录制组选择器（**录制回放...** 按钮或右 Alt，默认）→ 点第一个图标（所有组）录一段带姿势变化的动作 → 停止 → 再开一次选择器 → 点 **仅位置** 图标重录位置 → 播放观察",
+          "userWillSee": "第二次录制只覆盖了位置轨道，姿势轨道的关键帧保持第一次录制的原样",
+          "hint": "其他组（左摇杆/右摇杆/扳机/附加）用于更复杂的分层录制，留到后面章节结合控制器讲解"
+        }
+      ]
+    },
+    {
+      "id": "ch24_actor_control",
+      "order": 24,
+      "titleZh": "认识回放编辑器：五类轨道",
+      "labelDomains": [
+        "film_replays",
+        "forms_model"
+      ],
+      "steps": [
+        {
+          "id": "ch24_s1_concept",
+          "order": 1,
+          "action": "emote_thinking",
+          "dialogueMale": "一个回放的轨道很多。编辑器把它们分成五类管理。",
+          "dialogueFemale": "一个角色身上能录的东西超多喵！所以编辑器把它们分成五大类来整理呐～",
+          "instruction": "理解结构（无需操作）：回放编辑器把一个回放的所有轨道分成五个类别：玩家（位置/旋转/物品栏等）、模型（动作/纹理/颜色等）、姿势（骨骼/变换）、IK（目标/极向量目标/链控制）、物理（链控制/目标）；前面学过的姿势、IK、物理骨链在这里各有一个专属类别",
+          "userWillSee": "（认知铺垫步骤）",
+          "hint": "类别只是过滤器：切来切去不会改动任何数据，只是决定当前显示哪些轨道"
+        },
+        {
+          "id": "ch24_s2_open_controllers",
+          "order": 2,
+          "action": "emote_pointing",
+          "dialogueMale": "回放编辑器左侧有一竖排类别图标。逐个点过去看。",
+          "dialogueFemale": "看回放编辑器左边那一竖排小图标喵！那就是五个类别的入口，从上往下挨个点一点试试呐～",
+          "instruction": "在 Film 面板的回放编辑器左侧，找到竖排的类别图标栏 → 从上到下依次点击五个类别图标 → 观察每点击一个，右侧轨道列表如何切换",
+          "userWillSee": "轨道列表随点击切换：第一个类别显示位置/旋转等基础轨道；之后依次是模型类（动作/纹理/颜色等）、姿势类（骨骼/变换）、IK 类（目标/极向量目标/链控制）、物理类（链控制/目标）；每个图标的悬停提示都写明了它包含什么",
+          "hint": "悬停提示的原文就是各类别的轨道清单；这一步只认门牌，暂时不用逐条研究",
+          "uiElements": {
+            "categories": [
+              "玩家",
+              "模型",
+              "姿势",
+              "IK",
+              "物理"
+            ],
+            "source": "UIReplaysEditor.java ReplayCategory 枚举 + ui-domains bbs.ui.film.replays.category.*"
+          }
+        },
+        {
+          "id": "ch24_s3_add_gamepad",
+          "order": 3,
+          "action": "emote_confused",
+          "dialogueMale": "切到模型类。外观相关的轨道都在这里。",
+          "dialogueFemale": "点第二个类别图标喵！纹理、颜色这些管外观的轨道都住在这里哟～找找看你录过的是哪条？",
+          "instruction": "点击左侧第二个类别图标 → 浏览模型类的轨道列表，找一找与形态外观相关的轨道（如纹理、颜色）→ 再点击第一个图标切回基础类别",
+          "userWillSee": "模型类列出与外观相关的轨道；切回第一类后，又是熟悉的 位置/旋转 轨道列表",
+          "hint": "找不到某条轨道时，先想想它属于哪个类别，再去对应图标下翻",
+          "uiElements": {
+            "source": "UIReplaysEditor.java ReplayCategory.MODEL + ui-domains bbs.ui.film.replays.category.model.tooltip"
+          }
+        },
+        {
+          "id": "ch24_s4_recording_group_mapping",
+          "order": 4,
+          "action": "emote_salute",
+          "dialogueMale": "切到姿势类。你摆过的姿势全在这里。",
+          "dialogueFemale": "第三个类别是姿势喵！之前摆的每一个骨骼姿势，都会变成这里的轨道记录下来呐～随便展开一条骨骼轨道看看？",
+          "instruction": "点击左侧第三个类别图标 → 在轨道列表里展开任意一条骨骼轨道 → 观察它的关键帧排布（就是前面姿势章节练习时录下的成果）",
+          "userWillSee": "姿势类按部位分列骨骼轨道，你在姿势编辑器里做过的动作用关键帧躺在各自的轨道上",
+          "hint": "想系统编辑这些轨道，就用前面学过的关键帧视图技巧",
+          "uiElements": {
+            "source": "UIReplaysEditor.java ReplayCategory.POSE + ui-domains bbs.ui.film.replays.category.pose.tooltip"
+          }
+        },
+        {
+          "id": "ch24_s5_expression_controller",
+          "order": 5,
+          "action": "emote_pointing",
+          "dialogueMale": "第四、第五个类别是 IK 和物理。对照前面章节看一遍。",
+          "dialogueFemale": "最后两个类别是 IK 和物理喵！之前做的 IK 目标、物理骨链，它们的轨道就在这里住着呐～对照着看看是不是很眼熟？",
+          "instruction": "点击第四个类别图标（IK）→ 观察目标与极向量相关轨道 → 点击第五个类别图标（物理）→ 观察链控制相关轨道 → 回忆前面 IK 与物理骨链章节里操作过的对象",
+          "userWillSee": "IK 类显示目标与极向量轨道；物理类显示链控制与其目标的轨道——正是前两幕里你亲手摆过的那些物件的数据来源",
+          "hint": "到这里五个类别就认全了：基础、模型、姿势、IK、物理",
+          "uiElements": {
+            "source": "UIReplaysEditor.java ReplayCategory.IK / PHYSICS + ui-domains bbs.ui.film.replays.category.ik|physics.tooltip"
+          }
+        },
+        {
+          "id": "ch24_s6_sine_orbit",
+          "order": 6,
+          "action": "emote_tada",
+          "dialogueMale": "不用点图标。数字键 1 到 5，直接切换类别。",
+          "dialogueFemale": "偷懒时间到喵！直接按数字键 **1~5** 就能跳类别哟～比如按 **4** 一步跳到 IK 类，帅气吧呐～",
+          "instruction": "依次按键盘数字键 1、2、3、4、5（默认设置）→ 观察左侧选中的类别图标随按键跳动 → 最后停在你最想细看的类别上；键位可按 F9 查看，也可在设置中修改",
+          "userWillSee": "每按一个数字键，选中的类别立即切换，轨道列表同步刷新——效果和用鼠标点图标完全一致",
+          "hint": "这套数字键和 ch23 的录制组数字键作用在不同界面，不会打架：后者只在录制选择器弹出时生效",
+          "uiElements": {
+            "shortcuts": {
+              "1": "切换至玩家标签页",
+              "2": "切换至模型标签页",
+              "3": "切换至姿势标签页",
+              "4": "切换到 IK 标签页",
+              "5": "切换到物理选项卡"
+            },
+            "source": "keybinds-verified.json replays_editor.tab_1~5 + ui-domains bbs.ui.film.replay.tab.*"
+          }
+        },
+        {
+          "id": "ch24_s7_priority_note",
+          "order": 7,
+          "action": "emote_bow",
+          "dialogueMale": "记住分工：类别管你看什么。时间轴只有一条。",
+          "dialogueFemale": "总结一下喵：类别就像抽屉柜，帮你分类收纳轨道；但所有抽屉共用同一条时间轴哟～录制组决定生成哪些通道，类别决定你去哪里看到它们呐～",
+          "instruction": "理解分工（无需操作）：类别 = 轨道的过滤视图，切换类别不改动任何数据；一个回放只有一条关键帧时间轴，播放影片时五类轨道一起生效",
+          "userWillSee": "（总结步骤）",
+          "hint": "后面章节的运动路径、洋葱皮读取的都是这些轨道的数据——先把家门牌认熟"
+        }
+      ]
+    },
+    {
+      "id": "ch25_action_clips",
+      "order": 25,
+      "titleZh": "行为编辑器：让角色做事",
+      "labelDomains": [
+        "film_replays",
+        "film_core"
+      ],
+      "steps": [
+        {
+          "id": "ch25_s1_what_is_action",
+          "order": 1,
+          "action": "emote_thinking",
+          "dialogueMale": "行为剪辑让回放在特定时刻执行游戏动作。攻击、放方块、聊天。",
+          "dialogueFemale": "想让角色在第 5 秒挥剑、第 10 秒放个方块、第 15 秒说句话？用行为剪辑喵！",
+          "instruction": "理解概念（无需操作）：行为剪辑（Action Clips）让回放在时间轴上触发**真实游戏动作**（攻击、破坏方块、使用物品、发送聊天…），而不仅仅是移动和摆姿势",
+          "userWillSee": "（认知铺垫步骤）",
+          "hint": "回放的位置/旋转/姿势在「回放编辑器」做，游戏动作在「行为编辑器」做 —— 两个独立时间线"
+        },
+        {
+          "id": "ch25_s2_open_action_editor",
+          "order": 2,
+          "action": "emote_pointing",
+          "dialogueMale": "点顶部工具栏最右侧的动作图标，打开行为编辑器。熟练后按 Shift 加反引号。",
+          "dialogueFemale": "点 Film 面板顶部工具栏最右边的动作图标（悬停提示「**打开行为编辑器**」）喵！熟练后按 **Shift + `**（反引号，Tab 上面那个键）更快哟～",
+          "instruction": "在 Film 面板内、选中一个回放的情况下，点击 Film 面板顶部工具栏最右侧的动作图标（悬停提示 **打开行为编辑器**）→ 切换到行为编辑器。熟练后可用快捷键 Shift + `（反引号，默认），或按反引号 ` 循环切换三个编辑器（默认）；键位可按 F9 查看",
+          "userWillSee": "Film 面板右侧切换到行为编辑器：一条空白的动作剪辑时间线，底部播放控制条，左上角 **+ 添加剪辑**",
+          "hint": "行为编辑器和摄像机编辑器共用同一套时间线界面，只是剪辑类型不同",
+          "uiElements": {
+            "toggleKey": "Shift + ` (反引号)",
+            "topBarButton": "动作图标（ACTION）",
+            "timeline": "动作剪辑时间线",
+            "source": "UIFilmPanel.java:240 openActionEditor + Keys.FILM_CONTROLLER_TOGGLE_ACTIONS"
+          }
+        },
+        {
+          "id": "ch25_s3_add_chat_action",
+          "order": 3,
+          "action": "emote_confused",
+          "dialogueMale": "点击添加剪辑，选择聊天信息。填写文本，放到时间轴上。",
+          "dialogueFemale": "点左上角 **+ 添加剪辑** 喵！选 **聊天信息**，然后在 **聊天栏信息** 框里写一句话～",
+          "instruction": "先把播放头拖到 0 刻 → 点击左上角 **+ 添加剪辑** → 在类型选择器里找到并点击 **聊天信息** → 剪辑会插到播放头附近；在配置面板的 **聊天栏信息** 输入框填写 `你好，这是行为剪辑测试`",
+          "userWillSee": "时间线上新增一个聊天剪辑块，默认长度 10 刻；右侧面板显示配置：**聊天栏信息**（文本框）、**频率**（数字，默认 0）",
+          "hint": "频率 = 0 表示只执行一次；频率 > 0 表示每 N 刻重复执行一次",
+          "uiElements": {
+            "clipType": "聊天信息",
+            "fields": {
+              "聊天栏信息": "要发送的聊天文本",
+              "频率": "重复间隔（刻），0=仅执行一次"
+            },
+            "source": "UIChatActionClip.java + UIActionClip.java:45 frequency"
+          }
+        },
+        {
+          "id": "ch25_s4_test_chat",
+          "order": 4,
+          "action": "emote_salute",
+          "dialogueMale": "点底部预览栏的播放按钮。播放头扫过剪辑那一刻，聊天栏会出现你写的文本。",
+          "dialogueFemale": "点底部中间的 **播放/暂停** 小按钮喵！播放头扫过聊天剪辑时，聊天栏就会冒出那句话哟～",
+          "instruction": "把播放头拖回 0 刻 → 点击 Film 面板底部预览工具栏的 **播放/暂停** 按钮开始播放 → 观察聊天栏。熟练后可用快捷键右 Ctrl（默认）；键位可按 F9 查看",
+          "userWillSee": "当播放头到达 0 刻时，聊天栏立即显示 `<回放名称> 你好，这是行为剪辑测试`",
+          "hint": "聊天消息的发送者显示为回放的名称"
+        },
+        {
+          "id": "ch25_s5_13_action_types",
+          "order": 5,
+          "action": "emote_pointing",
+          "dialogueMale": "行为编辑器支持 12 种动作剪辑。攻击、挥手、伤害、聊天、命令、方块操作、物品操作。",
+          "dialogueFemale": "一共有 **12 种**动作剪辑喵！每种都能让角色做不同的事情～",
+          "instruction": "再次点击 **+ 添加剪辑**，浏览所有可用的动作类型（不用添加）",
+          "userWillSee": "类型选择器显示 12 种动作剪辑：**攻击** / **挥手** / **伤害** / **聊天信息** / **命令** / **放置方块** / **方块破坏进度** / **与方块交互** / **与实体交互** / **使用物品** / **对方块使用物品** / **掉落物品**",
+          "hint": "每种剪辑对应一个真实的游戏动作；有些需要填写目标坐标（方块类）或实体 UUID（实体类）",
+          "uiElements": {
+            "allTypes": [
+              "攻击",
+              "挥手",
+              "伤害",
+              "聊天信息",
+              "命令",
+              "放置方块",
+              "方块破坏进度",
+              "与方块交互",
+              "与实体交互",
+              "使用物品",
+              "对方块使用物品",
+              "掉落物品"
+            ],
+            "source": "clips-verified.json actionClips + UIAttackActionClip / UISwipeActionClip / ... 共 12 个子类"
+          }
+        },
+        {
+          "id": "ch25_s6_attack_action",
+          "order": 6,
+          "action": "emote_tada",
+          "dialogueMale": "添加攻击剪辑，让回放在某一刻挥剑攻击。可以配合姿势做连招。",
+          "dialogueFemale": "试试 **攻击** 剪辑喵！把它放到回放挥剑姿势的那一刻，就能真的打出伤害～",
+          "instruction": "添加一个 **攻击** 剪辑，把它放到时间轴 20 刻位置 → 播放观察",
+          "userWillSee": "当播放头到达 20 刻时，回放执行一次攻击动作（如果附近有生物会受到伤害，如果前方有方块不会破坏方块 —— 攻击≠破坏）",
+          "hint": "攻击剪辑的配置只有 **频率** 字段；攻击目标由回放当前朝向和附近实体自动决定"
+        },
+        {
+          "id": "ch25_s7_two_timelines",
+          "order": 7,
+          "action": "emote_bow",
+          "dialogueMale": "回放编辑器管位置姿势，行为编辑器管游戏动作。两条时间线独立运行。",
+          "dialogueFemale": "记住喵：**回放编辑器** = 角色怎么动、怎么摆姿势；**行为编辑器** = 角色做什么游戏动作。两个独立的时间线，互不干扰～",
+          "instruction": "理解结构（无需操作）：回放有两条独立时间线：**回放编辑器**（位置/旋转/姿势/IK/物理/声音/变换）和 **行为编辑器**（游戏动作）；播放影片时两条时间线同步执行",
+          "userWillSee": "（总结步骤）",
+          "hint": "所以一个完整的角色表演 = 回放编辑器做动画 + 行为编辑器做交互"
+        }
+      ]
+    },
+    {
+      "id": "ch26_replay_management",
+      "order": 26,
+      "titleZh": "回放管理：多角色调度",
+      "labelDomains": [
+        "film_replays",
+        "film_core"
+      ],
+      "steps": [
+        {
+          "id": "ch26_s1_problem",
+          "order": 1,
+          "action": "emote_thinking",
+          "dialogueMale": "一个场景里有多个角色。每个角色是一个回放。需要工具管理它们。",
+          "dialogueFemale": "一场戏里有好几个角色喵～每个角色都是一个回放，怎么管理它们？",
+          "instruction": "理解需求（无需操作）：影片可以包含多个回放（每个回放 = 一个角色），需要工具来创建、删除、重命名、排序、显示/隐藏回放",
+          "userWillSee": "（认知铺垫步骤）",
+          "hint": "这就是回放管理面板存在的理由"
+        },
+        {
+          "id": "ch26_s2_open_replays_list",
+          "order": 2,
+          "action": "emote_pointing",
+          "dialogueMale": "按右 Shift 打开回放列表。",
+          "dialogueFemale": "按 **右 Shift**（默认）喵！会弹出一个左列表、右属性的回放面板哟～",
+          "instruction": "在 Film 面板内，按 **右 Shift**（默认，「打开回放」键）→ 弹出覆盖层面板；键位可按 F9 查看",
+          "userWillSee": "屏幕中央弹出覆盖层面板，标题 **回放**：左侧是回放列表，右侧是选中回放的属性面板；新建回放要在列表上点右键（见下一步）",
+          "hint": "这个面板可以快速切换编辑哪个回放，也可以右键新建或管理回放",
+          "uiElements": {
+            "key": "右 Shift",
+            "title": "回放",
+            "contextAdd": "添加回放（列表右键菜单）",
+            "source": "UIReplaysOverlayPanel.java + Keys.FILM_CONTROLLER_OPEN_REPLAYS"
+          }
+        },
+        {
+          "id": "ch26_s3_add_replay",
+          "order": 3,
+          "action": "emote_confused",
+          "dialogueMale": "右键列表，选添加回放。名字在右侧属性栏改。",
+          "dialogueFemale": "在列表上右键，点 **添加回放** 喵！新角色马上出现～想改名的话，用右侧属性栏的 **回放显示名称** 输入框哟～",
+          "instruction": "在回放列表上点击右键 → 选择 **添加回放** → 新回放出现在准星指向的位置附近 → 如需命名，在右侧属性面板的 **回放显示名称** 输入框里输入 `角色2`",
+          "userWillSee": "列表新增一行（默认名称，可改成 角色2），Film 面板切换到编辑新回放；新回放自带初始位置/朝向关键帧，位于创建时准星指向的地方",
+          "hint": "新建回放不是空白：它会立刻记下创建时的初始位置和朝向；想一步到位，也可以用右键菜单的 **从摄像机生成...**"
+        },
+        {
+          "id": "ch26_s4_switch_replay",
+          "order": 4,
+          "action": "emote_salute",
+          "dialogueMale": "再按右 Shift，点击列表里的其他回放名称，切换编辑目标。",
+          "dialogueFemale": "再按 **右 Shift** 打开列表喵，点之前的回放名字，就能切回去编辑它～",
+          "instruction": "按 **右 Shift**（默认）→ 在列表里点击第一个回放的名称；键位可按 F9 查看",
+          "userWillSee": "面板关闭，Film 面板的回放编辑器和行为编辑器切换到第一个回放的时间轴",
+          "hint": "快捷切换：「选取上一个回放」（PageUp，默认）和「选取下一个回放」（PageDown，默认）可以不打开列表直接切换"
+        },
+        {
+          "id": "ch26_s5_rename_delete",
+          "order": 5,
+          "action": "emote_pointing",
+          "dialogueMale": "在回放列表右键，可以复制、移除。重命名去右侧属性栏。",
+          "dialogueFemale": "在列表里右键某个回放喵，菜单里有 **复制回放** / **移除** 这些选项～改名要去右侧属性栏的 **回放显示名称** 里改哟～",
+          "instruction": "按 **右 Shift**（默认）打开列表 → 右键 **角色2** → 选择 **移除**（若弹出确认框则确认）→ 列表中该行消失",
+          "userWillSee": "**角色2** 从列表中消失；若删除的是正在编辑的回放，编辑器会切到列表中的其他回放",
+          "hint": "**复制回放** 会询问复制份数，适合批量做同一角色的多个分身；改名不走右键菜单",
+          "uiElements": {
+            "contextMenu": [
+              "拷贝回放",
+              "粘贴回放",
+              "复制回放",
+              "移除"
+            ],
+            "source": "UIReplaysOverlayPanel.java context menu"
+          }
+        },
+        {
+          "id": "ch26_s6_visibility",
+          "order": 6,
+          "action": "emote_tada",
+          "dialogueMale": "隐藏某个角色：在列表选中它，关掉右侧的启用开关。",
+          "dialogueFemale": "选中要藏起来的回放喵，然后把右侧属性面板里的 **启用** 开关关掉～再打开就回来了呐～",
+          "instruction": "按 **右 Shift**（默认）打开列表 → 点击选中要隐藏的回放 → 关闭右侧属性面板顶部的 **启用** 开关 → 按 Esc 关闭面板 → 点底部预览栏的 **播放/暂停** 按钮（或右 Ctrl，默认）观察",
+          "userWillSee": "被隐藏的回放在播放时不可见（但仍在运行，行为剪辑仍会触发）；重新打开面板可看到它的 **启用** 开关处于关闭状态",
+          "hint": "隐藏回放常用于：1. 多角色场景里聚焦某一个；2. 临时关闭干扰视线的角色"
+        },
+        {
+          "id": "ch26_s7_playback_context",
+          "order": 7,
+          "action": "emote_bow",
+          "dialogueMale": "一个影片可以有几十个回放。每个回放独立录制、独立编辑。",
+          "dialogueFemale": "现在你会管理多个角色了喵！每个角色都是独立的回放，可以分别录制、分别编辑、一起播放～",
+          "instruction": "理解结构（无需操作）：影片 = 一个或多个回放的容器；每个回放有自己的关键帧时间轴、行为剪辑时间轴、形态配置；播放影片时所有回放同步执行",
+          "userWillSee": "（总结步骤）",
+          "hint": "所以拍一场多人戏的流程是：创建 N 个回放 → 逐个切换编辑 → 一起播放预览"
+        }
+      ]
+    },
+    {
+      "id": "ch27_motion_path",
+      "order": 27,
+      "titleZh": "运动路径与洋葱皮",
+      "labelDomains": [
+        "film_replays",
+        "keyframes"
+      ],
+      "steps": [
+        {
+          "id": "ch27_s1_problem",
+          "order": 1,
+          "action": "emote_thinking",
+          "dialogueMale": "录制完回放后，很难看清角色的运动轨迹。需要可视化工具。",
+          "dialogueFemale": "录完一段走位，想看看角色到底走了什么路线？轨迹看不清喵～",
+          "instruction": "理解需求（无需操作）:回放的位置轨迹藏在关键帧数据里，播放时只能看到当前一帧，很难判断整体路径是否符合预期；需要可视化工具把轨迹显示出来",
+          "userWillSee": "（认知铺垫步骤）",
+          "hint": "这就是运动路径和洋葱皮存在的理由"
+        },
+        {
+          "id": "ch27_s2_enable_motion_path",
+          "order": 2,
+          "action": "emote_pointing",
+          "dialogueMale": "底部预览栏有个曲线图标。点开，启用运动路径。",
+          "dialogueFemale": "Film 面板底部中央有一排小按钮喵，点那个曲线样子的 **运动路径** 图标～弹出的小面板里，先点左上角的启用小按钮呐～",
+          "instruction": "在 Film 面板底部中央的预览工具栏，点击 **运动路径** 图标（曲线样式，悬停提示同名）→ 在弹出的小面板里点击左上角的启用按钮（眼睛样式）",
+          "userWillSee": "启用后游戏世界里出现一条**彩色曲线**，连接回放在所有关键帧时刻的位置；曲线颜色从蓝到红渐变（时间从早到晚）；每个关键帧位置有一个小圆点标记；小面板里还有 线条/帧点/关键帧/当前帧 等显示选项可稍后探索",
+          "hint": "也可直接按 M 键（默认）开关运动路径；曲线实时渲染，会跟随关键帧更新自动刷新；键位可按 F9 查看",
+          "uiElements": {
+            "button": "运动路径图标（底部预览工具栏）",
+            "icon": "CURVES",
+            "visualization": "彩色渐变曲线 + 关键帧点",
+            "source": "UIFilmPreview.java motionPath + UIMotionPathContextMenu.java"
+          }
+        },
+        {
+          "id": "ch27_s3_edit_on_path",
+          "order": 3,
+          "action": "emote_confused",
+          "dialogueMale": "曲线上每个点都是关键帧。改数值，曲线跟着变。",
+          "dialogueFemale": "曲线上的小圆点就是位置关键帧喵！去关键帧视图里改它们的数值，3D 曲线立马跟着变形哟～",
+          "instruction": "保持运动路径开启 → 在回放编辑器的关键帧视图中选中 X/Y/Z 轨道上的某个关键帧 → 修改其数值（方法见前面关键帧章节）→ 观察世界中的曲线实时变化",
+          "userWillSee": "数值一改，运动路径曲线立即重新计算，该关键帧处的走向随之变化",
+          "hint": "一边看 3D 曲线一边调关键帧数值，轨迹对不对一眼便知"
+        },
+        {
+          "id": "ch27_s4_onion_skin_concept",
+          "order": 4,
+          "action": "emote_salute",
+          "dialogueMale": "洋葱皮显示角色在多个时刻的半透明残影，方便观察动作流畅度。",
+          "dialogueFemale": "还有个更酷的功能叫 **洋葱皮** 喵！它会在时间线上前后几帧的位置显示角色的半透明影子～",
+          "instruction": "理解概念（无需操作）：洋葱皮（Onion Skinning）是动画行业通用术语，指在当前帧同时显示前后若干帧的半透明图像，像一层层洋葱皮叠在一起，方便判断动作的连贯性和速度变化",
+          "userWillSee": "（认知铺垫步骤）",
+          "hint": "FSR 的洋葱皮会显示回放在前后 N 刻的形态和姿势"
+        },
+        {
+          "id": "ch27_s5_enable_onion_skin",
+          "order": 5,
+          "action": "emote_pointing",
+          "dialogueMale": "同一个地方，洋葱皮图标。启用后拖动播放头看残影。",
+          "dialogueFemale": "旁边那个 **洋葱皮** 图标喵！点开小面板，同样先启用呐～然后拖动播放头，前后就有半透明残影啦～",
+          "instruction": "在同一排点击 **洋葱皮** 图标（悬停提示同名）→ 在弹出的小面板里点击启用按钮 → 把 **前几帧及颜色** / **后几帧及颜色** 各调到 3 → 拖动时间线播放头左右移动",
+          "userWillSee": "游戏世界里出现多个半透明的角色残影，分布在当前播放头前后的位置（默认前后各 1 帧，最多可各调到 10）；残影越远离当前帧颜色区分越明显；拖动播放头时残影实时更新",
+          "hint": "也可直接按 O 键（默认）开关洋葱皮；帧数与颜色都在小面板里调整；键位可按 F9 查看",
+          "uiElements": {
+            "button": "洋葱皮图标（底部预览工具栏）",
+            "icon": "ONION_SKIN",
+            "visualization": "半透明残影 × N 帧",
+            "defaultRange": "前后各 1 帧（上限各 10）",
+            "source": "UIFilmPreview.java onionSkin + UIOnionSkinContextMenu.java"
+          }
+        },
+        {
+          "id": "ch27_s6_practical_use",
+          "order": 6,
+          "action": "emote_tada",
+          "dialogueMale": "运动路径看轨迹，洋葱皮看姿势连贯。两者结合，动画调整效率翻倍。",
+          "dialogueFemale": "记住喵：**运动路径** 看角色走了什么路线，**洋葱皮** 看姿势变化流不流畅！两个一起用超方便～",
+          "instruction": "同时开启运动路径和洋葱皮 → 拖动播放头到某个姿势变化较大的时刻 → 观察",
+          "userWillSee": "既能看到彩色轨迹曲线（整体路径），又能看到前后帧的姿势残影（动作连贯性）；如果某段轨迹太陡或残影间距不均，说明该处速度变化有问题",
+          "hint": "实战技巧：运动路径用于粗调走位，洋葱皮用于精修姿势过渡"
+        },
+        {
+          "id": "ch27_s7_close_tools",
+          "order": 7,
+          "action": "emote_bow",
+          "dialogueMale": "用完记得关：再点图标，把里面的启用关掉。",
+          "dialogueFemale": "用完记得关掉喵～再点图标打开小面板，把里面的启用关掉就好呐！这些线和影子只是编辑时看的，导出视频里不会有～",
+          "instruction": "分别再次点击 **运动路径** 和 **洋葱皮** 图标 → 在弹出的小面板里关闭各自的启用按钮",
+          "userWillSee": "彩色曲线和半透明残影消失，回到正常游戏画面",
+          "hint": "这些可视化只存在于编辑模式，播放影片（右 Ctrl，默认）和导出视频时不会显示"
+        }
+      ]
+    }
+  ]
+}

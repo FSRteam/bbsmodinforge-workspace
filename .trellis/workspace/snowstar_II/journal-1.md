@@ -18,7 +18,11 @@ Fixed particle parser hardening, Bezier chain and curve editor interactions, tex
 
 ### Main Changes
 
-(Add details)
+- Reproduced a transient Film Surface `drawImage()` failure in the browser
+  renderer and proved that the previous code aborted the frame.
+- Isolated dynamic Surface draw failures, guaranteed Canvas `restore()` in a
+  `finally` block, and added failure-then-recovery coverage.
+- Recorded the Canvas media command isolation rule in the frontend quality spec.
 
 ### Git Commits
 
@@ -1103,3 +1107,499 @@ bbs-web-remote 浏览器端从 5852 行单体 `app.js` 拆为 7 模块（protoco
 ### Next Steps
 
 - None - task complete
+
+
+## Session 28: 移植 BBS Together 1.6.14 到 BBSFSR
+
+**Date**: 2026-08-05
+**Task**: 移植 BBS Together 1.6.14 到 BBSFSR
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+完成独立 NeoForge 1.21.1 插件工程、BBSFSR Addon API 2.0 协作与安全资产同步，修复预登录握手发送问题；测试、构建、JAR 审计和客户端启动验证通过。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `df362dd` | (see git log) |
+| `4013527` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 29: FSR plugin Dashboard panel API
+
+**Date**: 2026-08-05
+**Task**: FSR plugin Dashboard panel API
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+Added Addon API 2.0 and hot-plugin Dashboard panel registration, lifecycle-safe dynamic projection, diagnostics, generation-safe reload cleanup, tests, docs, fixtures, and completed visual v1/v2/unload client smoke.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `75e51f0a` | (see git log) |
+| `2a160f9` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 30: 修复 WebRemote 影片入口网页卡死
+
+**Date**: 2026-08-10
+**Task**: 修复 WebRemote 影片入口网页卡死
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+确认影片 Surface 短暂不可绘制会中断 Canvas 帧；在浏览器渲染器中隔离动态 Surface drawImage 失败并保证 restore，新增恢复回归，verifyWeb 18 项通过。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5612d3c` | docs: require canvas surface error isolation |
+
+### Testing
+
+- [OK] `bbs-web-remote\\gradlew.bat verifyWeb --no-daemon --console=plain`
+  (18 tasks, including render fidelity, session lifecycle, WebRTC, input, and
+  syntax checks)
+- [OK] `node src/webTest/render-fidelity.test.js`
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Repeat the Film-entry flow against a real Minecraft client and browser to
+  confirm the runtime symptom is gone; the broader WebRemote task remains open.
+
+
+## Session 31: 完成 FS 770c0e7c 到 FSR 迁移
+
+**Date**: 2026-08-16
+**Task**: 完成 FS 770c0e7c 到 FSR 迁移
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+完成 16 个上游提交的逐项处置；迁移渲染深度写、VIEW Gizmo、滑条、主题、九槽电影与图标；聚焦测试、check、build/jarJar 验证通过，人工游戏内烟测保留为发布前检查。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `89dc7d6c` | (see git log) |
+| `fe01d69f` | (see git log) |
+| `874d67e5` | (see git log) |
+| `8e490d02` | (see git log) |
+| `4a81674c` | (see git log) |
+| `19d4d030` | (see git log) |
+| `4d73e9f` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+## Session 32: webremote UI 全量修复 + 手机端体验优化
+
+**Date**: 2026-08-16
+**Task**: 08-12-wr-ui-overhaul + 08-16-wr-mobile-experience（父任务 08-12-wr-frontend-overhaul）
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+完成 webremote UI 全量修复（样式令牌化、glass-panel、HUD 插槽、i18n 抽离、浅色主题）与手机端体验升级（右侧操作中枢+二级目录、WASD 摇杆、飞行、虚拟鼠标模式、鼠标 60Hz 流畅度）。三个子代理并行：input.js 交互、i18n 目录抽离、Trellis 文档。
+
+### Main Changes
+
+- styles.css 全量重写：:root 令牌族（玻璃分档/语义透明度/z 梯度/hud 几何）+ html[data-theme=light] 浅色覆盖组 + .glass-panel 复合类 + .hud-layer 插槽（消灭 top:62px 类手工避让）+ 手机中枢/二级面板/摇杆/动作键样式；CSS id 选择器清零（类迁移，id 保留给 JS）
+- index.html：连接卡与参与者面板入 HUD 插槽；新增 #mobileHub 右侧五键中枢（更多/控制/键盘/鼠标/游戏）、#mousePanel（L/R/M+虚拟鼠标切换+修饰键）、#moreMenu（打开BBS/交出操作权/参与者/诊断/主题）、#gamepadLayer（#virtualJoystick 摇杆 + 跑/飞/跳/蹲）、#virtualCursor、#themeToggle；旧底部 mobile-controls 横条移除
+- input.js（653→1131 行）：INPUT_STATE 30Hz→60Hz + scheduleStateFlush rAF 合帧；pointerMode direct|trackpad（相对移动×1.7、轻点/双击四连/长按拖拽、双指手势保留）；WASD 摇杆（deadzone 0.22、斜向、差集按键）；data-game-key 长按键；#gameFlyButton 双击空格切换飞行
+- i18n.js 新模块（protocol→i18n→error 加载序）：ns.I18n t/hydrate/setLocale/addCatalog，zh-CN 304 条目录；app.js 193 处 / media.js 20 处 / control.js 4 处 / ui.js 2 处 t() 化；index.html 123 处 data-i18n/-attr 水合；9 处发布链同步（index.html/webRuntimeScripts/FIXED_RESOURCE_PATHS/smoke×2/12 个 webTest require/WebTest 导出）
+- app.js：applyTheme/toggleTheme（localStorage bbs-web-remote.theme）、applyPointerModePreference/togglePointerMode（bbs-web-remote.pointer-mode）、setMobilePanel/setGamepadActive 互斥管理、updateControlUi 镜像 #mobileControlButton、updateLeaseUi 镜像交出操作权
+- 验证：verifyWeb 12/12 全绿（新增 i18n.test.js）；testServerSmoke 全绿；浏览器冒烟（静态服务器+IAB）确认 App 构造、i18n 水合、主题切换（meta/theme-color/color-scheme 同步）、手机视口中枢/二级面板/游戏层/虚拟光标显隐全部工作
+- spec 增补：web-browser-client-architecture.md 第 5 节（令牌/插槽/i18n/主题/移动交互约定）
+
+### Testing
+
+- [OK] gradlew.bat verifyWeb（12 个 Node 测试全绿）
+- [OK] gradlew.bat testServerSmoke（含 /i18n.js 资源与缓存断言）
+- [OK] 浏览器冒烟：App 构造无错、浅色/深色即时切换、手机中枢交互互斥正确
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 父任务 08-12-wr-frontend-overhaul 剩余三个子任务（code-hygiene / media-split / app-slim）按原计划激活前补 design/implement
+- 真机手机端联调（触控板灵敏度、摇杆手感、飞行双击时机 90ms 参数可调）
+
+## Session 33: webremote 前端重构总纲收尾（code-hygiene / media-split / app-slim）
+
+**Date**: 2026-08-16
+**Task**: 08-12-wr-frontend-overhaul 全部子任务（补完 code-hygiene、media-split、app-slim）
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+总纲五个子任务全部完成归档（ui-overhaul、mobile-experience、code-hygiene、media-split、app-slim），父任务归档。media.js 2243→631 行门面 + render/cache/transport 三模块；app.js 2971→2718 行（demo 抽离 + 诊断表驱动 + 消息查表）。
+
+### Main Changes
+
+- code-hygiene：删 media.js 死常量（QUALITY_STORAGE_KEY/CUSTOM_QUALITY_STORAGE_KEY/QUALITY_LABELS）；删 app.js disposeDecodedImage 死解构；clamp canonical 归位 ns.Style（ns.Media.clamp 兼容转发；ui/input.js 改依赖 style）；spec §1 依赖链与加载序更新 + 08-01 过时结论修正
+- media-split（agent 行切片逐字节搬移）：render.js 868 行（CanvasRenderer+解码工具，ns.Render）、cache.js 395 行（ResourceCache+SurfaceCache+decodeImageBytes/readBoundedResponse 私有，ns.Cache）、transport.js 409 行（RTC 常量+RtcSurfaceCache+HybridMediaTransport，ns.Transport）、media.js 631 行留守指标/自适应/画质 + ns.Media 20 键门面（键集合与顺序 diff 为零）；HybridMediaTransport.state 内部枚举化（jpeg/webrtc/negotiating/jpeg-fallback）+ i18n 映射；9 处发布同步 ×3 新文件
+- app-slim：新增 app-behavior.test.js（setTransportOverlay 五态+6s/12s 看门狗、note 去重合并、requestRoleUpgrade 流程 + 表结构断言）注册 testWebAppBehavior；DemoFixture+demo wire 编码器（264 行）抽入 demo.js（ns.Demo，9 处同步）；updateDiagnostics 改 DIAGNOSTIC_ROWS 47 行纯数据表驱动（DOM-free，WebTest 导出）；handleJsonMessage 改 JSON_MESSAGE_HANDLERS 19 键查表（ROLE/CONTROL 共享 handler，App 方法保留薄委托）
+- 验证：verifyWeb 13/13 全绿；testServerSmoke 全绿（含 render/cache/transport/demo 四个新资源断言）；浏览器冒烟（?demo=1 离线演示经 demo.js 重放正常）——中途一次 "clamp is not a function" 假警报为浏览器启发式缓存旧 style.js 所致，换端口复验排除
+
+### Testing
+
+- [OK] gradlew.bat verifyWeb（13 个 Node 测试全绿，新增 app-behavior）
+- [OK] gradlew.bat testServerSmoke
+- [OK] 浏览器冒烟：demo 模式 UI 帧重放、连接表单可用
+
+### Status
+
+[OK] **Completed**（父任务 5/5 子任务全部归档）
+
+### Next Steps
+
+- None - 父任务完成；git 提交由用户确认后执行
+
+## Session 34: 手机手势修正 + 版面简约重排（单 FAB 菜单 / 扁平皮肤）
+
+**Date**: 2026-08-16
+**Task**: 08-16-mobile-gesture-relayout
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+修复虚拟鼠标"移动即连点"bug（累计位移误判长按拖拽），按 CRD/MS RDP 共识重写 trackpad 手势（单击=左键、双指=右键、三指=中键、按住静止再拖=按住拖拽）；版面按用户"简约不过度设计"要求重排：手机端收敛为右缘单个 ☰ 按钮 + 单个扁平菜单，玻璃拟态全部换成扁平实色皮肤。
+
+### Main Changes
+
+- input.js trackpad 重写：触摸记录带 startX/startY/downAt（trackTouch()），位移改"相对落点"；trackpadHoldTimer(320ms)+trackpadHoldExpire() 静止按压、移动超 12px 取消计时（移动永不按压）；maybeTrackpadMultiTap 双指右键/三指中键（gestureActed/gestureMagnitude 判定手势已作用则不判点，GESTURE_DRAIN 态允许最后一指判定）；#virtualCursor data-pressed 按压反馈；setPointerMode/releaseAll/cancel 全量清理
+- index.html 重排：删 5 按钮 mobileHub + mousePanel 飞出面板，合并为 .menu-fab（#mobileMoreButton 右缘垂直居中）+ 唯一 .mobile-menu（#moreMenu：请求控制强调首项/键盘/虚拟鼠标/游戏模式/L·R·M+修饰键/更多组）；参与者面板默认 hidden
+- styles.css 全量重写（~1700→~1000 行）：扁平令牌（--bg/--panel/--panel-2/--line*/--accent*/--ok/--warn/--danger、单一 --shadow），无 backdrop-filter/渐变/--glass-* 分档；浅色主题同构；菜单/游戏层/摇杆重绘
+- app.js：mobilePanelIds()=["moreMenu"]、菜单项动作后自动收起、updateControlUi 菜单按钮用全文案（删 control.short* 镜像）、updateLeaseUi 不再自动展开参与者面板
+- i18n：touchBody/trackpadTitle/trackpadNote/demo.hintDefault 手势新文案；moreTitle→"菜单"；删死键 brandTagline/eyebrow/mobileHubAria/mobileMouseTitle/mousePanelAria/control.short*
+- 测试：mobile-input.test.js 新增 6 组 trackpad 断言（移动不按压回归、单击/双击、按住拖拽、双指右键、三指中键、滚动后不判点）
+- spec §5 重写为"扁平极简皮肤 + 移动收纳 + trackpad 手势契约"（禁玻璃/禁累计位移判定入规约）
+
+### Testing
+
+- [OK] gradlew.bat verifyWeb（13 个 Node 测试全绿，mobile-input 扩充）
+- [OK] gradlew.bat testServerSmoke
+- [OK] 静态一致性校验：HTML 129 个 id / 299 个 i18n 键与 JS 引用全对齐（临时脚本，已删）
+- [BLOCKED] 浏览器 IAB webview 本环境无法挂载（重试 5 次 "browser guest not attached"），移动端截图验证未执行
+
+### Status
+
+[OK] **Completed**（任务已归档）
+
+### Next Steps
+
+- 真机验收手势手感：TRACKPAD_SENSITIVITY=1.7、TRACKPAD_HOLD_MS=320、TRACKPAD_DOUBLE_TAP_MS=300 均为可调常量
+- git 提交待用户确认（bbs-web-remote 前端 + .trellis 变更）
+
+
+## Session 35: 同步剩余工作区改动
+
+**Date**: 2026-08-17
+**Task**: 同步剩余工作区改动
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+核对并提交剩余规范、任务资料、归档记录、教程数据与 Web Remote Cloudflare 启动脚本；排除本机工作树和临时生成草稿。
+
+### Main Changes
+
+- 提交规范、任务资料、归档记录、教程结构数据与 Cloudflare 启动脚本。
+- 排除本机工作树、教程生成草稿与重复的 TBD 归档目录。
+- 补齐 workspace 索引中 Session 32-34 的历史记录。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `07a0e65` | (see git log) |
+
+### Testing
+
+- [OK] JSON / JSONL 共 636 条记录解析通过
+- [OK] PowerShell 启动脚本语法解析通过
+- [OK] Git 暂存差异格式检查通过
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 36: BBS-PoseCurve 1.21.1 BBSFSR 迁移
+
+**Date**: 2026-08-18
+**Task**: BBS-PoseCurve 1.21.1 BBSFSR 迁移
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+完成独立 NeoForge 1.21.1 BBS-PoseCurve 插件迁移；通过 clean testPoseCurveLogic build、严格 runClient Mixin 目标校验、Jar 内容审计和工作区验证。插件源码位于 BBS-PoseCurve-fsr-1.21.1，保留手动 Film 编辑器交互冒烟测试作为残余风险。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a5d028f` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 37: 完成 FSR 教程引导覆盖层 API
+
+**Date**: 2026-08-21
+**Task**: 完成 FSR 教程引导覆盖层 API
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+新增 Dashboard 稳定面板导航、实时控件锚点解析和 addon 根层覆盖层槽位；补齐失败隔离、输入穿透、结构及二进制兼容测试，并通过 Gradle 9.7.0 完整构建。游戏内人工冒烟未执行，已记录在归档任务中。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `629bdc7c` | (see git log) |
+| `fdd3224` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 38: fs 2.5 上游增量同步到 FSR 完成
+
+**Date**: 2026-08-23
+**Task**: fs 2.5 上游增量同步到 FSR 完成
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+独立 worktree new-fs25-sync（分支 codex/sync-fs-8d99d77f-to-fsr，基点 497c4284）完成 fs 770c0e7c6..8d99d77fe 共 38 提交的增量同步：B 组 8 修复全部落地（034257e7/771d9bb5/e69ebb77），C1 六项落地（26bb5012 + 名牌基线已有），追加箱盖 b352c985c（cafbcdc1）、blend 逐命令重置 70274c5cb（8bae57a9，复核纠正）、旧 IK 链 classic 迁移 72744b984（dd0e0d97）、ru_ru typo 7d35fd494（72d6d208）；0d11b2327 物品谓词全家及 C2 UX 项推迟（disposition.md 逐项记录）。全量 build 真实 exit 0；mod_version 保持 0.0.11。终 commit 72d6d208。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `72d6d208` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 39: 移植 BFX Light 到最新 FSR
+
+**Date**: 2026-08-27
+**Task**: 移植 BFX Light 到最新 FSR
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+将 VFXLIGHTS master 快照保留在 bfx-light/TEMP/VFXLIGHTS，并迁移可验证的灯光表单、关键帧值、逐帧光源 API 和 BBSFSR NeoForge 客户端注册层；依赖 new-fs25-sync 最新 FSR JAR 快照，按 Fabric 官方映射迁移原则人工复核；bfx-light clean build 与 check 通过。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `054b475` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+## 2026-08-29 影片首页远程内容(08-29-film-home-remote-content)
+
+- CF Worker `bbs-film-home` 部署完成(KV `bbs_film_home`,种子=jar 默认广告/新闻);`worker.test.mjs` 19/19。workers.dev 被 DNS 污染且按需求不保留:`PUT /accounts/{id}/workers/domains` 直接挂载 `fsrapi.twiap.studio`(自动建 DNS+证书,实测 200),workers.dev 路由已停用,唯一公开入口 `https://fsrapi.twiap.studio`。
+- `film-home-publisher/`:零依赖 Node 推送台(4:3 校验+居中裁切、Markdown 编辑/预览、草稿、线上回填)+ deploy/mock 脚本;推送链路经本地 mock(复用真实 worker.js)浏览器 GUI 验收。
+- 客户端(worktree fsr-film-home,`79b33a0fc`):远程 URL 链 + 磁盘缓存回退 + Source 状态;拉取中空数据显示 spinner;MarkdownBody 滚轮/滚动条/溢出拖动翻页;新闻与广告详情弹窗窗口自适应。`compileClientJava` + `testThemeCore` 通过。
+- 契约沉淀:`.trellis/spec/frontend/film-home-remote-content.md`。
+
+## 2026-08-30 FSR 版本推送(08-30-fsr-version-update-push)
+
+- 全链路交付:Worker `content:releases`(PUT 校验 ≤20 条/semver/https/sha256,GET /api/version 裸列表)+ WebUI「版本发布」页(发布/撤回含原因/恢复/编辑/删除,jar 文件 crypto.subtle 算 sha256)+ 客户端 `mchorse.bbs_mod.update` 包(FSRUpdates 检查器/UIUpdateOverlayPanel/UpdateInstaller 自动安装)。
+- 客户端决策顺序:撤回警告 > 本地更新静默 > 跳过版本静默(跳过=下一版本再提醒)> 弹窗;缓存兜底数据不自动弹窗。自动安装仅 production+https+带 sha256,哈希不符即删除不装;换 jar = 运行中 jar 改名 `.pre-update` + 下载就位 + 重启提示,启动时清扫备份。设置分类 `fsr_updates`(开关/频道/频率/手动检查+状态行,UIValueMap 身份注册)。
+- 测试:worker.test 35/35;FSRUpdatesSourceTest(版本比较数学 + 决策顺序源级断言)进 filmEditorTest runner;浏览器 GUI 验收发布/撤回/恢复全过;真链路冒烟通过。
+- **事故**:部署时 deploy.mjs seed 探测经 `api()`(解 `payload.result`)读 KV values 裸值端点得 undefined → 误判 key 缺失 → 覆盖线上 ads/news 为空。已从客户端缓存恢复(3+3 条),seed 改裸 fetch 探测(200 跳过/404 才种/其他中止)。教训已沉淀进 spec(deploy seed guard 节)。
+
+## 2026-08-29 影片首页响应式分档(08-29-film-home-responsive-layout)
+
+- 客户端(worktree fsr-film-home,`9cac746a9`):宽度档 T0–T3(1000/700/480 GUI px)+ 高度档(700/480),每档 ±8px 迟滞带(严格 `<`,不切换带 [T-8,T+7]);独立 JVM 状态机模拟 24 项全过。切档零状态重置(轮播页码/选中/过滤保留),T3 强制列表并在退出时恢复 userGridMode。
+- T2/T3 广告板折叠成工具栏入口(UIAdBoard 直接嵌入 UIOverlayPanel);H<480 新闻条同样折叠。紧凑新闻单行卡(无缩略图,tag/标题/日期)。banner 改高度优先 contain,两侧纹理边缘列拉伸 + deepSurface 渐变,logo 任意窗宽完整可见。
+- 关键机制:relayout() 改 flex 后必须手动对子元素调 resize()(flex 只在 resize 级联生效)——此前内容到达时的重定位其实不生效,本次顺带修正。`compileClientJava` + themeCore/uiInputMailbox/uiMirrorDemand/filmEditor 全过;契约沉淀进 `.trellis/spec/frontend/film-home-remote-content.md`(响应式分档节)。
+- 用户实测反馈两轮修正(`c17c9b8ff`、`38e15bef6`):①选中影片后操作按钮不点亮——网格/列表消费点击导致面板收不到,覆写 `childrenMouseClicked/childrenKeyPressed` 后刷新;②卡片大小滑杆只跟视图(列表隐藏)、排序/滑杆任何档位常显,T2 只藏面包屑+缩搜索框;③按用户决定删掉窄栏的广告/新闻入口按钮,T2/T3 广告板和矮窗新闻条直接隐藏(早先的 overlay 入口设计回滚)。
+
+
+## Session 40: VFX Light FSR visual and editor completion
+
+**Date**: 2026-08-29
+**Task**: VFX Light FSR visual and editor completion
+**Branch**: `codex/bootstrap-trellis-workspace`
+
+### Summary
+
+Compared TEMP/VFXLIGHTS with latest new-fs25-sync API, completed depth-aware fallback lighting, editor guides and grouped controls, added Ambient Air/Style panels and model-block stale-submission kill window, then passed clean build and JAR audit.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+(No commits - planning session)
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+## Session 41: Model block render-last option (Blockbuster port)
+
+**Date**: 2026-08-29
+**Task**: 08-29-model-block-render-last
+**Branch**: `codex/new-local-backup-20260727` (new/)
+
+### Summary
+
+Ported Blockbuster's model-block "Render last" option to BBS FSR as a redesigned frame-local queue: render-last blocks skip the vanilla BE pass, capture the dispatcher's pose stack, and replay far-to-near at NeoForge's AFTER_BLOCK_ENTITIES stage (the semantic equivalent of Blockbuster's ASM renderLastEntities hook, before the translucent terrain boundary).
+
+### Main Changes
+
+- `ModelProperties`: `renderLast` field + `render_last` persistence key (round-trips through the existing model-block form packet; old saves decode to false).
+- `ModelBlockRenderLastQueue` (new): begin at AFTER_ENTITIES (before the BE pass), defer in `ModelBlockEntityRenderer.render`, flush far-to-near at AFTER_BLOCK_ENTITIES, `release()` safety net at AFTER_LEVEL.
+- `ModelBlockEntityRenderer`: deferral branch + static `renderDeferred` replay through the captured pose; shadow stays on the immediate pass (order-independent vanilla buffer).
+- UI: `Render last` toggle in `UIModelBlockPanel` + `bbs.ui.model_blocks.render_last` en_us string.
+- **Bugfix after user test (morph disappeared)**: first cut replayed through the AFTER_BLOCK_ENTITIES event PoseStack, which is camera-relative WITHOUT the per-block translate the vanilla BE loop applies — every model drew at the camera origin. Fix: capture the dispatcher's current PoseStack at enqueue time so the replay uses the exact transform of the immediate path.
+
+### Testing
+
+- [OK] `compileJava compileClientJava`
+- [OK] full `gradlew build` (BUILD SUCCESSFUL 5m44s; jar `BBS_FSR_beta_v0.0.11.jar`) — needed `--project-cache-dir .gradle/codex-sound-jar-build` after the default neoForm cache got corrupted by interrupted runs.
+- [PENDING] user in-game retest of the pose-capture fix.
+
+### Status
+
+**In progress** — awaiting user visual retest.

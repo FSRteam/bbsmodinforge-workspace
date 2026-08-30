@@ -18,6 +18,74 @@ Questions to answer:
 
 (To be filled by the team)
 
+## Scenario: FS 2.5.1 translucent queue and missing-texture migration
+
+### 1. Scope / Trigger
+
+Apply when porting FS 2.5.1 rendering/settings behavior into the NeoForge FSR worktree.
+
+### 2. Signatures
+
+- `FormTranslucentQueue.begin()` reads `BBSSettings.translucencyQueue`.
+- `FormTranslucentQueue.quadPlaneNormal(Matrix4f, Matrix4f)` returns the camera-space quad normal.
+- `TextureManager` keeps missing links in a private `Set<Link> failed`.
+- `Recorder.update()` calls `landMark()` before the countdown early return.
+
+### 3. Contracts
+
+- A disabled translucency queue leaves `isActive()` false so forms use the immediate single-pass path;
+  existing saved settings remain authoritative.
+- Flat billboard/framebuffer commands pass their plane normal into the queue and sort by squared
+  distance to the plane; model/entity commands keep origin-distance sorting.
+- Fabulous rendering rebinds `Minecraft.getInstance().getMainRenderTarget()` before replaying queued
+  forms so the final Fabulous blit cannot overwrite them.
+- The shared error texture is never inserted into `textures`; a failed link is retried only after
+  `delete`, `createTexture`, or watchdog invalidation clears its failure marker.
+- A recording mark is released as soon as the teleported player reaches it, including during countdown;
+  timeout remains a separate fallback.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Queue setting is false | No deferred commands are retained; draw immediately. |
+| Large flat form is orbiting the camera | Sort remains stable until the camera crosses the form plane. |
+| Fabulous graphics is enabled | Main render target is bound before queue replay. |
+| Missing texture is requested repeatedly | Return the shared error texture without re-reading every frame. |
+| Missing file appears later | Watchdog clears the failure marker and the next request may load it. |
+| Teleport lands while countdown is active | Clear the mark immediately; do not shift server action clips. |
+
+### 5. Good / Base / Bad Cases
+
+- Good: a missing PBR companion texture returns the shared placeholder, and deleting/reloading its link
+  does not delete that placeholder for unrelated forms.
+- Good: a billboard and a model at the same origin retain stable painter ordering while the camera orbits.
+- Base: queue enabled, Iris layout captured, and normal FSR shader/lightmap/overlay state restored.
+- Bad: storing `getError()` in `textures`, or using the quad centre as the only sort key for a large plane.
+
+### 6. Tests Required
+
+- `compileClientJava` and `build` on the independent `new-fs25-sync` worktree.
+- `testUiInputMailbox` and `testFilmEditorMigration` real execution tasks.
+- Static source assertions for queue setting, plane-normal propagation, failed-link cleanup, and
+  countdown mark release.
+- Manual Fabulous/Iris smoke test when the client environment is available.
+
+### 7. Wrong vs Correct
+
+Wrong:
+
+```java
+this.textures.put(link, this.getError());
+```
+
+Correct:
+
+```java
+this.failed.add(link);
+return this.getError();
+```
+
 ---
 
 ## Forbidden Patterns
@@ -159,6 +227,91 @@ if (BBSRendering.isRenderingWorld()
     && !context.modelRenderer)
 {
     FormTranslucentQueue.ensureStarted();
+}
+```
+
+## Scenario: Deferred translucent command state ownership
+
+### 1. Scope / Trigger
+
+Apply when a form captures a Minecraft `RenderType`, `VertexBuffer`, or grouped
+label/item/block layer for replay through `FormTranslucentQueue`, especially when
+Iris or Sodium is present.
+
+### 2. Signatures
+
+- `FormTranslucentQueue.resetBlend()` establishes standard source-alpha blending.
+- `CustomVertexConsumerProvider.drawLayer(...)` captures
+  `BBSRendering.captureIrisVertexLayout()` while the layer still owns its buffer.
+- `RenderLayerCommand(..., Runnable prepare, boolean extendedLayout)` carries that
+  layout to the deferred draw.
+- `BBSRendering.applyIrisVertexLayout(boolean)` returns the previous value;
+  `restoreIrisVertexLayout(boolean)` restores it in `finally`.
+
+### 3. Contracts
+
+- Blend state is command-local. `RenderType.clearRenderState()` may disable blending,
+  so every top-level command and every child of a `GroupCommand` must call
+  `resetBlend()` before drawing.
+- A deferred vanilla mesh is drawn with the Iris extended-layout flag captured at
+  upload time. Never infer the layout later from whichever buffer Iris is currently
+  flushing.
+- FSR-built plain `DefaultVertexFormat` buffers pass `extendedLayout=false`.
+- Form tint and Color Pose alpha use `RecolorVertexConsumer`. Sodium bulk writes
+  bypass `setColor()` and must not replace this path.
+- Depth-write and cull ownership remain per command; blend/layout restoration does
+  not weaken the existing far-to-near queue and self-occlusion contract.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Previous deferred `RenderType` disabled blending | Reset standard alpha blending before the next command. |
+| Grouped label child clears its state | Reset blending before the next child while preserving child order. |
+| Iris layout at replay differs from capture | Temporarily apply the captured layout and restore the caller layout in `finally`. |
+| Mesh was built directly by BBS | Mark it as plain layout (`false`). |
+| Sodium is loaded | Keep tint/alpha on `RecolorVertexConsumer`; do not use the bulk writer substitute. |
+
+### 5. Good / Base / Bad Cases
+
+- Good: a semi-transparent Color Pose model follows a deferred item or text layer
+  and remains tinted and translucent.
+- Good: a vanilla-format item mesh captured under Iris replays with its captured
+  stride, then restores Iris' current flag.
+- Base: without Iris, layout helpers are no-ops while per-command blend reset still
+  applies.
+- Bad: enable blending once at the start of `flush()` and assume later
+  `RenderType.clearRenderState()` leaves it enabled.
+- Bad: read `ImmediateState.renderWithExtendedVertexFormat` only at replay time.
+- Bad: route form alpha through Sodium's bulk writer, which bypasses `setColor()`.
+
+### 6. Tests Required
+
+- `testFilmEditorMigration` asserts at least one top-level and one grouped
+  `resetBlend()` call, captured layout propagation, apply/restore in `finally`, and
+  the absence of the Sodium bulk tint branch.
+- `compileClientJava` verifies Iris and Minecraft signatures.
+- `runClient` with Sodium and Iris installed must complete resource reload without
+  `MixinApplyError`, `InvalidInjectionException`, or a new crash report.
+- Manual visual matrix: Color Pose alpha at `1`, `0.5`, and near zero; consecutive
+  model/item/label/particle layers; Iris off and an active Iris shader pack.
+
+### 7. Wrong vs Correct
+
+Wrong:
+
+```java
+RenderSystem.enableBlend();
+for (DrawCommand command : pending) command.draw();
+```
+
+Correct:
+
+```java
+for (DrawCommand command : pending)
+{
+    resetBlend();
+    command.draw();
 }
 ```
 
@@ -476,8 +629,9 @@ stubs, held-item forms, nested body parts, and list/UI previews.
 - `FormRenderingContext.world`: semantic simulation `PoseStack`; it never
   contains camera/view transforms.
 - `FormRenderingContext.simulationOwner`: stable identity that owns mutable
-  simulation history. World paths default to `context.entity`; editor previews
-  set this to the preview renderer instance.
+  physics history. World paths default to `context.entity`; editor previews set
+  this to the preview renderer instance. FS-style IK evaluation is stateless and
+  must not use this owner.
 - `FormRenderingContext.allowWorldTargetOverrides` and
   `allowWorldCollisions`: explicit capabilities of the semantic host. They are
   both false for local simulation even when its clock entity has a live level.
@@ -533,9 +687,9 @@ stubs, held-item forms, nested body parts, and list/UI previews.
   entity selection, and captured bone caches are one exception-safe scope.
   Invisible forms, nested renderer failures, and recursive matrix failures must
   leave all of them restored.
-- Mutable Verlet/solver history is owned by the form renderer plus
+- Mutable Verlet/physics history is owned by the form renderer plus
   `simulationOwner`; it must not be keyed globally by shared `ModelInstance`
-  or model resource id alone.
+  or model resource id alone. Production IK has no renderer/owner history.
 - Compiled immutable IK/physics/constraint data may be cached by source data;
   simulation positions, previous positions, velocities, and tick history may
   not.
@@ -543,10 +697,11 @@ stubs, held-item forms, nested body parts, and list/UI previews.
   wanted bones, physics wanted bones/chain ids, rest lengths, and rest
   directions. A normal render must not rebuild these with copied lists or new
   sets.
-- Retain mutable pivot frames and solver scratch under the renderer plus
-  `simulationOwner`. Frame collectors must update the existing vectors and
-  quaternions in place after warm-up; never move mutable workspace onto the
-  shared `ModelInstance` to save allocations.
+- Retain mutable physics pivot frames and solver scratch under the renderer plus
+  `simulationOwner`. Never move mutable physics state onto the shared
+  `ModelInstance`. Do not apply this optimization to production IK by creating
+  persistent `ChainWorkspace` state: FS-compatible IK recomputes from the
+  current frame.
 - Performance work must preserve configured iterations, physics fixed substeps,
   collision/constraint behavior, and deterministic catch-up. Lower simulation
   quality is not an acceptable substitute for removing redundant topology work
@@ -561,8 +716,8 @@ stubs, held-item forms, nested body parts, and list/UI previews.
   tiny bend on the opposite side of a zero-degree limit. Use the authored rest
   bend to define the plane, keep the stable bend side until the predicted angle
   is at least 20 degrees, then return to live/pole control. Store that stable
-  bend normal with the same renderer/owner/model/chain ownership as other
-  mutable solver state.
+  bend normal deterministically from current/rest inputs; it must not depend on
+  renderer/owner history.
 - Explicit `softness > 0` opts out of exact straight restore as well as exact
   reach; do not let the dead zone erase the user's requested asymptotic bend.
 - Bend magnitude and bend-plane direction are separate invariants. Hysteresis
@@ -577,26 +732,17 @@ stubs, held-item forms, nested body parts, and list/UI previews.
   the child parent frame with that clamped value. If the target becomes
   unreachable, preserve the hard joint limit instead of letting the rendered
   mesh cross it while debug joint positions still reach the target.
-- IK bend hints and pole controls are direction inputs, not absolute pose
-  inputs. On the first effective frame, store target, pole, and optional tip
-  rotation in the chain root-parent frame owned by
-  renderer/`simulationOwner`/model/chain. Rebind after compiled data changes,
-  owner changes, disable/re-enable, or weight returning from zero.
-- The current animated FK chain is the maintain-offset reference every frame.
-  With target translation delta zero, pole angular delta zero,
-  `poleAngle == 0`, no absolute override, and tip-rotation delta identity, IK
-  must return without writing `orient`. A static bind-pose snapshot would
-  freeze animation; an absolute pole solve would manufacture a pose change.
-- Apply ordinary target movement as a root-parent-local bind delta added to the
-  current FK reach. Apply pole movement as its signed projected angular delta
-  around the current root-to-target axis. Existing `poleAngle` is an additive
-  relative offset after calibration. A bound pole may choose a deterministic
-  bend side for an authored-straight chain, but it must not create bend
-  magnitude while all controller deltas are zero.
-- Tip rotation follows the same contract: compute controller
-  `current * inverse(bind)` in root-parent local space, conjugate it into world
-  space, and multiply it onto the current FK effector rotation. Never copy the
-  controller's absolute rotation on enable.
+- IK target and pole controls are current-frame solve inputs. Resolve their
+  current model-local positions every render, apply any film spatial override
+  and weight, and solve directly from those values. Never reinterpret them as
+  deltas from a renderer-owned first binding.
+- Production `ModelIKRuntime` is a static entry point. It may cache immutable
+  compiled topology, but it must not retain per-owner/per-model workspaces,
+  bind targets, bind poles, or bind rotations. Undo, redo, and history jumps
+  therefore need no IK-specific invalidation or rebind.
+- `poleAngle` remains an additive configured angle after resolving the current
+  pole point. Tip rotation follows the current target frame directly, matching
+  FS; it is not computed from a stored bind rotation.
 - Model viewport bone picking belongs to the visible property panel first.
   `UIModelForm` must offer ordinary and Ctrl-click bone selections to the
   active IK, physics, or constraint panel through `pickBoneInList(...)`; only
@@ -628,15 +774,15 @@ stubs, held-item forms, nested body parts, and list/UI previews.
 | Player/camera moves while unrelated models are visible | Each model responds only to its own host transform/history |
 | Same world entity is also rendered in an editor preview | Preview uses the preview renderer as `simulationOwner`; world uses the entity |
 | Two forms use the same model resource id | Their renderer-owned mutable histories remain independent |
-| IK is enabled on a pre-bent animated limb while controllers remain at bind | The enable frame and every later FK-only frame remain bitwise pose-preserving; no `orient` write occurs |
-| Target returns to its bind transform after FK animation advances | The chain returns to that frame's FK pose, not the original bind-frame snapshot |
-| Pole remains at bind and `poleAngle` is zero | Pole supplies no pose delta; a straight chain may only use it as a bend-side fallback |
-| Pole moves 10 degrees and `poleAngle` is 5 degrees | The requested bend-plane change is the signed relative pole delta plus the 5-degree authored offset |
-| IK is disabled or weight reaches zero, then becomes effective again | Discard the old calibration and bind against the newly evaluated FK/controller state |
+| IK is enabled on a pre-bent animated limb | Solve toward the target and pole transforms visible in the current frame, exactly as FS does |
+| Target/pole history goes A -> B -> C -> B | Both B evaluations produce the same solved pose; no first-binding state participates |
+| Pole is enabled and `poleAngle` is zero | The current pole point supplies the bend direction directly |
+| Pole changes and `poleAngle` is 5 degrees | Resolve the current pole point, then apply the authored 5-degree offset |
+| IK is disabled or weight reaches zero, then becomes effective again | Resume from current frame inputs; no calibration is created or restored |
 | Constraint affects an IK/physics bone | FK input is clamped first; procedural result remains active and is limited inside its solver |
 | Render type has no meaningful world host (inventory/UI/hand preview) | Use a stable local simulation space and a context-specific owner; never borrow the main camera/player transform |
 | Nested body part applies a local transform | Apply the same local transform to `stack` and `world` before the child solver runs |
-| Same compiled IK/physics config renders for many frames | Reuse topology, pivot frames, chain-frame containers, and solver scratch after warm-up |
+| Same compiled IK/physics config renders for many frames | Reuse immutable compiled topology and physics-owned state; never persist IK bind workspaces |
 | Physics performance is insufficient | Profile topology/allocation and solver work; do not reduce fixed substeps, configured iterations, collisions, or limits |
 | Film replay/channel order changes | The same frame resolves identical target maps and placement poses; target resolution does not advance world physics |
 | Replays have different loop periods and their list order changes | Each replay receives the same controller tick as input and keeps the same local playback time |
@@ -663,8 +809,8 @@ stubs, held-item forms, nested body parts, and list/UI previews.
 - Good: a relative replay and every relative bone consumer use the same
   resettable local owner while absolute cross-policy consumers return no
   target.
-- Good: `ModelIKCache.Compiled` owns sorted chains and wanted-bone sets, while a
-  renderer-owned runtime retains mutable frame maps and bend history per owner.
+- Good: `ModelIKCache.Compiled` owns immutable compiled chain data, while every
+  production IK solve reads current-frame targets/poles without an owner state.
 - Good: a pivot-frame collector calls `set(...)` on an existing frame's
   position/rotations after the first collection.
 - Base: an ordinary world morph uses its stable `IEntity` as simulation owner
@@ -679,8 +825,9 @@ stubs, held-item forms, nested body parts, and list/UI previews.
   or create a new frame map on every render.
 - Bad: change `SUBSTEPS_PER_TICK`, silently cap user iterations, or disable
   collision to claim an IK/physics optimization.
-- Bad: choose a straight-chain bend side from a camera axis or store the last
-  bend normal on a shared model resource.
+- Bad: choose a straight-chain bend side from a camera axis, store the last bend
+  normal on a shared model resource, or preserve target/pole bind data in a
+  renderer-owned IK workspace.
 - Bad: stabilize only `bendNormal` while leaving a nonzero analytic `sinA`; the
   center line can look straight while the local joint angle crosses below its
   authored zero/limit.
@@ -721,9 +868,9 @@ stubs, held-item forms, nested body parts, and list/UI previews.
 - Hysteresis: move a two-bone target through straight extension from both sides;
   assert bend-side recovery starts at 3 degrees, remains stable below 20
   degrees, and explicit pole control resumes outside the band without a flip.
-- Performance: compare the same multi-chain scene after warm-up and confirm the
-  render path no longer reconstructs chain ordering/wanted sets/frame maps/
-  chain-frame lists/stiffness arrays. Keep all solver quality settings equal.
+- Performance: compare the same multi-chain scene with all solver quality
+  settings equal. Immutable topology may be cached, but performance work must
+  not reintroduce per-owner IK bind state.
 - Film order: reorder replays and target channels while ordinary animated bones
   reference each other; assert target maps and final placement poses are equal
   and the target-resolution pass does not advance world physics history. Give
@@ -756,22 +903,19 @@ ModelIKRuntime.apply(model, targets, poles);
 physics.apply(entity, context.simulationOwner, model, transition, baseTransform);
 ```
 
-Wrong performance/state ownership:
-
-```java
-List<CompiledChain> ordered = new ArrayList<>(chains);
-Set<String> wanted = new HashSet<>();
-Map<String, PivotFrame> frames = new HashMap<>();
-model.lastBendNormal = solvedNormal;
-```
-
-Correct performance/state ownership:
+Wrong IK state ownership:
 
 ```java
 private final ModelIKRuntime ikRuntime = new ModelIKRuntime();
+ikRuntime.apply(context.simulationOwner, model, targets, poles);
+```
+
+Correct FS-compatible ownership:
+
+```java
 private final ModelPhysicsRuntime physicsRuntime = new ModelPhysicsRuntime();
 
-ikRuntime.apply(context.simulationOwner, model, targets, poles);
+ModelIKRuntime.apply(model, targets, poles);
 physicsRuntime.apply(entity, context.simulationOwner, model, transition, baseTransform);
 ```
 
@@ -792,6 +936,92 @@ for (Replay replay : replays) resolveTargetsWithLocalOwner(replay);
 
 collectMatrices(entity, placementOwner, absoluteSemanticBase,
     allowWorldTargetOverrides, allowWorldCollisions, transition);
+```
+
+## Scenario: Film history and stateless FS IK evaluation
+
+### 1. Scope / Trigger
+
+Apply this contract when changing Film undo/redo, history navigation, model IK
+runtime ownership, or target/pole interpretation.
+
+### 2. Signatures
+
+- `ModelIKRuntime.apply(ModelInstance, controllerTargets, poleTargets)` is a
+  static production entry point with no `simulationOwner` argument.
+- `ModelIKDlsApplier.apply(..., workspaces, boneLimits)` receives `null` for
+  `workspaces` from production and retains FSR bone constraints through
+  `boneLimits`.
+- Ordinary FS undo/history code restores keyframe/Form values; there is no
+  `UIFilmPanel.refreshAfterUndo`, history-jump batch, or IK rebind API.
+
+### 3. Contracts
+
+- The current frame's target position, target rotation, pole position, weights,
+  and IK control overrides are the complete production IK inputs.
+- `ModelIKRuntime` may cache immutable `ModelIKCache.Compiled` data only. It
+  must not keep `InstanceState`, a `WeakHashMap` keyed by `simulationOwner`, or
+  per-chain `ChainWorkspace` objects.
+- With a `null` workspace, DLS target and pole resolution follows FS: use the
+  current target frame, blend any current spatial override, use the current pole
+  point, and copy current target rotation when tip rotation is enabled.
+- Undo, redo, and history selection must remain ordinary value restoration.
+  Do not add entity-preservation rules, forced preview snapshot invalidation,
+  selected-editor reconstruction, gesture-specific undo commits, or post-undo
+  IK recalibration to compensate for solver state.
+- FSR-only bone constraints remain in the solve. They do not authorize changing
+  target/pole semantics or reintroducing persistent IK binding.
+- The optional workspace overload is compatibility/internal code only. Any new
+  production call site that passes workspaces is a contract violation.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Target/pole goes A -> B -> C, then Ctrl+Z | Control point, Gizmo, and solved limb reproduce B |
+| Ctrl+Y after that undo | Control point, Gizmo, and solved limb reproduce C |
+| History panel selects B directly | B is solved from B's restored current values, independent of which state was previously shown |
+| Preview entity is rebuilt or retained | The same restored frame produces the same IK pose because IK has no entity-owned bind state |
+| Bone limits are configured | Current-frame FS target/pole resolution runs, then FSR limits remain enforced |
+| Production code supplies a `ChainWorkspace` | Reject; history behavior again depends on transient first-binding state |
+
+### 5. Good / Base / Bad Cases
+
+- Good: A, B, and C are each pure current-frame evaluations; revisiting B
+  reproduces B without a refresh hook.
+- Base: IK is disabled or has no compiled chains; the runtime returns without
+  creating state.
+- Bad: preserve a renderer/entity so B can be interpreted relative to A's old
+  binding, or rebuild it so B becomes a new zero-delta binding. Both outcomes
+  make history depend on navigation order.
+- Bad: patch the history panel, undo merge flags, keyframe factory, and preview
+  snapshots while leaving a production `ChainWorkspace` alive.
+
+### 6. Tests Required
+
+- Run `testFilmEditorMigration`, `testIkPhysicsConsistency`,
+  `testReplayKeyframeConsistency`, `compileJava`, `compileClientJava`, full
+  `build`, and `git diff --check`.
+- Keep diagnostic logging disabled in ordinary builds and do not add a temporary
+  undo/workspace regression class to the delivered source tree.
+- In game, move both an IK target and pole through A -> B -> C, then verify
+  Ctrl+Z, Ctrl+Y, and direct history-panel selection of B. At each state compare
+  the control point, Gizmo, and solved limb.
+
+### 7. Wrong vs Correct
+
+Wrong:
+
+```java
+private final ModelIKRuntime ikRuntime = new ModelIKRuntime();
+ikRuntime.apply(simulationOwner, model, targets, poles);
+refreshAfterUndo(PRESERVE_ENTITIES);
+```
+
+Correct:
+
+```java
+ModelIKRuntime.apply(model, targets, poles);
 ```
 
 ### Morph renderer recursion and film preview hide-player order
@@ -1784,6 +2014,71 @@ lifecycle.execute(() -> {
 });
 ```
 
+### Web Remote reconnect frame replay and control-handoff contract
+
+#### 1. Scope / Trigger
+
+Apply this contract when changing Web Remote UI-session publication, browser
+WebSocket reconnect, co-control disconnect handling, or native `UIScreen`
+input ownership. These paths are one lifecycle: a browser can reconnect only
+if the transport can reconstruct the current UI and resolve its old controls.
+
+#### 2. Signatures
+
+- `LatestUiFrameReplay.publish(sessionEpoch, FrameInput)` retains one immutable
+  encoded input for the current UI epoch.
+- `CoControlCoordinator.disconnect(peer)` starts the ordinary reconnect grace;
+  `disconnectImmediately(peer)` is reserved for server stop and terminal paths.
+- `BBSUiInputDispatcher.preemptForLocalInput(screen, sessionId)` transfers the
+  current native screen back to physical FSR input on the client thread.
+
+#### 3. Contracts
+
+- Cache only a frame whose native `sessionId` still matches the active session,
+  and tag it with the current unsigned `sessionEpoch`. Opening or closing a UI
+  session, disconnecting the Minecraft client, and final addon shutdown clear
+  the cache. Runtime Web server stop/start preserves it with the live mirror
+  session so the replacement server can restore the current UI.
+- A new UI WebSocket receives the active `SESSION` gate first, then every
+  current resource definition, then the cached frame. Check the socket identity
+  and epoch before resource replay and again before frame replay. Never replay
+  a frame across epochs, even when its dimensions or command handles look valid.
+- Ordinary WebSocket disconnect marks the peer disconnected immediately,
+  rejects new input, and starts a 10-second grace period. The lease and held
+  snapshot remain resumable only for the same authenticated participant id and
+  the same maximum permission. Reconnect rebinds the existing participant;
+  grace expiry performs the normal cancellation/release path exactly once.
+- Runtime server stop, session replacement, world disconnect, and final client
+  stop bypass reconnect grace. They must not leave held native input active.
+- Physical FSR input is always available: an in-progress local mouse/key gesture
+  blocks remote acquisition, while any physical mouse, wheel, key, or text event
+  cancels a current remote held state before the local event is dispatched.
+  Remote mouse cleanup uses cancellation rather than a committing release.
+
+#### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Refresh during an unchanged active UI epoch | Send `SESSION`, resources, and the cached frame; do not wait for a future repaint. |
+| Old encoder callback finishes after a session change | Drop it; it cannot populate or replay the new epoch cache. |
+| Same authenticated controller reconnects within 10 seconds | Rebind the participant and preserve its lease/held snapshot. |
+| Grace expires without a valid reconnect | Cancel held buttons, release held keys, and free the lease once. |
+| Local FSR input arrives while remote input owns the screen | Cancel the remote gesture, then deliver the physical event normally. |
+| Runtime Web server stops | Release browser control immediately but preserve the active UI session/frame for a later start. |
+
+#### 5. Tests Required
+
+- `testServerSmoke` must cover same-epoch latest-frame replay, replacement by a
+  newer frame, cross-epoch rejection, and explicit cache clear.
+- `testCoControl` must cover reconnect within a shortened deterministic grace,
+  release only after expiry, identity/permission mismatch, and terminal cleanup.
+- Core `testUiInputMailbox` must cover active-local rejection, local preemption,
+  ordered synthetic key release, mouse cancellation, and retained local event
+  delivery after the handoff.
+- Release gates are `new\gradlew.bat testUiInputMailbox jar` and
+  `bbs-web-remote\gradlew.bat check build`, followed by a real browser refresh
+  while a Film editor is open.
+
 ### Web Remote settings, public proxy, telemetry and text-input contract
 
 #### 1. Scope / Trigger
@@ -2703,8 +2998,137 @@ finally
 }
 ```
 
+## Scenario: Windows executable publication and cleanup
+
+### 1. Scope / Trigger
+
+Apply when a worker downloads, validates, replaces, moves, or deletes an executable that it has
+just launched, especially when publishing through a staging directory on Windows.
+
+### 2. Signatures
+
+- Validation owns the spawned `Process` until it has exited or a bounded forced-termination wait
+  has completed.
+- Managed publication uses `<target>.installing` followed by a same-filesystem directory move.
+- Retry only transient `AccessDeniedException`; other I/O failures propagate immediately.
+
+### 3. Contracts
+
+- A timed-out validation process is destroyed, forcibly destroyed when necessary, and waited for
+  before its executable is moved or removed.
+- Directory move and managed cleanup may retry a small bounded number of times because Windows or
+  a scanner can retain a short-lived executable handle after process exit.
+- Cleanup failure is secondary. It is logged or attached to the primary validation/publication
+  failure and must never replace that primary failure classification.
+- Retry stays on the worker thread and does not block the Minecraft client thread.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Executable handle clears during the retry window | Complete publication without redownloading. |
+| Access remains denied after all attempts | Preserve the exact denied path/message and leave resumable state. |
+| Validation fails and staging cleanup is also denied | Report validation as primary; record cleanup separately. |
+| Non-access I/O failure occurs | Fail immediately without treating it as a transient lock. |
+
+### 5. Good / Base / Bad Cases
+
+- Good: a child process holds the candidate briefly; publication retries and succeeds after exit.
+- Base: no handle remains; the first atomic move succeeds with no added delay.
+- Bad: immediately move or delete a just-launched executable, then report cleanup's
+  `AccessDeniedException` instead of the original validation result.
+
+### 6. Tests Required
+
+- Launch a real child process that holds the candidate file open, then assert managed publication
+  succeeds after the handle is released.
+- Time out a real child process and assert the validation helper leaves it no longer alive.
+- Run the owning focused regression plus common/client compilation.
+
+### 7. Wrong vs Correct
+
+Wrong:
+
+```java
+validate(candidate);
+Files.move(staging, target, StandardCopyOption.ATOMIC_MOVE);
+```
+
+Correct:
+
+```java
+validateAndStopProcess(candidate);
+moveWithBoundedAccessDeniedRetry(staging, target);
+```
+
 ## Code Review Checklist
 
 <!-- What reviewers should check -->
+
+## Scenario: Deferred depth effects and view-space matrices
+
+### 1. Scope / Trigger
+
+Apply when a NeoForge 1.21.1 addon queues form transforms for a later fullscreen pass that
+reconstructs scene positions from the depth buffer with an inverse projection matrix.
+
+### 2. Signatures
+
+- Form matrix: `FormRenderContext.stack.last().pose()`.
+- Active camera model-view: `RenderSystem.getModelViewMatrix()`.
+- Deferred view-space matrix:
+  `new Matrix4f(RenderSystem.getModelViewMatrix()).mul(formMatrix)`.
+
+### 3. Contracts
+
+- The form stack is camera-relative on the migrated BBSFSR render path; camera rotation remains in
+  the active RenderSystem model-view matrix.
+- A shader that computes `viewPosition = inverseProjection * ndcDepth` requires every compared
+  origin, normal, axis, and tangent to be in the same view space.
+- Compose and copy the matrix when the effect is queued. Do not keep the mutable pose-stack matrix
+  reference or defer the conversion until an unrelated later render stage.
+- Keep the conversion at the queue boundary so all shader uniforms derived from the stored matrix
+  share one coordinate-space contract.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Shader reconstructs view-space depth but receives the raw form stack | Reject; the effect can slide or rotate with the camera. |
+| Queue stores a pose-stack matrix reference | Reject; copy it before the stack is mutated. |
+| Shader reconstructs world space with inverse view-projection | Supply world-space origins and axes instead; do not apply this view-space rule blindly. |
+| Projection and queued transform come from different frames | Drop or fence the entry rather than mixing frames. |
+
+### 5. Good / Base / Bad Cases
+
+- Good: ground cracks queue `modelView * formMatrix`; their origin and tangent axes stay fixed while
+  the player rotates and moves the camera.
+- Base: a purely geometric effect drawn immediately through the same pose stack needs no deferred
+  conversion.
+- Bad: depth is reconstructed in view space while `uOrigin`, `uUp`, `uTanU`, and `uTanV` come from
+  the raw camera-relative form stack.
+
+### 6. Tests Required
+
+- Compile the client source set and build the release addon JAR.
+- Launch a real client through shader/resource reload and require API READY with no Mixin or shader
+  uniform failure.
+- In-world, hold the effect centre fixed; rotate, pitch, and translate the camera and assert the
+  pattern remains anchored while its configured radius/animation still changes normally.
+
+### 7. Wrong vs Correct
+
+Wrong:
+
+```java
+QUEUE.add(new Entry(new Matrix4f(formMatrix), parameters));
+```
+
+Correct:
+
+```java
+Matrix4f viewMatrix = new Matrix4f(RenderSystem.getModelViewMatrix()).mul(formMatrix);
+QUEUE.add(new Entry(viewMatrix, parameters));
+```
 
 (To be filled by the team)

@@ -1,0 +1,689 @@
+{
+  "_meta": {
+    "purpose": "300 步教程的章节骨架；每章限定可引用的真实 UI 文案域",
+    "totalChapters": 53,
+    "totalSteps": 304,
+    "labelSource": "new/src/client/resources/assets/bbs/assets/strings/zh_cn.json",
+    "labelTotal": 1987,
+    "keybindSource": "new/src/client/java/mchorse/bbs_mod/ui/Keys.java",
+    "keybindTotal": 155,
+    "rules": [
+      "每步 instruction/userWillSee 只能引用本章 labelDomains 内的真实文案",
+      "编辑器快捷键必须写「默认」，并提示可按 F9 查看实际绑定",
+      "涉及 F4/F5/F6/B/M/0 时必须说明面板开启或关闭的状态差异",
+      "每步都要有男版（高冷）与女版（猫娘）两套台词",
+      "台词经 Fish Audio TTS 合成语音；API key 只存本地设置，不入 jar、不写日志"
+    ],
+    "byStage": {
+      "入门": {
+        "chapters": 5,
+        "steps": 30
+      },
+      "伪装": {
+        "chapters": 10,
+        "steps": 62
+      },
+      "影片": {
+        "chapters": 15,
+        "steps": 92
+      },
+      "创作": {
+        "chapters": 12,
+        "steps": 74
+      },
+      "导出": {
+        "chapters": 5,
+        "steps": 26
+      },
+      "系统": {
+        "chapters": 5,
+        "steps": 20
+      }
+    },
+    "revisionNote": "2026-08-23 content audit: inserted ch46_export_basics (video export basics was silently dropped from the original plan); orders of former ch46-ch52 shifted to ch47-ch53. Skeleton step ids keep their original chNN prefixes on purpose."
+  },
+  "chapters": [
+    {
+      "order": 1,
+      "id": "ch01",
+      "stage": "入门",
+      "titleZh": "认识 Dashboard 与九大面板",
+      "labelDomains": [
+        "dashboard"
+      ],
+      "availableLabels": 31,
+      "plannedSteps": 7,
+      "status": "skeleton"
+    },
+    {
+      "order": 2,
+      "id": "ch02",
+      "stage": "入门",
+      "titleZh": "按键体系与 F9 自查",
+      "labelDomains": [
+        "keys_labels",
+        "general"
+      ],
+      "availableLabels": 33,
+      "plannedSteps": 6,
+      "status": "skeleton"
+    },
+    {
+      "order": 3,
+      "id": "ch03",
+      "stage": "入门",
+      "titleZh": "第一次变身：伪装基础",
+      "labelDomains": [
+        "morphing",
+        "forms_other"
+      ],
+      "availableLabels": 198,
+      "plannedSteps": 7,
+      "status": "skeleton"
+    },
+    {
+      "order": 4,
+      "id": "ch04",
+      "stage": "入门",
+      "titleZh": "姿势编辑器入门（FK）",
+      "labelDomains": [
+        "forms_pose"
+      ],
+      "availableLabels": 25,
+      "plannedSteps": 6,
+      "status": "skeleton"
+    },
+    {
+      "order": 5,
+      "id": "ch05",
+      "stage": "入门",
+      "titleZh": "保存、预设与热键",
+      "labelDomains": [
+        "presets",
+        "forms_other"
+      ],
+      "availableLabels": 202,
+      "plannedSteps": 4,
+      "status": "skeleton"
+    },
+    {
+      "order": 6,
+      "id": "ch06",
+      "stage": "伪装",
+      "titleZh": "形态类型（上）：模型与生物",
+      "labelDomains": [
+        "forms_other"
+      ],
+      "availableLabels": 192,
+      "plannedSteps": 7,
+      "status": "skeleton"
+    },
+    {
+      "order": 7,
+      "id": "ch07",
+      "stage": "伪装",
+      "titleZh": "形态类型（下）：方块/物品/文字/广告牌",
+      "labelDomains": [
+        "forms_other"
+      ],
+      "availableLabels": 192,
+      "plannedSteps": 7,
+      "status": "skeleton"
+    },
+    {
+      "order": 8,
+      "id": "ch08",
+      "stage": "伪装",
+      "titleZh": "特殊形态：拖影/拉伸/声音/原版粒子",
+      "labelDomains": [
+        "forms_other"
+      ],
+      "availableLabels": 192,
+      "plannedSteps": 6,
+      "status": "skeleton"
+    },
+    {
+      "order": 9,
+      "id": "ch09",
+      "stage": "伪装",
+      "titleZh": "IK 链：从痛点到解法",
+      "labelDomains": [
+        "forms_model"
+      ],
+      "availableLabels": 64,
+      "plannedSteps": 7,
+      "status": "skeleton"
+    },
+    {
+      "order": 10,
+      "id": "ch10",
+      "stage": "伪装",
+      "titleZh": "IK 进阶：极向量/拉伸/柔软度/权重",
+      "labelDomains": [
+        "forms_model"
+      ],
+      "availableLabels": 64,
+      "plannedSteps": 7,
+      "status": "skeleton"
+    },
+    {
+      "order": 11,
+      "id": "ch11",
+      "stage": "伪装",
+      "titleZh": "物理骨链：重力/阻尼/刚度",
+      "labelDomains": [
+        "forms_model"
+      ],
+      "availableLabels": 64,
+      "plannedSteps": 7,
+      "status": "skeleton"
+    },
+    {
+      "order": 12,
+      "id": "ch12",
+      "stage": "伪装",
+      "titleZh": "物理进阶：风力/阵风/世界碰撞",
+      "labelDomains": [
+        "forms_model"
+      ],
+      "availableLabels": 64,
+      "plannedSteps": 6,
+      "status": "skeleton"
+    },
+    {
+      "order": 13,
+      "id": "ch13",
+      "stage": "伪装",
+      "titleZh": "骨骼约束：角度限制",
+      "labelDomains": [
+        "forms_model"
+      ],
+      "availableLabels": 64,
+      "plannedSteps": 5,
+      "status": "skeleton"
+    },
+    {
+      "order": 14,
+      "id": "ch14",
+      "stage": "伪装",
+      "titleZh": "形态键与附魔光效",
+      "labelDomains": [
+        "forms_pose"
+      ],
+      "availableLabels": 25,
+      "plannedSteps": 5,
+      "status": "skeleton"
+    },
+    {
+      "order": 15,
+      "id": "ch15",
+      "stage": "伪装",
+      "titleZh": "动作与动画状态机",
+      "labelDomains": [
+        "forms_actions"
+      ],
+      "availableLabels": 29,
+      "plannedSteps": 5,
+      "status": "skeleton"
+    },
+    {
+      "order": 16,
+      "id": "ch16",
+      "stage": "影片",
+      "titleZh": "影片编辑器总览与第一个影片",
+      "labelDomains": [
+        "film_core"
+      ],
+      "availableLabels": 113,
+      "plannedSteps": 7,
+      "status": "skeleton"
+    },
+    {
+      "order": 17,
+      "id": "ch17",
+      "stage": "影片",
+      "titleZh": "关键帧基础：插入/选择/移动",
+      "labelDomains": [
+        "keyframes"
+      ],
+      "availableLabels": 47,
+      "plannedSteps": 7,
+      "status": "skeleton"
+    },
+    {
+      "order": 18,
+      "id": "ch18",
+      "stage": "影片",
+      "titleZh": "关键帧进阶：插值/曲线/批量调值",
+      "labelDomains": [
+        "keyframes"
+      ],
+      "availableLabels": 47,
+      "plannedSteps": 7,
+      "status": "skeleton"
+    },
+    {
+      "order": 19,
+      "id": "ch19",
+      "stage": "影片",
+      "titleZh": "回放系统：录制你的动作",
+      "labelDomains": [
+        "film_replays"
+      ],
+      "availableLabels": 120,
+      "plannedSteps": 7,
+      "status": "skeleton"
+    },
+    {
+      "order": 20,
+      "id": "ch20",
+      "stage": "影片",
+      "titleZh": "录制组：仅位置/仅旋转/摇杆",
+      "labelDomains": [
+        "film_replays"
+      ],
+      "availableLabels": 120,
+      "plannedSteps": 6,
+      "status": "skeleton"
+    },
+    {
+      "order": 21,
+      "id": "ch21",
+      "stage": "影片",
+      "titleZh": "演员控制与行为编辑器",
+      "labelDomains": [
+        "film_replays"
+      ],
+      "availableLabels": 120,
+      "plannedSteps": 6,
+      "status": "skeleton"
+    },
+    {
+      "order": 22,
+      "id": "ch22",
+      "stage": "影片",
+      "titleZh": "回放管理：类别/复制/从摄像机生成",
+      "labelDomains": [
+        "film_replays"
+      ],
+      "availableLabels": 120,
+      "plannedSteps": 6,
+      "status": "skeleton"
+    },
+    {
+      "order": 23,
+      "id": "ch23",
+      "stage": "影片",
+      "titleZh": "运动路径与洋葱皮",
+      "labelDomains": [
+        "film_motion_path"
+      ],
+      "availableLabels": 17,
+      "plannedSteps": 6,
+      "status": "skeleton"
+    },
+    {
+      "order": 24,
+      "id": "ch24",
+      "stage": "影片",
+      "titleZh": "摄像机剪辑（上）：空闲/路径/环绕",
+      "labelDomains": [
+        "film_clips"
+      ],
+      "availableLabels": 197,
+      "plannedSteps": 7,
+      "status": "skeleton"
+    },
+    {
+      "order": 25,
+      "id": "ch25",
+      "stage": "影片",
+      "titleZh": "摄像机剪辑（中）：推轨/变焦/注视/抖动",
+      "labelDomains": [
+        "film_clips"
+      ],
+      "availableLabels": 197,
+      "plannedSteps": 7,
+      "status": "skeleton"
+    },
+    {
+      "order": 26,
+      "id": "ch26",
+      "stage": "影片",
+      "titleZh": "摄像机剪辑（下）：曲线/追踪/重映射/数学",
+      "labelDomains": [
+        "film_clips"
+      ],
+      "availableLabels": 197,
+      "plannedSteps": 7,
+      "status": "skeleton"
+    },
+    {
+      "order": 27,
+      "id": "ch27",
+      "stage": "影片",
+      "titleZh": "剪辑图层、启停与时长调整",
+      "labelDomains": [
+        "film_clips"
+      ],
+      "availableLabels": 197,
+      "plannedSteps": 6,
+      "status": "skeleton"
+    },
+    {
+      "order": 28,
+      "id": "ch28",
+      "stage": "影片",
+      "titleZh": "音频剪辑与麦克风录音",
+      "labelDomains": [
+        "audio",
+        "film_core"
+      ],
+      "availableLabels": 116,
+      "plannedSteps": 5,
+      "status": "skeleton"
+    },
+    {
+      "order": 29,
+      "id": "ch29",
+      "stage": "影片",
+      "titleZh": "字幕系统",
+      "labelDomains": [
+        "film_core"
+      ],
+      "availableLabels": 113,
+      "plannedSteps": 4,
+      "status": "skeleton"
+    },
+    {
+      "order": 30,
+      "id": "ch30",
+      "stage": "影片",
+      "titleZh": "撤销历史与影片详情",
+      "labelDomains": [
+        "film_core"
+      ],
+      "availableLabels": 113,
+      "plannedSteps": 4,
+      "status": "skeleton"
+    },
+    {
+      "order": 31,
+      "id": "ch31",
+      "stage": "创作",
+      "titleZh": "模型编辑器入门：骨骼与结构",
+      "labelDomains": [
+        "model_editor"
+      ],
+      "availableLabels": 78,
+      "plannedSteps": 7,
+      "status": "skeleton"
+    },
+    {
+      "order": 32,
+      "id": "ch32",
+      "stage": "创作",
+      "titleZh": "模型编辑器进阶：查找/折叠/历史",
+      "labelDomains": [
+        "model_editor"
+      ],
+      "availableLabels": 78,
+      "plannedSteps": 6,
+      "status": "skeleton"
+    },
+    {
+      "order": 33,
+      "id": "ch33",
+      "stage": "创作",
+      "titleZh": "纹理管理器与图层",
+      "labelDomains": [
+        "textures"
+      ],
+      "availableLabels": 79,
+      "plannedSteps": 6,
+      "status": "skeleton"
+    },
+    {
+      "order": 34,
+      "id": "ch34",
+      "stage": "创作",
+      "titleZh": "像素画编辑器：画笔/填充/选区",
+      "labelDomains": [
+        "textures_pixels"
+      ],
+      "availableLabels": 27,
+      "plannedSteps": 7,
+      "status": "skeleton"
+    },
+    {
+      "order": 35,
+      "id": "ch35",
+      "stage": "创作",
+      "titleZh": "纹理进阶：缩放/提取/取色",
+      "labelDomains": [
+        "textures"
+      ],
+      "availableLabels": 79,
+      "plannedSteps": 5,
+      "status": "skeleton"
+    },
+    {
+      "order": 36,
+      "id": "ch36",
+      "stage": "创作",
+      "titleZh": "模型方块：放置与属性",
+      "labelDomains": [
+        "model_blocks"
+      ],
+      "availableLabels": 16,
+      "plannedSteps": 5,
+      "status": "skeleton"
+    },
+    {
+      "order": 37,
+      "id": "ch37",
+      "stage": "创作",
+      "titleZh": "粒子系统入门：方案与发射率",
+      "labelDomains": [
+        "particles"
+      ],
+      "availableLabels": 217,
+      "plannedSteps": 7,
+      "status": "skeleton"
+    },
+    {
+      "order": 38,
+      "id": "ch38",
+      "stage": "创作",
+      "titleZh": "粒子外观：材质/光照/着色",
+      "labelDomains": [
+        "particles"
+      ],
+      "availableLabels": 217,
+      "plannedSteps": 6,
+      "status": "skeleton"
+    },
+    {
+      "order": 39,
+      "id": "ch39",
+      "stage": "创作",
+      "titleZh": "粒子运动：形状/空间/生命周期",
+      "labelDomains": [
+        "particles"
+      ],
+      "availableLabels": 217,
+      "plannedSteps": 7,
+      "status": "skeleton"
+    },
+    {
+      "order": 40,
+      "id": "ch40",
+      "stage": "创作",
+      "titleZh": "粒子碰撞与事件",
+      "labelDomains": [
+        "particles"
+      ],
+      "availableLabels": 217,
+      "plannedSteps": 6,
+      "status": "skeleton"
+    },
+    {
+      "order": 41,
+      "id": "ch41",
+      "stage": "创作",
+      "titleZh": "粒子曲线与 Molang 表达式",
+      "labelDomains": [
+        "particles"
+      ],
+      "availableLabels": 217,
+      "plannedSteps": 6,
+      "status": "skeleton"
+    },
+    {
+      "order": 42,
+      "id": "ch42",
+      "stage": "创作",
+      "titleZh": "BBS 枪：弹道/碰撞/命令",
+      "labelDomains": [
+        "gun"
+      ],
+      "availableLabels": 47,
+      "plannedSteps": 6,
+      "status": "skeleton"
+    },
+    {
+      "order": 43,
+      "id": "ch43",
+      "stage": "导出",
+      "titleZh": "FFmpeg 配置与排错",
+      "labelDomains": [
+        "video_export"
+      ],
+      "availableLabels": 94,
+      "plannedSteps": 5,
+      "status": "skeleton"
+    },
+    {
+      "order": 44,
+      "id": "ch44",
+      "stage": "导出",
+      "titleZh": "视频导出：F4 手动与 F6 影片",
+      "labelDomains": [
+        "video_export"
+      ],
+      "availableLabels": 94,
+      "plannedSteps": 7,
+      "status": "skeleton"
+    },
+    {
+      "order": 45,
+      "id": "ch45",
+      "stage": "导出",
+      "titleZh": "导出参数：分辨率/帧率/编码",
+      "labelDomains": [
+        "video_export"
+      ],
+      "availableLabels": 94,
+      "plannedSteps": 6,
+      "status": "skeleton"
+    },
+    {
+      "order": 46,
+      "id": "ch46",
+      "stage": "导出",
+      "titleZh": "视频导出基础：FFmpeg 自检、第一支视频与导出参数",
+      "labelDomains": [
+        "video_export"
+      ],
+      "availableLabels": 94,
+      "plannedSteps": 6,
+      "status": "skeleton"
+    },
+    {
+      "id": "ch47",
+      "stage": "导出",
+      "titleZh": "批量导出队列",
+      "labelDomains": [
+        "video_export"
+      ],
+      "availableLabels": 94,
+      "plannedSteps": 4,
+      "status": "skeleton",
+      "order": 47
+    },
+    {
+      "id": "ch48",
+      "stage": "导出",
+      "titleZh": "素材导入与格式转换",
+      "labelDomains": [
+        "importer"
+      ],
+      "availableLabels": 27,
+      "plannedSteps": 4,
+      "status": "skeleton",
+      "order": 48
+    },
+    {
+      "id": "ch49",
+      "stage": "系统",
+      "titleZh": "设置总览：外观/性能/录制",
+      "labelDomains": [
+        "settings"
+      ],
+      "availableLabels": 258,
+      "plannedSteps": 5,
+      "status": "skeleton",
+      "order": 49
+    },
+    {
+      "id": "ch50",
+      "stage": "系统",
+      "titleZh": "主题与皮肤系统",
+      "labelDomains": [
+        "skins_themes"
+      ],
+      "availableLabels": 41,
+      "plannedSteps": 4,
+      "status": "skeleton",
+      "order": 50
+    },
+    {
+      "id": "ch51",
+      "stage": "系统",
+      "titleZh": "插件管理与热重载",
+      "labelDomains": [
+        "plugins"
+      ],
+      "availableLabels": 44,
+      "plannedSteps": 5,
+      "status": "skeleton",
+      "order": 51
+    },
+    {
+      "id": "ch52",
+      "stage": "系统",
+      "titleZh": "实体选择器与图形计算器",
+      "labelDomains": [
+        "selectors",
+        "graph"
+      ],
+      "availableLabels": 8,
+      "plannedSteps": 3,
+      "status": "skeleton",
+      "order": 52
+    },
+    {
+      "id": "ch53",
+      "stage": "系统",
+      "titleZh": "音频/语言编辑器与教程录制选项",
+      "labelDomains": [
+        "utility",
+        "settings"
+      ],
+      "availableLabels": 294,
+      "plannedSteps": 3,
+      "status": "skeleton",
+      "order": 53
+    }
+  ]
+}

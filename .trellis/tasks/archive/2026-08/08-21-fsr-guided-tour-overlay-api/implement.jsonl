@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/new/backend/external-addon-integration-contract.md", "reason": "Addon/API 2.0 registration window, capability table, Dashboard panel contract (3.4.2) and animated model preview contract (3.4.3). The three new capabilities must be isomorphic with these."}
+{"file": ".trellis/spec/new/backend/index.md", "reason": "Backend spec index; shows which contracts are active and where a new section belongs."}
+{"file": ".trellis/tasks/08-05-fsr-onboarding-tutorial-plugin/prd.md", "reason": "The consumer of this API. Its Out of Scope entry on overlay highlighting is what this task supersedes; ch01-ch05 instruction fields define the first anchor coverage set."}
+{"file": ".trellis/tasks/08-05-fsr-onboarding-tutorial-plugin/design.md", "reason": "Documents why the tutorial cannot do this from the addon side, and the animation clock ownership rule that the overlay must preserve."}

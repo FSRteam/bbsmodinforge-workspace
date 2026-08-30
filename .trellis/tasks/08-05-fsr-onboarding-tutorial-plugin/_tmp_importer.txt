@@ -1,0 +1,29 @@
+=== importer (27 labels)
+  bbs.config.cdn.title                                           CDN
+  bbs.config.cdn.token                                           令牌
+  bbs.config.cdn.token-comment                                   上传模型所需的令牌（仅持有令牌的管理员可向 CDN 上传模型）
+  bbs.config.cdn.tooltip                                         基于 HTTP 的 CDN 资产同步选项
+  bbs.config.cdn.url                                             URL
+  bbs.config.cdn.url-comment                                     负责同步资产的 CDN 服务 URL
+  bbs.ui.cdn.downloading-title                                   正在下载...
+  bbs.ui.cdn.status.deleted                                      已删除 "%s"！
+  bbs.ui.cdn.status.downloaded                                   已下载 "%s"！
+  bbs.ui.cdn.status.failed_downloading                           "%s" 下载失败...
+  bbs.ui.cdn.status.failed_fetch                                 获取 /files 失败...
+  bbs.ui.cdn.status.success_downloading                          文件下载已完成！
+  bbs.ui.cdn.status.success_uploading                            文件已上传完成！
+  bbs.ui.cdn.status.uploaded                                     已上传 "%s"!
+  bbs.ui.cdn.uploading-title                                     正在上传...
+  bbs.ui.importer.aiff                                           AIFF 转 WAV
+  bbs.ui.importer.ffmpeg-notification                            FFmpeg 的配置似乎存在问题... 请在视频设置中检查编码器路径选项！
+  bbs.ui.importer.flac                                           FLAC 转 WAV
+  bbs.ui.importer.gif                                            GIF 转为 PNG 序列
+  bbs.ui.importer.jpeg                                           JPEG 转为 PNG
+  bbs.ui.importer.mpeg                                           MP4/MP3 转为 WAV
+  bbs.ui.importer.ogg                                            OGG 转为 WAV
+  bbs.ui.importer.old_skin                                       64x32 皮肤转为 64x64 皮肤
+  bbs.ui.importer.png                                            PNG
+  bbs.ui.importer.success-notification                           拖放的文件已被 %s 成功处理！
+  bbs.ui.importer.wav                                            WAV
+  bbs.ui.importer.webp                                           WEBP 转为 PNG
+

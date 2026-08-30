@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/new/backend/fs-migration-baseline.md", "reason": "FS→FSR 移植红线与验证命令基准:IK 使用 FS 当前帧目标/极向量求解语义，同时保留 FSR 骨骼约束与其他既有能力"}
+{"file": ".trellis/spec/new/backend/quality-guidelines.md", "reason": "检查静态 ModelIKRuntime、生产 null ChainWorkspace、无 IK 专用 undo/history 刷新、无诊断残留和无临时测试代码；运行影片、IK、回放一致性与完整 build"}

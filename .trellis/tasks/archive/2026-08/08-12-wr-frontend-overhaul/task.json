@@ -1,0 +1,32 @@
+{
+  "id": "wr-frontend-overhaul",
+  "name": "wr-frontend-overhaul",
+  "title": "webremote 前端重构总纲",
+  "description": "",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "snowstar_II",
+  "assignee": "snowstar_II",
+  "createdAt": "2026-08-12",
+  "completedAt": "2026-08-16",
+  "branch": null,
+  "base_branch": "codex/bootstrap-trellis-workspace",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "08-12-wr-ui-overhaul",
+    "08-12-wr-code-hygiene",
+    "08-12-wr-media-split",
+    "08-12-wr-app-slim",
+    "08-16-wr-mobile-experience"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}

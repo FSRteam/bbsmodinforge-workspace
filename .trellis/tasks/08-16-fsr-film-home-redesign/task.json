@@ -1,0 +1,31 @@
+{
+  "id": "fsr-film-home-redesign",
+  "name": "fsr-film-home-redesign",
+  "title": "FSR 影片首页重设计（banner + 新闻 + 阿雪绘制单 + 影片网格）",
+  "description": "",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "snowstar_II",
+  "assignee": "snowstar_II",
+  "createdAt": "2026-08-16",
+  "completedAt": "2026-08-23",
+  "branch": "fsr-film-home-redesign",
+  "base_branch": "codex/new-local-backup-20260727",
+  "worktree_path": ".worktrees/fsr-film-home",
+  "commit": "98d08163",
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "new/src/client/java/mchorse/bbs_mod/ui/film/UIFilmSelectionPanel.java",
+    "new/src/client/java/mchorse/bbs_mod/ui/dashboard/panels/UISelectionScreen.java",
+    "new/src/client/java/mchorse/bbs_mod/ui/film/UIFilmPanel.java",
+    "new/src/main/java/mchorse/bbs_mod/film/Film.java"
+  ],
+  "notes": "已完成并经实机多轮验证：影片首页（banner/新闻条/广告轮播/卡片网格/卡片大小滑杆）、FILM_META 元数据管线、updated_at 保存戳、Markdown 详情（可拖选复制+远程图片）、封面走 ScreenshotRecorder 导出分辨率管线（被动静默）。实现于 new/ 仓库分支 fsr-film-home-redesign（worktree .worktrees/fsr-film-home），最新 016f6023+。",
+  "meta": {}
+}

@@ -1,0 +1,7 @@
+{"file": ".trellis/tasks/08-12-wr-ui-overhaul/prd.md", "reason": "验收标准逐条核对（R1–R5 + 验收清单）"}
+{"file": ".trellis/tasks/08-12-wr-ui-overhaul/design.md", "reason": "实现与设计一致性核对：槽位分配、令牌档、加载序、WebTest 导出形状"}
+{"file": "bbs-web-remote/src/webTest/", "reason": "全部 webTest（含新增 i18n.test.js）全绿是回归安全网"}
+{"file": "bbs-web-remote/build.gradle", "reason": "发布契约同步核对：webRuntimeScripts、webTestTasks、语法任务循环化"}
+{"file": "bbs-web-remote/src/client/java/mchorse/bbs_web_remote/client/server/ClasspathStaticHandler.java", "reason": "FIXED_RESOURCE_PATHS 白名单须含 i18n.js"}
+{"file": "bbs-web-remote/src/serverTest/java/mchorse/bbs_web_remote/client/server/ServerSmokeTestMain.java", "reason": "新资源逐项断言与缓存断言列表须含 i18n.js"}
+{"file": "bbs-web-remote/src/client/resources/assets/bbswebremote/web/index.html", "reason": "script 加载序、data-i18n 覆盖、themeToggle、mobileControlButton、插槽结构"}

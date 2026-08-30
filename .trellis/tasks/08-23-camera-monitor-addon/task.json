@@ -1,0 +1,32 @@
+{
+  "id": "camera-monitor-addon",
+  "name": "08-23-camera-monitor-addon",
+  "title": "多机位导播监视器插件 bbs-camera-addon(摄像机实体 + 画中画 + Blender 式切割布局)",
+  "description": "独立 NeoForge 插件:可摆放摄像机实体、影片编辑器内多画面监视器(Blender 式切割/拖拽/逐台独立开关)、音频波形与伪装名显示。交接文档见 prd.md 与 implement.md。",
+  "status": "in-progress",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P1",
+  "creator": "snowstar_II",
+  "assignee": "GLM",
+  "createdAt": "2026-08-23",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": null,
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "bbs-camera-addon/src/client/java/mchorse/bbs_camera/client/PiPManager.java",
+    "bbs-camera-addon/src/client/java/mchorse/bbs_camera/client/Monitors.java",
+    "bbs-camera-addon/src/client/java/mchorse/bbs_camera/client/MonitorInput.java",
+    "bbs-camera-addon/src/client/java/mchorse/bbs_camera/client/UIMonitorConfigOverlayPanel.java",
+    "bbs-camera-addon/src/main/java/mchorse/bbs_camera/CameraUnitEntity.java"
+  ],
+  "notes": "交接状态:阶段一/二功能已实现并编译通过(最新 jar 2026-08-23 14:15);卡点=用户机器上监视器画面不显示但旧版点击拦截曾生效,已埋诊断日志,等用户发 游戏根目录/logs/latest.log 中 [bbs_camera] 行定位(两种可能:影片面板检测失败 / 渲染异常疑似光影环境)。未完成:每台摄像机自己的镜头轨道同步播放头、切镜标记、逐台光影(Iris 硬限制)、阶段三整合进 new/ 主工程。必读 implement.md 的踩坑清单(尤其:勿用 PowerShell 改含中文源文件)。",
+  "meta": {}
+}

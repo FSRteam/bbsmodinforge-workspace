@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/new/backend/fs-migration-baseline.md", "reason": "四个行为以已锁定的 FS origin/1.21.1 为黄金参考:BaseType.equals、UIDataContextMenu.scrollToCurrent、UIReplaysEditorUtils.resolveBoneSheet/insertIntoPoseSheet、ModelIKRuntime 均逐文件比对移植语义;FSR 差异点(case-insensitive 多匹配、层级化 bone、骨骼约束)需保留"}
+{"file": ".trellis/spec/new/backend/quality-guidelines.md", "reason": "生产 IK 必须通过静态 ModelIKRuntime 按当前帧求解并传入 null ChainWorkspace;不得加入 refreshAfterUndo、历史跳转批处理、手势专用 undo commit 或临时 undo/workspace 测试代码"}

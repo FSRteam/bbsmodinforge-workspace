@@ -1,0 +1,137 @@
+plugins {
+    id 'net.neoforged.gradle.userdev' version '7.1.21'
+    id 'java-library'
+}
+
+version = mod_version
+group = mod_group_id
+
+base {
+    archivesName = archives_base_name
+}
+
+sourceSets {
+    main {
+        java.srcDirs = ['src/main/java', 'src/client/java']
+        resources.srcDirs = ['src/main/resources', 'src/client/resources']
+    }
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(java_version)
+    withSourcesJar()
+}
+
+repositories {
+    maven { url = 'https://bmclapi2.bangbang93.com/maven' }
+    mavenCentral()
+    maven { url = 'https://maven.neoforged.net/releases' }
+}
+
+def bbsCoreJar = file(bbs_fsr_jar)
+
+dependencies {
+    implementation "net.neoforged:neoforge:${neo_version}"
+    compileOnly files(bbsCoreJar)
+
+    testImplementation platform('org.junit:junit-bom:5.11.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.register('verifyBbsCoreJar') {
+    group = 'verification'
+    description = 'Rejects a missing, stale, or API-incompatible local BBSFSR jar.'
+
+    doLast {
+        if (!bbsCoreJar.isFile()) {
+            throw new GradleException("Missing BBSFSR jar: ${bbsCoreJar}. Build it with `cd ../new && ./gradlew jar`.")
+        }
+
+        def sourceFiles = files(
+            fileTree('../new/src/main/java') { include '**/*.java' },
+            fileTree('../new/src/client/java') { include '**/*.java' }
+        ).files
+        def newerSources = sourceFiles.findAll { it.lastModified() > bbsCoreJar.lastModified() }
+
+        if (!newerSources.isEmpty()) {
+            throw new GradleException(
+                "BBSFSR jar predates ${newerSources.size()} source file(s) in ../new " +
+                "(e.g. ${newerSources.first().name}). Build it with `cd ../new && ./gradlew jar`.")
+        }
+
+        def requiredEntries = [
+            'mchorse/bbs_mod/BBSMod.class',
+            'mchorse/bbs_mod/api/addon/BBSAddon.class',
+            'mchorse/bbs_mod/api/addon/BBSAddonDescriptor.class',
+            'mchorse/bbs_mod/api/network/BBSNetworkRegistry.class',
+            'mchorse/bbs_mod/api/client/BBSClientApi.class',
+            'mchorse/bbs_mod/api/client/film/BBSFilmCollaborationListener.class'
+        ]
+
+        new java.util.jar.JarFile(bbsCoreJar).withCloseable { jar ->
+            def missing = requiredEntries.findAll { jar.getEntry(it) == null }
+
+            if (!missing.isEmpty()) {
+                throw new GradleException("BBSFSR jar does not provide the required Addon API 2.0 classes: ${missing.join(', ')}")
+            }
+        }
+    }
+}
+
+tasks.register('installBbsCoreForRun', Copy) {
+    group = 'neogradle runs'
+    description = 'Copies BBSFSR into the development client mods directory.'
+    dependsOn tasks.named('verifyBbsCoreJar')
+    from bbsCoreJar
+    into layout.projectDirectory.dir('runs/client/mods')
+}
+
+runs {
+    client {
+        systemProperty 'mixin.debug.verbose', 'true'
+    }
+}
+
+tasks.matching { it.name == 'runClient' }.configureEach {
+    dependsOn tasks.named('installBbsCoreForRun')
+}
+
+tasks.withType(JavaCompile).configureEach {
+    dependsOn tasks.named('verifyBbsCoreJar')
+    options.encoding = 'UTF-8'
+    options.release = java_version as int
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+}
+
+processResources {
+    inputs.properties(
+        mod_id: mod_id,
+        mod_name: mod_name,
+        mod_version: mod_version,
+        mod_license: mod_license,
+        minecraft_version_range: minecraft_version_range,
+        loader_version_range: loader_version_range,
+        neo_version_range: neo_version_range,
+        bbs_version: bbs_version
+    )
+
+    filesMatching('META-INF/neoforge.mods.toml') {
+        expand project.properties
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+            'Specification-Title': mod_name,
+            'Specification-Vendor': 'McHorse, ChillinWithDylan',
+            'Specification-Version': mod_version,
+            'Implementation-Title': project.name,
+            'Implementation-Version': mod_version
+        )
+    }
+}

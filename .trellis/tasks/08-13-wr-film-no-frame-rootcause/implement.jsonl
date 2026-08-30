@@ -1,0 +1,3 @@
+{"file": ".trellis/tasks/08-13-wr-film-no-frame-rootcause/research/jstack-hang-2026-08-13.txt", "reason": "Root-cause evidence: native addIceCandidate hung 12819s holding RTC lock; onClose held main lock waiting on it; five threads chained. Fix targets derive from these stacks."}
+{"file": ".trellis/spec/frontend/web-browser-client-architecture.md", "reason": "Browser bundle contract for 1C changes: IIFE ns module rules, WebTest export additions must be add-only, three-place sync for new modules."}
+{"file": ".trellis/spec/guides/index.md", "reason": "Shared thinking guides index; consult before cross-layer changes between new/ (FSR capture) and bbs-web-remote/."}

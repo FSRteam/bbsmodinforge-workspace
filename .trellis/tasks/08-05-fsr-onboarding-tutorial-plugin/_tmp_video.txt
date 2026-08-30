@@ -1,0 +1,104 @@
+=== video_export (94 labels)
+  bbs.config.recording.camera_preview                            摄像机预览
+  bbs.config.recording.camera_preview-comment                    允许在影片编辑器中切换摄像机线框的渲染（当摄像机模式不“摄像机”时生效）
+  bbs.config.recording.countdown                                 录制倒计时
+  bbs.config.recording.countdown-comment                         录制倒计时（以秒为单位）
+  bbs.config.recording.overlays                                  录制提示
+  bbs.config.recording.overlays-comment                          是否显示录制提示（显示倒计时、当前刻，以及摄像机预览）
+  bbs.config.recording.pose_transform_overlays                   额外附加层（Overlay）
+  bbs.config.recording.pose_transform_overlays-comment           形态能有多少额外的 pose 和 transform 关键帧轨道（重新进入世界以刷新附加层的数量）
+  bbs.config.recording.replay_tabs                               回放标签页
+  bbs.config.recording.replay_tabs-comment                       启用后，回放轨道将分为三个标签页：玩家、模型和姿势
+  bbs.config.recording.swipe_damage                              挥手攻击
+  bbs.config.recording.swipe_damage-comment                      当录制下挥手行为时，会自动插入对应的攻击行为
+  bbs.config.recording.title                                     录制
+  bbs.config.recording.tooltip                                   与玩家录制系统相关的所有内容
+  bbs.config.video.arguments                                     编码器参数
+  bbs.config.video.arguments-comment                             用于编码视频的 FFmpeg 参数。占位符：%WIDTH%（宽）、%HEIGHT%（高）、%FPS%（帧率）、%FILTERS%（滤镜）、%NAME%（名称）
+  bbs.config.video.arguments_audio                               编码器参数（音频）
+  bbs.config.video.arguments_audio-comment                       启用音频导出时使用的 FFmpeg 参数。增加了 %AUDIO_TRACK%（音轨）占位符。
+  bbs.config.video.arguments_mux                                 编码器参数（声音合并）
+  bbs.config.video.arguments_mux-comment                         将捕获声音合入已录制视频时使用的 FFmpeg 参数。占位符：%VIDEO%、%AUDIO_TRACK%、%NAME%。
+  bbs.config.video.audio                                         导出音频
+  bbs.config.video.audio-comment                                 导出影片音频剪辑；Minecraft 场景声音由下方独立选项控制
+  bbs.config.video.audio_channel_layout                          音频声道
+  bbs.config.video.audio_channel_layout-comment                  选择导出音频使用单声道或立体声。
+  bbs.config.video.delay                                         导出延迟
+  bbs.config.video.delay-comment                                 导出开始前的延迟时间（秒）。有助于让回放 / 实体在第一帧（Tick）时完全稳定下来。
+  bbs.config.video.encoder_args                                  编码器参数
+  bbs.config.video.encoder_args-comment                          在此处可以指定自定义的 FFmpeg 参数。自行更改此字段存在风险！
+  bbs.config.video.encoder_path                                  编码器路径
+  bbs.config.video.encoder_path-comment                          要录制视频，您需要在此处指定 FFmpeg 二进制文件的路径（根据操作系统选择 ffmpeg 或 ffmpeg.exe 文件）
+  bbs.config.video.export_path                                   导出路径
+  bbs.config.video.export_path-comment                           保存导出视频的文件夹。如果留空，则使用默认的导出文件夹。
+  bbs.config.video.filename_format                               文件名格式
+  bbs.config.video.filename_format-comment                       导出视频的文件名模板。花括号中的占位符会被替换：
+{name} - 影片名称，
+{date} - 日期，
+{time} - 时间，
+{datetime} - 日期和时间，
+{width} - 宽度，
+{height} - 高度，
+{fps} - 帧率，
+{duration} - 时长（秒）
+  bbs.config.video.frame_rate                                    帧率
+  bbs.config.video.frame_rate-comment                            将以此帧率录制视频
+  bbs.config.video.height                                        高度
+  bbs.config.video.height-comment                                要录制的视频高度（与当前窗口高度不同）
+  bbs.config.video.held_frames                                   保持帧
+  bbs.config.video.held_frames-comment                           如果需要稳定累积型着色器（如 RT 光追或 PT 路径追踪）的画面，请增加此数值
+  bbs.config.video.limit_frame_rate                              限制帧率
+  bbs.config.video.limit_frame_rate-comment                      启用后，录制会限速，确保实时渲染速度不会超过上方设置的帧率。适用于性能较强且录制速度过快的设备。
+  bbs.config.video.log                                           编码器日志
+  bbs.config.video.log-comment                                   若禁用，模组不会在视频导出文件夹中生成日志（而是会保存至 BBS 模组的 settings/video.log）
+  bbs.config.video.minecraft_sounds                              导出 Minecraft 场景声音
+  bbs.config.video.minecraft_sounds-comment                      录制时捕获脚步、生物、天气等场景声音并混入导出视频；忽略音乐和界面点击声。
+  bbs.config.video.motion_blur                                   运动模糊
+  bbs.config.video.motion_blur-comment                           数值越大，运动模糊效果越好，但录制所需的时间也会越长
+  bbs.config.video.mute_audio_while_render                       渲染时静音影片音频
+  bbs.config.video.mute_audio_while_render-comment               启用后，视频导出录制期间影片中的 BBS 音频剪辑不在扬声器播放（若启用导出音频，导出的音轨不受影响）。
+  bbs.config.video.open_folder_after_export                      导出后打开文件夹
+  bbs.config.video.open_folder_after_export-comment              启用后，渲染完成后，系统文件管理器将自动打开包含导出视频的文件夹。
+  bbs.config.video.play_sound_after_export                       导出后播放提示音
+  bbs.config.video.play_sound_after_export-comment               启用此选项后，渲染完成时将播放提示音。禁用此选项后，则不播放声音。
+  bbs.config.video.title                                         视频录制
+  bbs.config.video.tooltip                                       关于视频录制的选项
+  bbs.config.video.width                                         视频宽度
+  bbs.config.video.width-comment                                 要录制的视频宽度（与当前窗口宽度不同）
+  bbs.config.video.world_export_resize_window                    从游戏世界导出时调整窗口尺寸
+  bbs.config.video.world_export_resize_window-comment            启用后，使用 F4/F6 键从游戏世界导出时，Minecraft 窗口大小会暂时调整为导出分辨率，并在停止导出后恢复原尺寸。
+  bbs.ui.ffmpeg.error-description                                FFmpeg 未设置或不存在。请在 BBS 模组的设置中配置 FFmpeg 的路径，或点击 ? 按钮阅读指南。
+  bbs.ui.ffmpeg.error-guide                                      在浏览器中打开指南
+  bbs.ui.ffmpeg.error-guide_link                                 https://www.yuque.com/mhmzh/bbs-mod/ffmpeg
+  bbs.ui.ffmpeg.find                                             搜索 ffmpeg.exe...
+  bbs.ui.video_settings.args                                     编码器参数
+  bbs.ui.video_settings.audio                                    导出音频
+  bbs.ui.video_settings.audio-tooltip                            将音频剪辑导出并与录制的视频合并（不包含 Minecraft 声音）
+  bbs.ui.video_settings.audio_args                               编码器参数（音频）
+  bbs.ui.video_settings.audio_channels                           音频声道
+  bbs.ui.video_settings.audio_channels.mono                      单声道
+  bbs.ui.video_settings.audio_channels.stereo                    立体声
+  bbs.ui.video_settings.delay                                    导出延迟
+  bbs.ui.video_settings.delay-tooltip                            导出开始前的延迟（秒）。可让回放和实体在第一刻充分稳定。
+  bbs.ui.video_settings.edit                                     编辑设置...
+  bbs.ui.video_settings.frame_rate                               帧率
+  bbs.ui.video_settings.height                                   高度
+  bbs.ui.video_settings.held_frames                              保持帧数
+  bbs.ui.video_settings.held_frames-tooltip                      若需稳定累积式光影（如光线追踪或路径追踪）的画面，请增大此值
+  bbs.ui.video_settings.motion_blur                              运动模糊
+  bbs.ui.video_settings.motion_blur-tooltip                      数值越大，运动模糊质量越高，但录制耗时也越长
+  bbs.ui.video_settings.open_folder_after_export                 导出后打开文件夹
+  bbs.ui.video_settings.open_folder_after_export-tooltip         启用后，渲染完成时会在系统文件管理器中打开导出视频所在的文件夹。
+  bbs.ui.video_settings.path                                     导出路径
+  bbs.ui.video_settings.play_sound_after_export                  导出后播放声音
+  bbs.ui.video_settings.play_sound_after_export-tooltip          启用后，渲染完成时会播放提示音；禁用后不会播放。
+  bbs.ui.video_settings.presets.1080p                            1080p (1920x1080 - 60 FPS)
+  bbs.ui.video_settings.presets.1440p                            1440p (2560x1440 - 60 FPS)
+  bbs.ui.video_settings.presets.4k                               4K (3840x2160 - 60 FPS)
+  bbs.ui.video_settings.presets.720p                             720p (1280x720 - 60 FPS)
+  bbs.ui.video_settings.presets.shorts_1080p                     1080p 竖屏 (1080x1920 - 60 FPS)
+  bbs.ui.video_settings.resolution                               帧分辨率
+  bbs.ui.video_settings.swap                                     对调宽度和高度
+  bbs.ui.video_settings.title                                    视频导出设置
+  bbs.ui.video_settings.width                                    宽度
+

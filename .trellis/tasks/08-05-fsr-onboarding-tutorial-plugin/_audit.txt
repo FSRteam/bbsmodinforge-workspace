@@ -1,0 +1,112 @@
+PLAN total=52 chapters, 304 steps
+  stage 入门: 5 ch / 30 steps
+  stage 伪装: 10 ch / 62 steps
+  stage 影片: 15 ch / 92 steps
+  stage 创作: 12 ch / 74 steps
+  stage 导出: 5 ch / 26 steps
+  stage 系统: 5 ch / 20 steps
+
+-- plan chapters --
+01 ch01 | 入门 | steps=7 | 认识 Dashboard 与九大面板
+02 ch02 | 入门 | steps=6 | 按键体系与 F9 自查
+03 ch03 | 入门 | steps=7 | 第一次变身：伪装基础
+04 ch04 | 入门 | steps=6 | 姿势编辑器入门（FK）
+05 ch05 | 入门 | steps=4 | 保存、预设与热键
+06 ch06 | 伪装 | steps=7 | 形态类型（上）：模型与生物
+07 ch07 | 伪装 | steps=7 | 形态类型（下）：方块/物品/文字/广告牌
+08 ch08 | 伪装 | steps=6 | 特殊形态：拖影/拉伸/声音/原版粒子
+09 ch09 | 伪装 | steps=7 | IK 链：从痛点到解法
+10 ch10 | 伪装 | steps=7 | IK 进阶：极向量/拉伸/柔软度/权重
+11 ch11 | 伪装 | steps=7 | 物理骨链：重力/阻尼/刚度
+12 ch12 | 伪装 | steps=6 | 物理进阶：风力/阵风/世界碰撞
+13 ch13 | 伪装 | steps=5 | 骨骼约束：角度限制
+14 ch14 | 伪装 | steps=5 | 形态键与附魔光效
+15 ch15 | 伪装 | steps=5 | 动作与动画状态机
+16 ch16 | 影片 | steps=7 | 影片编辑器总览与第一个影片
+17 ch17 | 影片 | steps=7 | 关键帧基础：插入/选择/移动
+18 ch18 | 影片 | steps=7 | 关键帧进阶：插值/曲线/批量调值
+19 ch19 | 影片 | steps=7 | 回放系统：录制你的动作
+20 ch20 | 影片 | steps=6 | 录制组：仅位置/仅旋转/摇杆
+21 ch21 | 影片 | steps=6 | 演员控制与行为编辑器
+22 ch22 | 影片 | steps=6 | 回放管理：类别/复制/从摄像机生成
+23 ch23 | 影片 | steps=6 | 运动路径与洋葱皮
+24 ch24 | 影片 | steps=7 | 摄像机剪辑（上）：空闲/路径/环绕
+25 ch25 | 影片 | steps=7 | 摄像机剪辑（中）：推轨/变焦/注视/抖动
+26 ch26 | 影片 | steps=7 | 摄像机剪辑（下）：曲线/追踪/重映射/数学
+27 ch27 | 影片 | steps=6 | 剪辑图层、启停与时长调整
+28 ch28 | 影片 | steps=5 | 音频剪辑与麦克风录音
+29 ch29 | 影片 | steps=4 | 字幕系统
+30 ch30 | 影片 | steps=4 | 撤销历史与影片详情
+31 ch31 | 创作 | steps=7 | 模型编辑器入门：骨骼与结构
+32 ch32 | 创作 | steps=6 | 模型编辑器进阶：查找/折叠/历史
+33 ch33 | 创作 | steps=6 | 纹理管理器与图层
+34 ch34 | 创作 | steps=7 | 像素画编辑器：画笔/填充/选区
+35 ch35 | 创作 | steps=5 | 纹理进阶：缩放/提取/取色
+36 ch36 | 创作 | steps=5 | 模型方块：放置与属性
+37 ch37 | 创作 | steps=7 | 粒子系统入门：方案与发射率
+38 ch38 | 创作 | steps=6 | 粒子外观：材质/光照/着色
+39 ch39 | 创作 | steps=7 | 粒子运动：形状/空间/生命周期
+40 ch40 | 创作 | steps=6 | 粒子碰撞与事件
+41 ch41 | 创作 | steps=6 | 粒子曲线与 Molang 表达式
+42 ch42 | 创作 | steps=6 | BBS 枪：弹道/碰撞/命令
+43 ch43 | 导出 | steps=5 | FFmpeg 配置与排错
+44 ch44 | 导出 | steps=7 | 视频导出：F4 手动与 F6 影片
+45 ch45 | 导出 | steps=6 | 导出参数：分辨率/帧率/编码
+46 ch46 | 导出 | steps=4 | 批量导出队列
+47 ch47 | 导出 | steps=4 | 素材导入与格式转换
+48 ch48 | 系统 | steps=5 | 设置总览：外观/性能/录制
+49 ch49 | 系统 | steps=4 | 主题与皮肤系统
+50 ch50 | 系统 | steps=5 | 插件管理与热重载
+51 ch51 | 系统 | steps=3 | 实体选择器与图形计算器
+52 ch52 | 系统 | steps=3 | 音频/语言编辑器与教程录制选项
+
+-- skeleton files --
+ch01 <- chapters-01-10-skeleton.json | ch01_dashboard_overview | steps=7 | 认识 Dashboard —— 九大面板与工作台
+ch02 <- chapters-01-10-skeleton.json | ch02_keybind_system | steps=6 | 按键体系与自查：全局键 vs 编辑器键
+ch03 <- chapters-01-10-skeleton.json | ch03_first_morph | steps=7 | 第一次变身：伪装基础
+ch04 <- chapters-01-10-skeleton.json | ch04_pose_fk | steps=6 | 姿势编辑器入门：FK 正向动力学
+ch05 <- chapters-01-10-skeleton.json | ch05_presets_hotkeys | steps=6 | 保存、预设与热键：别做重复劳动
+ch06 <- chapters-01-10-skeleton.json | ch06_form_types_model_mob | steps=7 | 形态类型（上）：模型与生物
+ch07 <- chapters-01-10-skeleton.json | ch07_form_types_block_item_label | steps=7 | 形态类型（下）：方块 / 物品 / 文字标签 / 广告牌
+ch08 <- chapters-01-10-skeleton.json | ch08_form_types_special | steps=7 | 特殊形态：拖影 / 拉伸 / 声音 / 原版粒子
+ch09 <- chapters-01-10-skeleton.json | ch09_ik_basics | steps=7 | IK 链：从 FK 的痛点到 IK 的解法
+ch10 <- chapters-01-10-skeleton.json | ch10_ik_advanced | steps=7 | IK 进阶：极向量 / 拉伸 / 柔软度 / 权重
+ch11 <- chapters-11-20-skeleton.json | ch11_physics_basics | steps=7 | 物理骨链：让头发和裙摆自己动起来
+ch12 <- chapters-11-20-skeleton.json | ch12_physics_wind_collision | steps=6 | 物理进阶：风力、阵风与世界碰撞
+ch13 <- chapters-11-20-skeleton.json | ch13_bone_constraints | steps=6 | 骨骼约束：给关节上一道保险
+ch14 <- chapters-11-20-skeleton.json | ch14_shape_keys_glint | steps=6 | 形态键与附魔光效
+ch15 <- chapters-11-20-skeleton.json | ch15_actions_states | steps=6 | 动作与动画状态：按键触发的动作
+ch16 <- chapters-11-20-skeleton.json | ch16_film_overview | steps=7 | 影片编辑器总览：界面、布局与第一个影片
+ch17 <- chapters-11-20-skeleton.json | ch17_keyframe_basics | steps=7 | 关键帧基础：插入、选择与移动
+ch18 <- chapters-11-20-skeleton.json | ch18_keyframe_interpolation | steps=7 | 关键帧插值：42 种曲线怎么选
+ch19 <- chapters-19-25-skeleton.json | ch19_animatable_properties | steps=7 | 什么都能打关键帧：29 种可动画属性
+ch20 <- chapters-19-25-skeleton.json | ch20_keyframe_views | steps=8 | 关键帧视图：摘要表、曲线图与形状标记
+ch21 <- chapters-19-25-skeleton.json | ch21_realtime_recording | steps=6 | 实时录制数值：把手感直接录成曲线
+ch22 <- chapters-19-25-skeleton.json | ch22_replay_system | steps=7 | 回放系统：录下你的动作
+ch23 <- chapters-23-27-skeleton.json | ch23_recording_groups | steps=6 | 录制组：只录你想录的
+ch24 <- chapters-23-27-skeleton.json | ch24_actor_control | steps=7 | 演员控制：用数据驱动表演
+ch25 <- chapters-23-27-skeleton.json | ch25_action_clips | steps=7 | 行为编辑器：让角色做事
+ch26 <- chapters-23-27-skeleton.json | ch26_replay_management | steps=7 | 回放管理：多角色调度
+ch27 <- chapters-23-27-skeleton.json | ch27_motion_path | steps=7 | 运动路径与洋葱皮
+ch28 <- chapters-28-31-skeleton.json | ch28_camera_clips_intro | steps=7 | 摄像机剪辑入门：从静止到路径
+ch29 <- chapters-28-31-skeleton.json | ch29_camera_layers | steps=7 | 图层叠加：修饰你的镜头
+ch30 <- chapters-28-31-skeleton.json | ch30_look_orbit_tracker | steps=8 | 注视与跟随：让镜头追着目标
+ch31 <- chapters-28-31-skeleton.json | ch31_advanced_clips | steps=7 | 程序化镜头：关键帧、数学与重映射
+ch32 <- chapters-32-38-skeleton.json | ch32_pixel_paint_tools | steps=7 | 像素画工具箱：画笔、橡皮与油漆桶
+ch33 <- chapters-32-38-skeleton.json | ch33_pixel_layers | steps=7 | 图层管理：叠加你的画作
+ch34 <- chapters-32-38-skeleton.json | ch34_texture_manager | steps=7 | 纹理管理器：导入、导出与复用
+ch35 <- chapters-32-38-skeleton.json | ch35_model_editor_basics | steps=7 | 模型配置基础：绑纹理与隐藏骨骼
+ch36 <- chapters-32-38-skeleton.json | ch36_model_items_armor | steps=8 | 装备配置：手持物品与盔甲
+ch37 <- chapters-32-38-skeleton.json | ch37_model_blocks | steps=8 | 模型方块：把模型摆进世界
+ch38 <- chapters-32-38-skeleton.json | ch38_chapter_summary | steps=4 | 第六幕总结：从画到穿戴
+ch39 <- chapters-39-45-skeleton.json | ch39_particle_basics | steps=7 | 粒子入门：从预设开始
+ch40 <- chapters-39-45-skeleton.json | ch40_emitter_and_lifetime | steps=7 | 发射器与寿命：让粒子活起来
+ch41 <- chapters-39-45-skeleton.json | ch41_motion_and_color | steps=7 | 运动与颜色：让粒子动起来、亮起来
+ch42 <- chapters-39-45-skeleton.json | ch42_texture_and_animation | steps=7 | 纹理与动画：给粒子换装
+ch43 <- chapters-39-45-skeleton.json | ch43_collision_and_events | steps=7 | 碰撞与事件：粒子的交互
+ch44 <- chapters-39-45-skeleton.json | ch44_curves_and_expressions | steps=7 | 曲线与表达式：参数化控制
+ch45 <- chapters-39-45-skeleton.json | ch45_chapter_summary | steps=4 | 第七幕总结：从零到粒子特效
+
+-- coverage --
+missing: [46, 47, 48, 49, 50, 51, 52]
+duplicated: []

@@ -1,0 +1,360 @@
+{
+  "_meta": {
+    "purpose": "剧情目录：六幕结构，每幕有一个学习者真正做出来的成品",
+    "narrativeRule": "每幕开头给出本幕要做出的东西，每章是朝它推进的一步；猫娘版有情绪起伏，高冷版只做简短确认",
+    "writtenChapters": 22,
+    "writtenSteps": 147,
+    "plannedChapters": 28,
+    "targetSteps": 300
+  },
+  "acts": {
+    "第一幕 · 入门": {
+      "mission": "让角色站到镜头前：打开工作台、变身、摆出第一个姿势并存下来",
+      "stakes": "从「装了个 mod 不知道干什么」到「我能让角色变成任何样子」",
+      "chapters": [
+        {
+          "order": 1,
+          "titleZh": "认识 Dashboard —— 九大面板与工作台",
+          "steps": 7,
+          "status": "written"
+        },
+        {
+          "order": 2,
+          "titleZh": "按键体系与自查：全局键 vs 编辑器键",
+          "steps": 6,
+          "status": "written"
+        },
+        {
+          "order": 3,
+          "titleZh": "第一次变身：伪装基础",
+          "steps": 7,
+          "status": "written"
+        },
+        {
+          "order": 4,
+          "titleZh": "姿势编辑器入门：FK 正向动力学",
+          "steps": 6,
+          "status": "written"
+        },
+        {
+          "order": 5,
+          "titleZh": "保存、预设与热键：别做重复劳动",
+          "steps": 6,
+          "status": "written"
+        }
+      ]
+    },
+    "第二幕 · 塑形": {
+      "mission": "做出一个能一键召唤的完整角色：正确的关节、会飘的头发、会变的表情",
+      "stakes": "从「能变身」到「这个角色是活的」——头发会甩、关节不会反折、表情会变",
+      "chapters": [
+        {
+          "order": 6,
+          "titleZh": "形态类型（上）：模型与生物",
+          "steps": 7,
+          "status": "written"
+        },
+        {
+          "order": 7,
+          "titleZh": "形态类型（下）：方块 / 物品 / 文字标签 / 广告牌",
+          "steps": 7,
+          "status": "written"
+        },
+        {
+          "order": 8,
+          "titleZh": "特殊形态：拖影 / 拉伸 / 声音 / 原版粒子",
+          "steps": 7,
+          "status": "written"
+        },
+        {
+          "order": 9,
+          "titleZh": "IK 链：从 FK 的痛点到 IK 的解法",
+          "steps": 7,
+          "status": "written"
+        },
+        {
+          "order": 10,
+          "titleZh": "IK 进阶：极向量 / 拉伸 / 柔软度 / 权重",
+          "steps": 7,
+          "status": "written"
+        },
+        {
+          "order": 11,
+          "titleZh": "物理骨链：让头发和裙摆自己动起来",
+          "steps": 7,
+          "status": "written"
+        },
+        {
+          "order": 12,
+          "titleZh": "物理进阶：风力、阵风与世界碰撞",
+          "steps": 6,
+          "status": "written"
+        },
+        {
+          "order": 13,
+          "titleZh": "骨骼约束：给关节上一道保险",
+          "steps": 6,
+          "status": "written"
+        },
+        {
+          "order": 14,
+          "titleZh": "形态键与附魔光效",
+          "steps": 6,
+          "status": "written"
+        },
+        {
+          "order": 15,
+          "titleZh": "动作与动画状态：按键触发的动作",
+          "steps": 6,
+          "status": "written"
+        }
+      ]
+    },
+    "第三幕 · 动起来": {
+      "mission": "拍出第一个 10 秒镜头：录下动作、修好曲线、让参数随时间变化",
+      "stakes": "从「静态雕像」到「会演戏」——这一幕的转折是发现「什么都能打关键帧」",
+      "chapters": [
+        {
+          "order": 16,
+          "titleZh": "影片编辑器总览：界面、布局与第一个影片",
+          "steps": 7,
+          "status": "written"
+        },
+        {
+          "order": 17,
+          "titleZh": "关键帧基础：插入、选择与移动",
+          "steps": 7,
+          "status": "written"
+        },
+        {
+          "order": 18,
+          "titleZh": "关键帧插值：42 种曲线怎么选",
+          "steps": 7,
+          "status": "written"
+        },
+        {
+          "order": 19,
+          "titleZh": "什么都能打关键帧：29 种可动画属性",
+          "steps": 7,
+          "status": "written"
+        },
+        {
+          "order": 20,
+          "titleZh": "关键帧视图：摘要表、曲线图与形状标记",
+          "steps": 8,
+          "status": "written"
+        },
+        {
+          "order": 21,
+          "titleZh": "实时录制数值：把手感直接录成曲线",
+          "steps": 6,
+          "status": "written"
+        },
+        {
+          "order": 22,
+          "titleZh": "回放系统：录下你的动作",
+          "steps": 7,
+          "status": "written"
+        }
+      ]
+    },
+    "第四幕 · 调度": {
+      "mission": "把一个人的动作变成一场戏：分组录制、控制演员、让世界配合演出",
+      "stakes": "从「录了一段动作」到「导演一场戏」——学会看见时间（运动路径与洋葱皮）",
+      "chapters": [
+        {
+          "order": 23,
+          "titleZh": "录制组：只录位置还是连旋转一起录",
+          "steps": null,
+          "status": "planned"
+        },
+        {
+          "order": 24,
+          "titleZh": "演员控制：接管角色与轨道摄像机",
+          "steps": null,
+          "status": "planned"
+        },
+        {
+          "order": 25,
+          "titleZh": "行为编辑器：让世界配合演出",
+          "steps": null,
+          "status": "planned"
+        },
+        {
+          "order": 26,
+          "titleZh": "回放管理：类别、复制、从摄像机生成、动画转姿势",
+          "steps": null,
+          "status": "planned"
+        },
+        {
+          "order": 27,
+          "titleZh": "运动路径与洋葱皮：看见时间",
+          "steps": null,
+          "status": "planned"
+        }
+      ]
+    },
+    "第五幕 · 运镜": {
+      "mission": "给那场戏配上电影级镜头运动：环绕、推轨、跟随、手持抖动、字幕与配音",
+      "stakes": "从「有画面」到「有镜头语言」",
+      "chapters": [
+        {
+          "order": 28,
+          "titleZh": "摄像机剪辑（上）：空闲、路径、环绕",
+          "steps": null,
+          "status": "planned"
+        },
+        {
+          "order": 29,
+          "titleZh": "摄像机剪辑（中）：推轨、变焦、注视、抖动",
+          "steps": null,
+          "status": "planned"
+        },
+        {
+          "order": 30,
+          "titleZh": "摄像机剪辑（下）：曲线、追踪、重映射、数学",
+          "steps": null,
+          "status": "planned"
+        },
+        {
+          "order": 31,
+          "titleZh": "剪辑图层、启停、时长与淡入淡出",
+          "steps": null,
+          "status": "planned"
+        },
+        {
+          "order": 32,
+          "titleZh": "音频剪辑与麦克风录音",
+          "steps": null,
+          "status": "planned"
+        },
+        {
+          "order": 33,
+          "titleZh": "字幕系统",
+          "steps": null,
+          "status": "planned"
+        }
+      ]
+    },
+    "第六幕 · 造物": {
+      "mission": "亲手画一张贴图，并把现成模型配置成自己的角色（含挂物品、绑盔甲、隐藏骨骼）",
+      "stakes": "从「只会用别人做好的东西」到「贴图我自己画、模型我自己配」",
+      "chapters": [
+        {
+          "order": 34,
+          "titleZh": "像素画编辑器（上）：六种工具与前景背景色",
+          "steps": null,
+          "status": "planned"
+        },
+        {
+          "order": 35,
+          "titleZh": "像素画编辑器（下）：图层、选区与合并",
+          "steps": null,
+          "status": "planned"
+        },
+        {
+          "order": 36,
+          "titleZh": "纹理管理器：导入、缩放、提取",
+          "steps": null,
+          "status": "planned"
+        },
+        {
+          "order": 37,
+          "titleZh": "模型配置（上）：绑纹理、隐藏骨骼、缩放",
+          "steps": null,
+          "status": "planned"
+        },
+        {
+          "order": 38,
+          "titleZh": "模型配置（下）：挂手持物品、绑盔甲、朝向注视",
+          "steps": null,
+          "status": "planned"
+        },
+        {
+          "order": 39,
+          "titleZh": "模型方块：把模型放进世界",
+          "steps": null,
+          "status": "planned"
+        }
+      ]
+    },
+    "第七幕 · 特效": {
+      "mission": "做出属于自己的粒子特效与弹道物件",
+      "stakes": "从「静态场景」到「有魔法、有爆炸、有子弹」",
+      "chapters": [
+        {
+          "order": 40,
+          "titleZh": "粒子系统入门：方案与发射率",
+          "steps": null,
+          "status": "planned"
+        },
+        {
+          "order": 41,
+          "titleZh": "粒子外观：材质、光照、着色",
+          "steps": null,
+          "status": "planned"
+        },
+        {
+          "order": 42,
+          "titleZh": "粒子运动：形状、空间、生命周期",
+          "steps": null,
+          "status": "planned"
+        },
+        {
+          "order": 43,
+          "titleZh": "粒子碰撞与事件",
+          "steps": null,
+          "status": "planned"
+        },
+        {
+          "order": 44,
+          "titleZh": "粒子曲线与 Molang 表达式",
+          "steps": null,
+          "status": "planned"
+        },
+        {
+          "order": 45,
+          "titleZh": "BBS 枪：弹道、碰撞、命令",
+          "steps": null,
+          "status": "planned"
+        }
+      ]
+    },
+    "第八幕 · 交付": {
+      "mission": "把作品导出成视频文件发出去，并把整套环境调成自己顺手的样子",
+      "stakes": "从「游戏里好看」到「拿得出手的成品」",
+      "chapters": [
+        {
+          "order": 46,
+          "titleZh": "FFmpeg 配置与排错",
+          "steps": null,
+          "status": "planned"
+        },
+        {
+          "order": 47,
+          "titleZh": "视频导出：F4 手动与 F6 影片",
+          "steps": null,
+          "status": "planned"
+        },
+        {
+          "order": 48,
+          "titleZh": "导出参数与批量队列",
+          "steps": null,
+          "status": "planned"
+        },
+        {
+          "order": 49,
+          "titleZh": "素材导入与格式转换",
+          "steps": null,
+          "status": "planned"
+        },
+        {
+          "order": 50,
+          "titleZh": "设置、主题、插件与教程录制选项",
+          "steps": null,
+          "status": "planned"
+        }
+      ]
+    }
+  }
+}

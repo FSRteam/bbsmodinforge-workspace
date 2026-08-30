@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/new/backend/fs-migration-baseline.md", "reason": "第 4 节 Validation & Error Matrix 与第 6 节 Tests Required 是本任务的验收命令清单;终止 SHA、祖先关系、版本锁、粒子/半透明无 diff 均在此判定"}
+{"file": ".trellis/tasks/08-13-sync-fs-770c0e7c-to-fsr/research/fs-upstream-diff-2026-08-13.md", "reason": "核对 16 项处置矩阵是否完整:每个提交必须落为 ported / target-equivalent / rejected 且有证据"}
+{"file": ".trellis/spec/new/backend/quality-guidelines.md", "reason": "检查阶段的代码标准与禁止模式基准"}
+{"file": ".trellis/spec/frontend/bbs-ui-theming.md", "reason": "校验主题改动未绕过 token 层、浅色主题无回归、无残留 bevelBox 调用"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "校验 Group B 存档格式/网络包/UI 三层一致,旧电影迁移路径无回归"}

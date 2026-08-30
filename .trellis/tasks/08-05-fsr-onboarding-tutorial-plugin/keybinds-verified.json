@@ -1,0 +1,1696 @@
+{
+  "_meta": {
+    "purpose": "BBS 编辑器内快捷键权威清单（教程 instruction 文案必须与此一致）",
+    "source_file": "new/src/client/java/mchorse/bbs_mod/ui/Keys.java",
+    "registry": "new/src/client/java/mchorse/bbs_mod/ui/utils/keys/KeybindSettings.java",
+    "how_registered": "KeybindSettings.register() 反射扫描 Keys.class 的所有 KeyCombo 字段，按 categoryKey 分组注册为设置项",
+    "user_config_file": "config/bbs/keybinds.json",
+    "rebindable": true,
+    "tutorial_rule": "这些键用户可在 设置 → 按键绑定 中修改，教程文案必须写「默认」二字，并提示可去按键绑定查看",
+    "open_keybind_list_shortcut": "F9（Keys.KEYBINDS）",
+    "total": 155,
+    "categories": {
+      "camera": 25,
+      "dashboard": 6,
+      "editor": 17,
+      "film_controller": 19,
+      "flight": 10,
+      "forms": 8,
+      "keyframes": 16,
+      "model_blocks": 3,
+      "model_editor": 4,
+      "particle": 1,
+      "pixels": 12,
+      "recording_groups": 11,
+      "replays_editor": 7,
+      "texture_picker": 1,
+      "transformations": 14,
+      "world": 1
+    }
+  },
+  "categories": {
+    "camera": [
+      {
+        "id": "add_at_cursor",
+        "category": "camera",
+        "combo": "Shift + A",
+        "glfw": [
+          "GLFW_KEY_A",
+          "GLFW_KEY_LEFT_SHIFT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_TIMELINE_CONTEXT_ADD_AT_CURSOR"
+      },
+      {
+        "id": "add_at_tick",
+        "category": "camera",
+        "combo": "Alt + A",
+        "glfw": [
+          "GLFW_KEY_A",
+          "GLFW_KEY_LEFT_ALT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_TIMELINE_CONTEXT_ADD_AT_TICK"
+      },
+      {
+        "id": "add_on_top",
+        "category": "camera",
+        "combo": "Shift + Alt + A",
+        "glfw": [
+          "GLFW_KEY_A",
+          "GLFW_KEY_LEFT_SHIFT",
+          "GLFW_KEY_LEFT_ALT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_TIMELINE_CONTEXT_ADD_ON_TOP"
+      },
+      {
+        "id": "clip_cut",
+        "category": "camera",
+        "combo": "Alt + C",
+        "glfw": [
+          "GLFW_KEY_C",
+          "GLFW_KEY_LEFT_ALT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_TIMELINE_CONTEXT_CUT"
+      },
+      {
+        "id": "clip_duration",
+        "category": "camera",
+        "combo": "M",
+        "glfw": [
+          "GLFW_KEY_M"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_TIMELINE_CONTEXT_SHIFT_DURATION"
+      },
+      {
+        "id": "clip_enable",
+        "category": "camera",
+        "combo": "J",
+        "glfw": [
+          "GLFW_KEY_J"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_TIMELINE_KEYS_ENABLED"
+      },
+      {
+        "id": "clip_layer_down",
+        "category": "camera",
+        "combo": "Alt + ↓",
+        "glfw": [
+          "GLFW_KEY_DOWN",
+          "GLFW_KEY_LEFT_ALT"
+        ],
+        "repeatable": true,
+        "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_CLIPS_LAYER_DOWN"
+      },
+      {
+        "id": "clip_layer_up",
+        "category": "camera",
+        "combo": "Alt + ↑",
+        "glfw": [
+          "GLFW_KEY_UP",
+          "GLFW_KEY_LEFT_ALT"
+        ],
+        "repeatable": true,
+        "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_CLIPS_LAYER_UP"
+      },
+      {
+        "id": "clip_select_after",
+        "category": "camera",
+        "combo": "Ctrl + 句号 .",
+        "glfw": [
+          "GLFW_KEY_PERIOD",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_EDITOR_SELECT_AFTER"
+      },
+      {
+        "id": "clip_select_all",
+        "category": "camera",
+        "combo": "Ctrl + A",
+        "glfw": [
+          "GLFW_KEY_A",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_CLIPS_SELECT_ALL"
+      },
+      {
+        "id": "clip_select_before",
+        "category": "camera",
+        "combo": "Ctrl + 逗号 ,",
+        "glfw": [
+          "GLFW_KEY_COMMA",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_EDITOR_SELECT_BEFORE"
+      },
+      {
+        "id": "clip_select_track",
+        "category": "camera",
+        "combo": "Ctrl + Shift + A",
+        "glfw": [
+          "GLFW_KEY_A",
+          "GLFW_KEY_LEFT_CONTROL",
+          "GLFW_KEY_LEFT_SHIFT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_CLIPS_SELECT_TRACK"
+      },
+      {
+        "id": "clip_select_track_after",
+        "category": "camera",
+        "combo": "Ctrl + Shift + 句号 .",
+        "glfw": [
+          "GLFW_KEY_PERIOD",
+          "GLFW_KEY_LEFT_CONTROL",
+          "GLFW_KEY_LEFT_SHIFT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_CLIPS_SELECT_TRACK_AFTER"
+      },
+      {
+        "id": "clip_select_track_before",
+        "category": "camera",
+        "combo": "Ctrl + Shift + 逗号 ,",
+        "glfw": [
+          "GLFW_KEY_COMMA",
+          "GLFW_KEY_LEFT_CONTROL",
+          "GLFW_KEY_LEFT_SHIFT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_CLIPS_SELECT_TRACK_BEFORE"
+      },
+      {
+        "id": "clip_shift",
+        "category": "camera",
+        "combo": "Shift + S",
+        "glfw": [
+          "GLFW_KEY_S",
+          "GLFW_KEY_LEFT_SHIFT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_TIMELINE_CONTEXT_SHIFT"
+      },
+      {
+        "id": "fade_in",
+        "category": "camera",
+        "combo": "逗号 ,",
+        "glfw": [
+          "GLFW_KEY_COMMA"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_EDITOR_FADE_IN"
+      },
+      {
+        "id": "fade_out",
+        "category": "camera",
+        "combo": "句号 .",
+        "glfw": [
+          "GLFW_KEY_PERIOD"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_EDITOR_FADE_OUT"
+      },
+      {
+        "id": "flight",
+        "category": "camera",
+        "combo": "F",
+        "glfw": [
+          "GLFW_KEY_F"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_MODES_FLIGHT"
+      },
+      {
+        "id": "jump_backward",
+        "category": "camera",
+        "combo": "↓",
+        "glfw": [
+          "GLFW_KEY_DOWN"
+        ],
+        "repeatable": true,
+        "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_EDITOR_JUMP_BACKWARD"
+      },
+      {
+        "id": "jump_forward",
+        "category": "camera",
+        "combo": "↑",
+        "glfw": [
+          "GLFW_KEY_UP"
+        ],
+        "repeatable": true,
+        "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_EDITOR_JUMP_FORWARD"
+      },
+      {
+        "id": "looping",
+        "category": "camera",
+        "combo": "L",
+        "glfw": [
+          "GLFW_KEY_L"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_MODES_LOOPING"
+      },
+      {
+        "id": "looping_set_max",
+        "category": "camera",
+        "combo": "右方括号 ]",
+        "glfw": [
+          "GLFW_KEY_RIGHT_BRACKET"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_LOOPING_SET_MAX"
+      },
+      {
+        "id": "looping_set_min",
+        "category": "camera",
+        "combo": "左方括号 [",
+        "glfw": [
+          "GLFW_KEY_LEFT_BRACKET"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_LOOPING_SET_MIN"
+      },
+      {
+        "id": "next_clip",
+        "category": "camera",
+        "combo": "Shift + →",
+        "glfw": [
+          "GLFW_KEY_RIGHT",
+          "GLFW_KEY_LEFT_SHIFT"
+        ],
+        "repeatable": true,
+        "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_EDITOR_NEXT_CLIP"
+      },
+      {
+        "id": "prev_clip",
+        "category": "camera",
+        "combo": "Shift + ←",
+        "glfw": [
+          "GLFW_KEY_LEFT",
+          "GLFW_KEY_LEFT_SHIFT"
+        ],
+        "repeatable": true,
+        "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_EDITOR_PREV_CLIP"
+      }
+    ],
+    "dashboard": [
+      {
+        "id": "data_manager",
+        "category": "dashboard",
+        "combo": "N",
+        "glfw": [
+          "GLFW_KEY_N"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.PANELS_KEYS_OPEN_DATA_MANAGER"
+      },
+      {
+        "id": "new_tab",
+        "category": "dashboard",
+        "combo": "Ctrl + N",
+        "glfw": [
+          "GLFW_KEY_N",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.PANELS_KEYS_OPEN_NEW_TAB"
+      },
+      {
+        "id": "toggle",
+        "category": "dashboard",
+        "combo": "F1",
+        "glfw": [
+          "GLFW_KEY_F1"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.DASHBOARD_CONTEXT_TOGGLE_VISIBILITY"
+      },
+      {
+        "id": "toggle_debug",
+        "category": "dashboard",
+        "combo": "F5",
+        "glfw": [
+          "GLFW_KEY_F5"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.DASHBOARD_KEYS_TOGGLE_DEBUG"
+      },
+      {
+        "id": "toggle_taskbar_auto_hide",
+        "category": "dashboard",
+        "combo": "Ctrl + S",
+        "glfw": [
+          "GLFW_KEY_S",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.DASHBOARD_KEYS_TOGGLE_AUTO_HIDE"
+      },
+      {
+        "id": "utility_panel",
+        "category": "dashboard",
+        "combo": "F6",
+        "glfw": [
+          "GLFW_KEY_F6"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.UTILITY_TITLE"
+      }
+    ],
+    "editor": [
+      {
+        "id": "close",
+        "category": "editor",
+        "combo": "Esc",
+        "glfw": [
+          "GLFW_KEY_ESCAPE"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.GENERAL_CLOSE"
+      },
+      {
+        "id": "confirm",
+        "category": "editor",
+        "combo": "Ctrl + 回车",
+        "glfw": [
+          "GLFW_KEY_ENTER",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.GENERAL_CONFIRM"
+      },
+      {
+        "id": "copy",
+        "category": "editor",
+        "combo": "Ctrl + C",
+        "glfw": [
+          "GLFW_KEY_C",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.GENERAL_COPY"
+      },
+      {
+        "id": "cut",
+        "category": "editor",
+        "combo": "Ctrl + X",
+        "glfw": [
+          "GLFW_KEY_X",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.GENERAL_CUT"
+      },
+      {
+        "id": "delete",
+        "category": "editor",
+        "combo": "Delete",
+        "glfw": [
+          "GLFW_KEY_DELETE"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.GENERAL_REMOVE"
+      },
+      {
+        "id": "deselect",
+        "category": "editor",
+        "combo": "Ctrl + D",
+        "glfw": [
+          "GLFW_KEY_D",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_CLIPS_DESELECT"
+      },
+      {
+        "id": "keybinds",
+        "category": "editor",
+        "combo": "F9",
+        "glfw": [
+          "GLFW_KEY_F9"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.KEYS_LIST"
+      },
+      {
+        "id": "next",
+        "category": "editor",
+        "combo": "→",
+        "glfw": [
+          "GLFW_KEY_RIGHT"
+        ],
+        "repeatable": true,
+        "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_EDITOR_NEXT"
+      },
+      {
+        "id": "paste",
+        "category": "editor",
+        "combo": "Ctrl + V",
+        "glfw": [
+          "GLFW_KEY_V",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.GENERAL_PASTE"
+      },
+      {
+        "id": "plause",
+        "category": "editor",
+        "combo": "空格",
+        "glfw": [
+          "GLFW_KEY_SPACE"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_EDITOR_PLAUSE"
+      },
+      {
+        "id": "presets",
+        "category": "editor",
+        "combo": "Shift + Ctrl + V",
+        "glfw": [
+          "GLFW_KEY_V",
+          "GLFW_KEY_LEFT_SHIFT",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.GENERAL_PRESETS"
+      },
+      {
+        "id": "prev",
+        "category": "editor",
+        "combo": "←",
+        "glfw": [
+          "GLFW_KEY_LEFT"
+        ],
+        "repeatable": true,
+        "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_EDITOR_PREV"
+      },
+      {
+        "id": "redo",
+        "category": "editor",
+        "combo": "Ctrl + Y",
+        "glfw": [
+          "GLFW_KEY_Y",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_EDITOR_REDO"
+      },
+      {
+        "id": "save",
+        "category": "editor",
+        "combo": "Ctrl + S",
+        "glfw": [
+          "GLFW_KEY_S",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.GENERAL_SAVE"
+      },
+      {
+        "id": "ui_scale_dec",
+        "category": "editor",
+        "combo": "Ctrl + 减号 -",
+        "glfw": [
+          "GLFW_KEY_MINUS",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": true,
+        "labelKey": "UIKeys.KEYS_UI_SCALE_DEC"
+      },
+      {
+        "id": "ui_scale_inc",
+        "category": "editor",
+        "combo": "Ctrl + 等号 =",
+        "glfw": [
+          "GLFW_KEY_EQUAL",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": true,
+        "labelKey": "UIKeys.KEYS_UI_SCALE_INC"
+      },
+      {
+        "id": "undo",
+        "category": "editor",
+        "combo": "Ctrl + Z",
+        "glfw": [
+          "GLFW_KEY_Z",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_EDITOR_KEYS_EDITOR_UNDO"
+      }
+    ],
+    "film_controller": [
+      {
+        "id": "attach_orbit_record",
+        "category": "film_controller",
+        "combo": "Shift + Z",
+        "glfw": [
+          "GLFW_KEY_Z",
+          "GLFW_KEY_LEFT_SHIFT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_CONTROLLER_KEYS_ATTACH_ORBIT"
+      },
+      {
+        "id": "cycle_editors",
+        "category": "film_controller",
+        "combo": "反引号 `",
+        "glfw": [
+          "GLFW_KEY_GRAVE_ACCENT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_CONTROLLER_KEYS_CYCLE_EDITORS"
+      },
+      {
+        "id": "insert_frame",
+        "category": "film_controller",
+        "combo": "I",
+        "glfw": [
+          "GLFW_KEY_I"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_CONTROLLER_KEYS_INSERT_FRAME"
+      },
+      {
+        "id": "move_replay_to_cursor",
+        "category": "film_controller",
+        "combo": "Ctrl + G",
+        "glfw": [
+          "GLFW_KEY_G",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_CONTROLLER_KEYS_MOVE_REPLAY_TO_CURSOR"
+      },
+      {
+        "id": "next_dock_tab",
+        "category": "film_controller",
+        "combo": "Ctrl + Tab",
+        "glfw": [
+          "GLFW_KEY_TAB",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_CONTROLLER_KEYS_CYCLE_EDITORS"
+      },
+      {
+        "id": "next_replay",
+        "category": "film_controller",
+        "combo": "PageDown",
+        "glfw": [
+          "GLFW_KEY_PAGE_DOWN"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_CONTROLLER_KEYS_NEXT_REPLAY"
+      },
+      {
+        "id": "prev_dock_tab",
+        "category": "film_controller",
+        "combo": "Shift + Ctrl + Tab",
+        "glfw": [
+          "GLFW_KEY_TAB",
+          "GLFW_KEY_LEFT_SHIFT",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_CONTROLLER_KEYS_CYCLE_EDITORS"
+      },
+      {
+        "id": "prev_replay",
+        "category": "film_controller",
+        "combo": "PageUp",
+        "glfw": [
+          "GLFW_KEY_PAGE_UP"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_CONTROLLER_KEYS_PREV_REPLAY"
+      },
+      {
+        "id": "restart_actions",
+        "category": "film_controller",
+        "combo": "Alt + R",
+        "glfw": [
+          "GLFW_KEY_R",
+          "GLFW_KEY_LEFT_ALT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_CONTROLLER_KEYS_RESTART_ACTIONS"
+      },
+      {
+        "id": "start_recording",
+        "category": "film_controller",
+        "combo": "Ctrl + R",
+        "glfw": [
+          "GLFW_KEY_R",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_CONTROLLER_KEYS_START_RECORDING"
+      },
+      {
+        "id": "teleport_orbit_record",
+        "category": "film_controller",
+        "combo": "C",
+        "glfw": [
+          "GLFW_KEY_C"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_CONTROLLER_KEYS_TELEPORT_ORBIT"
+      },
+      {
+        "id": "toggle_actions",
+        "category": "film_controller",
+        "combo": "Shift + 反引号 `",
+        "glfw": [
+          "GLFW_KEY_GRAVE_ACCENT",
+          "GLFW_KEY_LEFT_SHIFT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_CONTROLLER_KEYS_TOGGLE_ACTIONS"
+      },
+      {
+        "id": "toggle_control",
+        "category": "film_controller",
+        "combo": "H",
+        "glfw": [
+          "GLFW_KEY_H"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_CONTROLLER_KEYS_TOGGLE_CONTROL"
+      },
+      {
+        "id": "toggle_motion_path",
+        "category": "film_controller",
+        "combo": "M",
+        "glfw": [
+          "GLFW_KEY_M"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_CONTROLLER_MOTION_PATH_KEYS_TOGGLE"
+      },
+      {
+        "id": "toggle_motion_path_pin",
+        "category": "film_controller",
+        "combo": "Shift + M",
+        "glfw": [
+          "GLFW_KEY_M",
+          "GLFW_KEY_LEFT_SHIFT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_CONTROLLER_MOTION_PATH_KEYS_TOGGLE_PIN"
+      },
+      {
+        "id": "toggle_onion_skin",
+        "category": "film_controller",
+        "combo": "O",
+        "glfw": [
+          "GLFW_KEY_O"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_CONTROLLER_ONION_SKIN_KEYS_TOGGLE"
+      },
+      {
+        "id": "toggle_orbit_mode",
+        "category": "film_controller",
+        "combo": "F3",
+        "glfw": [
+          "GLFW_KEY_F3"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_CONTROLLER_KEYS_CHANGE_CAMERA_MODE"
+      },
+      {
+        "id": "toggle_replay_menu",
+        "category": "film_controller",
+        "combo": "F4",
+        "glfw": [
+          "GLFW_KEY_F4"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_CONTROLLER_KEYS_OPEN_REPLAYS"
+      },
+      {
+        "id": "toggle_replays",
+        "category": "film_controller",
+        "combo": "右 Shift",
+        "glfw": [
+          "GLFW_KEY_RIGHT_SHIFT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_CONTROLLER_KEYS_OPEN_REPLAYS"
+      }
+    ],
+    "flight": [
+      {
+        "id": "flight_backward",
+        "category": "flight",
+        "combo": "S",
+        "glfw": [
+          "GLFW_KEY_S"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_FLIGHT_FLIGHT_BACKWARD"
+      },
+      {
+        "id": "flight_down",
+        "category": "flight",
+        "combo": "Shift",
+        "glfw": [
+          "GLFW_KEY_LEFT_SHIFT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_FLIGHT_FLIGHT_DOWN"
+      },
+      {
+        "id": "flight_forward",
+        "category": "flight",
+        "combo": "W",
+        "glfw": [
+          "GLFW_KEY_W"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_FLIGHT_FLIGHT_FORWARD"
+      },
+      {
+        "id": "flight_left",
+        "category": "flight",
+        "combo": "A",
+        "glfw": [
+          "GLFW_KEY_A"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_FLIGHT_FLIGHT_LEFT"
+      },
+      {
+        "id": "flight_pan_left",
+        "category": "flight",
+        "combo": "←",
+        "glfw": [
+          "GLFW_KEY_LEFT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_FLIGHT_FLIGHT_PAN_LEFT"
+      },
+      {
+        "id": "flight_pan_right",
+        "category": "flight",
+        "combo": "→",
+        "glfw": [
+          "GLFW_KEY_RIGHT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_FLIGHT_FLIGHT_PAN_RIGHT"
+      },
+      {
+        "id": "flight_right",
+        "category": "flight",
+        "combo": "D",
+        "glfw": [
+          "GLFW_KEY_D"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_FLIGHT_FLIGHT_RIGHT"
+      },
+      {
+        "id": "flight_tilt_down",
+        "category": "flight",
+        "combo": "↓",
+        "glfw": [
+          "GLFW_KEY_DOWN"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_FLIGHT_FLIGHT_TILT_DOWN"
+      },
+      {
+        "id": "flight_tilt_up",
+        "category": "flight",
+        "combo": "↑",
+        "glfw": [
+          "GLFW_KEY_UP"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_FLIGHT_FLIGHT_TILT_UP"
+      },
+      {
+        "id": "flight_up",
+        "category": "flight",
+        "combo": "空格",
+        "glfw": [
+          "GLFW_KEY_SPACE"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.CAMERA_FLIGHT_FLIGHT_UP"
+      }
+    ],
+    "forms": [
+      {
+        "id": "edit",
+        "category": "forms",
+        "combo": "E",
+        "glfw": [
+          "GLFW_KEY_E"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.GENERAL_EDIT"
+      },
+      {
+        "id": "edit_alt",
+        "category": "forms",
+        "combo": "Shift + E",
+        "glfw": [
+          "GLFW_KEY_E",
+          "GLFW_KEY_LEFT_SHIFT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.GENERAL_EDIT"
+      },
+      {
+        "id": "focus",
+        "category": "forms",
+        "combo": "Ctrl + F",
+        "glfw": [
+          "GLFW_KEY_F",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FORMS_LIST_CONTEXT_FOCUS"
+      },
+      {
+        "id": "open_states_editor",
+        "category": "forms",
+        "combo": "反斜杠",
+        "glfw": [
+          "GLFW_KEY_BACKSLASH"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FORMS_EDITOR_STATES_OPEN"
+      },
+      {
+        "id": "pick",
+        "category": "forms",
+        "combo": "P",
+        "glfw": [
+          "GLFW_KEY_P"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.GENERAL_PICK"
+      },
+      {
+        "id": "pick_alt",
+        "category": "forms",
+        "combo": "Shift + P",
+        "glfw": [
+          "GLFW_KEY_P",
+          "GLFW_KEY_LEFT_SHIFT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.GENERAL_PICK"
+      },
+      {
+        "id": "pick_texture",
+        "category": "forms",
+        "combo": "Shift + P",
+        "glfw": [
+          "GLFW_KEY_P",
+          "GLFW_KEY_LEFT_SHIFT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FORMS_EDITOR_MODEL_PICK_TEXTURE"
+      },
+      {
+        "id": "toggle_body_part_gizmo",
+        "category": "forms",
+        "combo": "Ctrl + Q",
+        "glfw": [
+          "GLFW_KEY_Q",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FORMS_EDITOR_BODY_PART_GIZMO"
+      }
+    ],
+    "keyframes": [
+      {
+        "id": "adjust_values",
+        "category": "keyframes",
+        "combo": "Shift + N",
+        "glfw": [
+          "GLFW_KEY_N",
+          "GLFW_KEY_LEFT_SHIFT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.KEYFRAMES_CONTEXT_ADJUST_VALUES"
+      },
+      {
+        "id": "flip",
+        "category": "keyframes",
+        "combo": "Ctrl + F",
+        "glfw": [
+          "GLFW_KEY_F",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.KEYFRAMES_CONTEXT_FLIP"
+      },
+      {
+        "id": "interp",
+        "category": "keyframes",
+        "combo": "Shift + T",
+        "glfw": [
+          "GLFW_KEY_T",
+          "GLFW_KEY_LEFT_SHIFT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.KEYFRAMES_KEYS_TOGGLE_INTERP"
+      },
+      {
+        "id": "maximize",
+        "category": "keyframes",
+        "combo": "Home",
+        "glfw": [
+          "GLFW_KEY_HOME"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.KEYFRAMES_CONTEXT_MAXIMIZE"
+      },
+      {
+        "id": "scale_time",
+        "category": "keyframes",
+        "combo": "V",
+        "glfw": [
+          "GLFW_KEY_V"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.KEYFRAMES_KEYS_SCALE_TIME"
+      },
+      {
+        "id": "select_all",
+        "category": "keyframes",
+        "combo": "Ctrl + A",
+        "glfw": [
+          "GLFW_KEY_A",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.KEYFRAMES_CONTEXT_SELECT_ALL"
+      },
+      {
+        "id": "select_left",
+        "category": "keyframes",
+        "combo": "Ctrl + 逗号 ,",
+        "glfw": [
+          "GLFW_KEY_COMMA",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.KEYFRAMES_KEYS_SELECT_LEFT"
+      },
+      {
+        "id": "select_next",
+        "category": "keyframes",
+        "combo": "右方括号 ]",
+        "glfw": [
+          "GLFW_KEY_RIGHT_BRACKET"
+        ],
+        "repeatable": true,
+        "labelKey": "UIKeys.KEYFRAMES_KEYS_SELECT_NEXT"
+      },
+      {
+        "id": "select_prev",
+        "category": "keyframes",
+        "combo": "左方括号 [",
+        "glfw": [
+          "GLFW_KEY_LEFT_BRACKET"
+        ],
+        "repeatable": true,
+        "labelKey": "UIKeys.KEYFRAMES_KEYS_SELECT_PREV"
+      },
+      {
+        "id": "select_right",
+        "category": "keyframes",
+        "combo": "Ctrl + 句号 .",
+        "glfw": [
+          "GLFW_KEY_PERIOD",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.KEYFRAMES_KEYS_SELECT_RIGHT"
+      },
+      {
+        "id": "select_same",
+        "category": "keyframes",
+        "combo": "L",
+        "glfw": [
+          "GLFW_KEY_L"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.KEYFRAMES_KEYS_SELECT_SAME"
+      },
+      {
+        "id": "select_track",
+        "category": "keyframes",
+        "combo": "Ctrl + Shift + A",
+        "glfw": [
+          "GLFW_KEY_A",
+          "GLFW_KEY_LEFT_CONTROL",
+          "GLFW_KEY_LEFT_SHIFT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.KEYFRAMES_KEYS_SELECT_TRACK"
+      },
+      {
+        "id": "select_track_left",
+        "category": "keyframes",
+        "combo": "Ctrl + Shift + 逗号 ,",
+        "glfw": [
+          "GLFW_KEY_COMMA",
+          "GLFW_KEY_LEFT_CONTROL",
+          "GLFW_KEY_LEFT_SHIFT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.KEYFRAMES_KEYS_SELECT_TRACK_LEFT"
+      },
+      {
+        "id": "select_track_right",
+        "category": "keyframes",
+        "combo": "Ctrl + Shift + 句号 .",
+        "glfw": [
+          "GLFW_KEY_PERIOD",
+          "GLFW_KEY_LEFT_CONTROL",
+          "GLFW_KEY_LEFT_SHIFT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.KEYFRAMES_KEYS_SELECT_TRACK_RIGHT"
+      },
+      {
+        "id": "spread",
+        "category": "keyframes",
+        "combo": "Alt + B",
+        "glfw": [
+          "GLFW_KEY_B",
+          "GLFW_KEY_LEFT_ALT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.KEYFRAMES_CONTEXT_SPREAD"
+      },
+      {
+        "id": "stack_keyframes",
+        "category": "keyframes",
+        "combo": "B",
+        "glfw": [
+          "GLFW_KEY_B"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.KEYFRAMES_KEYS_STACK_KEYFRAMES"
+      }
+    ],
+    "model_blocks": [
+      {
+        "id": "move_to",
+        "category": "model_blocks",
+        "combo": "Ctrl + G",
+        "glfw": [
+          "GLFW_KEY_G",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.MODEL_BLOCKS_KEYS_MOVE_TO"
+      },
+      {
+        "id": "teleport",
+        "category": "model_blocks",
+        "combo": "Ctrl + T",
+        "glfw": [
+          "GLFW_KEY_T",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.MODEL_BLOCKS_KEYS_TELEPORT"
+      },
+      {
+        "id": "toggle_rendering",
+        "category": "model_blocks",
+        "combo": "F7",
+        "glfw": [
+          "GLFW_KEY_F7"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.MODEL_BLOCKS_KEYS_TOGGLE_RENDERING"
+      }
+    ],
+    "model_editor": [
+      {
+        "id": "collapse_all",
+        "category": "model_editor",
+        "combo": "Ctrl + Shift + E",
+        "glfw": [
+          "GLFW_KEY_E",
+          "GLFW_KEY_LEFT_CONTROL",
+          "GLFW_KEY_LEFT_SHIFT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.MODEL_EDITOR_KEYS_COLLAPSE_ALL"
+      },
+      {
+        "id": "expand_all",
+        "category": "model_editor",
+        "combo": "Ctrl + E",
+        "glfw": [
+          "GLFW_KEY_E",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.MODEL_EDITOR_KEYS_EXPAND_ALL"
+      },
+      {
+        "id": "find_bone",
+        "category": "model_editor",
+        "combo": "Ctrl + F",
+        "glfw": [
+          "GLFW_KEY_F",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.MODEL_EDITOR_KEYS_FIND_BONE"
+      },
+      {
+        "id": "open_history",
+        "category": "model_editor",
+        "combo": "Ctrl + H",
+        "glfw": [
+          "GLFW_KEY_H",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.MODEL_EDITOR_OPEN_HISTORY"
+      }
+    ],
+    "particle": [
+      {
+        "id": "particle_plause",
+        "category": "particle",
+        "combo": "空格",
+        "glfw": [
+          "GLFW_KEY_SPACE"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.SNOWSTORM_PLAUSE"
+      }
+    ],
+    "pixels": [
+      {
+        "id": "brush_dec",
+        "category": "pixels",
+        "combo": "左方括号 [",
+        "glfw": [
+          "GLFW_KEY_LEFT_BRACKET"
+        ],
+        "repeatable": true,
+        "labelKey": "UIKeys.TEXTURES_KEYS_BRUSH_DEC"
+      },
+      {
+        "id": "brush_inc",
+        "category": "pixels",
+        "combo": "右方括号 ]",
+        "glfw": [
+          "GLFW_KEY_RIGHT_BRACKET"
+        ],
+        "repeatable": true,
+        "labelKey": "UIKeys.TEXTURES_KEYS_BRUSH_INC"
+      },
+      {
+        "id": "copy_hex",
+        "category": "pixels",
+        "combo": "Ctrl + Shift + C",
+        "glfw": [
+          "GLFW_KEY_C",
+          "GLFW_KEY_LEFT_CONTROL",
+          "GLFW_KEY_LEFT_SHIFT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.TEXTURES_VIEWER_CONTEXT_COPY_HEX"
+      },
+      {
+        "id": "deselect",
+        "category": "pixels",
+        "combo": "Ctrl + D",
+        "glfw": [
+          "GLFW_KEY_D",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.TEXTURES_DESELECT"
+      },
+      {
+        "id": "fill",
+        "category": "pixels",
+        "combo": "Ctrl + B",
+        "glfw": [
+          "GLFW_KEY_B",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.TEXTURES_KEYS_FILL"
+      },
+      {
+        "id": "pick",
+        "category": "pixels",
+        "combo": "R",
+        "glfw": [
+          "GLFW_KEY_R"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.TEXTURES_KEYS_PICK"
+      },
+      {
+        "id": "swap",
+        "category": "pixels",
+        "combo": "X",
+        "glfw": [
+          "GLFW_KEY_X"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.TEXTURES_KEYS_SWAP"
+      },
+      {
+        "id": "tool_brush",
+        "category": "pixels",
+        "combo": "B",
+        "glfw": [
+          "GLFW_KEY_B"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.TEXTURES_KEYS_TOOL_BRUSH"
+      },
+      {
+        "id": "tool_eraser",
+        "category": "pixels",
+        "combo": "E",
+        "glfw": [
+          "GLFW_KEY_E"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.TEXTURES_KEYS_TOOL_ERASER"
+      },
+      {
+        "id": "tool_fill",
+        "category": "pixels",
+        "combo": "F",
+        "glfw": [
+          "GLFW_KEY_F"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.TEXTURES_KEYS_TOOL_FILL"
+      },
+      {
+        "id": "tool_move",
+        "category": "pixels",
+        "combo": "V",
+        "glfw": [
+          "GLFW_KEY_V"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.TEXTURES_KEYS_TOOL_MOVE"
+      },
+      {
+        "id": "tool_selection",
+        "category": "pixels",
+        "combo": "M",
+        "glfw": [
+          "GLFW_KEY_M"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.TEXTURES_TOOLS_SELECTION"
+      }
+    ],
+    "recording_groups": [
+      {
+        "id": "all",
+        "category": "recording_groups",
+        "combo": "1",
+        "glfw": [
+          "GLFW_KEY_1"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_GROUPS_ALL"
+      },
+      {
+        "id": "extra_1",
+        "category": "recording_groups",
+        "combo": "5",
+        "glfw": [
+          "GLFW_KEY_5"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_GROUPS_EXTRA_1"
+      },
+      {
+        "id": "extra_2",
+        "category": "recording_groups",
+        "combo": "6",
+        "glfw": [
+          "GLFW_KEY_6"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_GROUPS_EXTRA_2"
+      },
+      {
+        "id": "left_stick",
+        "category": "recording_groups",
+        "combo": "2",
+        "glfw": [
+          "GLFW_KEY_2"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_GROUPS_LEFT_STICK"
+      },
+      {
+        "id": "only_position",
+        "category": "recording_groups",
+        "combo": "7",
+        "glfw": [
+          "GLFW_KEY_7"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_GROUPS_ONLY_POSITION"
+      },
+      {
+        "id": "only_rotation",
+        "category": "recording_groups",
+        "combo": "8",
+        "glfw": [
+          "GLFW_KEY_8"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_GROUPS_ONLY_ROTATION"
+      },
+      {
+        "id": "outside",
+        "category": "recording_groups",
+        "combo": "R",
+        "glfw": [
+          "GLFW_KEY_R"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_GROUPS_OUTSIDE"
+      },
+      {
+        "id": "pos_rot",
+        "category": "recording_groups",
+        "combo": "9",
+        "glfw": [
+          "GLFW_KEY_9"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_GROUPS_ONLY_POS_ROT"
+      },
+      {
+        "id": "right_stick",
+        "category": "recording_groups",
+        "combo": "3",
+        "glfw": [
+          "GLFW_KEY_3"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_GROUPS_RIGHT_STICK"
+      },
+      {
+        "id": "transform",
+        "category": "recording_groups",
+        "combo": "0",
+        "glfw": [
+          "GLFW_KEY_0"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_GROUPS_TRANSFORM"
+      },
+      {
+        "id": "triggers",
+        "category": "recording_groups",
+        "combo": "4",
+        "glfw": [
+          "GLFW_KEY_4"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_GROUPS_TRIGGERS"
+      }
+    ],
+    "replays_editor": [
+      {
+        "id": "replays_dupe",
+        "category": "replays_editor",
+        "combo": "Ctrl + D",
+        "glfw": [
+          "GLFW_KEY_D",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.SCENE_REPLAYS_CONTEXT_DUPE"
+      },
+      {
+        "id": "replays_select_all",
+        "category": "replays_editor",
+        "combo": "Ctrl + A",
+        "glfw": [
+          "GLFW_KEY_A",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.KEYFRAMES_CONTEXT_SELECT_ALL"
+      },
+      {
+        "id": "tab_1",
+        "category": "replays_editor",
+        "combo": "1",
+        "glfw": [
+          "GLFW_KEY_1"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_REPLAY_TAB_1"
+      },
+      {
+        "id": "tab_2",
+        "category": "replays_editor",
+        "combo": "2",
+        "glfw": [
+          "GLFW_KEY_2"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_REPLAY_TAB_2"
+      },
+      {
+        "id": "tab_3",
+        "category": "replays_editor",
+        "combo": "3",
+        "glfw": [
+          "GLFW_KEY_3"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_REPLAY_TAB_3"
+      },
+      {
+        "id": "tab_4",
+        "category": "replays_editor",
+        "combo": "4",
+        "glfw": [
+          "GLFW_KEY_4"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_REPLAY_TAB_4"
+      },
+      {
+        "id": "tab_5",
+        "category": "replays_editor",
+        "combo": "5",
+        "glfw": [
+          "GLFW_KEY_5"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.FILM_REPLAY_TAB_5"
+      }
+    ],
+    "texture_picker": [
+      {
+        "id": "find",
+        "category": "texture_picker",
+        "combo": "Ctrl + F",
+        "glfw": [
+          "GLFW_KEY_F",
+          "GLFW_KEY_LEFT_CONTROL"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.TEXTURE_KEYS_FIND_ALL"
+      }
+    ],
+    "transformations": [
+      {
+        "id": "combined",
+        "category": "transformations",
+        "combo": "T",
+        "glfw": [
+          "GLFW_KEY_T"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.TRANSFORMS_COMBINED"
+      },
+      {
+        "id": "copy_world",
+        "category": "transformations",
+        "combo": "Ctrl + Shift + Alt + C",
+        "glfw": [
+          "GLFW_KEY_C",
+          "GLFW_KEY_LEFT_CONTROL",
+          "GLFW_KEY_LEFT_SHIFT",
+          "GLFW_KEY_LEFT_ALT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.TRANSFORMS_CONTEXT_COPY_WORLD"
+      },
+      {
+        "id": "hide_gizmo",
+        "category": "transformations",
+        "combo": "Alt",
+        "glfw": [
+          "GLFW_KEY_LEFT_ALT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.TRANSFORMS_KEYS_HIDE_GIZMO"
+      },
+      {
+        "id": "mirror_edit",
+        "category": "transformations",
+        "combo": "Shift + F",
+        "glfw": [
+          "GLFW_KEY_F",
+          "GLFW_KEY_LEFT_SHIFT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.TRANSFORMS_KEYS_MIRROR_EDIT"
+      },
+      {
+        "id": "paste_world",
+        "category": "transformations",
+        "combo": "Ctrl + Shift + Alt + V",
+        "glfw": [
+          "GLFW_KEY_V",
+          "GLFW_KEY_LEFT_CONTROL",
+          "GLFW_KEY_LEFT_SHIFT",
+          "GLFW_KEY_LEFT_ALT"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.TRANSFORMS_CONTEXT_PASTE_WORLD"
+      },
+      {
+        "id": "rotate",
+        "category": "transformations",
+        "combo": "R",
+        "glfw": [
+          "GLFW_KEY_R"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.TRANSFORMS_ROTATE"
+      },
+      {
+        "id": "scale",
+        "category": "transformations",
+        "combo": "S",
+        "glfw": [
+          "GLFW_KEY_S"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.TRANSFORMS_SCALE"
+      },
+      {
+        "id": "toggle_axes",
+        "category": "transformations",
+        "combo": "F8",
+        "glfw": [
+          "GLFW_KEY_F8"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.TRANSFORMS_KEYS_TOGGLE_AXES"
+      },
+      {
+        "id": "toggle_fix",
+        "category": "transformations",
+        "combo": "Y",
+        "glfw": [
+          "GLFW_KEY_Y"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.TRANSFORMS_KEYS_TOGGLE_FIX"
+      },
+      {
+        "id": "toggle_local",
+        "category": "transformations",
+        "combo": "Q",
+        "glfw": [
+          "GLFW_KEY_Q"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.TRANSFORMS_CONTEXT_SWITCH_LOCAL"
+      },
+      {
+        "id": "translate",
+        "category": "transformations",
+        "combo": "G",
+        "glfw": [
+          "GLFW_KEY_G"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.TRANSFORMS_TRANSLATE"
+      },
+      {
+        "id": "x",
+        "category": "transformations",
+        "combo": "X",
+        "glfw": [
+          "GLFW_KEY_X"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.GENERAL_X"
+      },
+      {
+        "id": "y",
+        "category": "transformations",
+        "combo": "Y",
+        "glfw": [
+          "GLFW_KEY_Y"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.GENERAL_Y"
+      },
+      {
+        "id": "z",
+        "category": "transformations",
+        "combo": "Z",
+        "glfw": [
+          "GLFW_KEY_Z"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.GENERAL_Z"
+      }
+    ],
+    "world": [
+      {
+        "id": "cycle_panels",
+        "category": "world",
+        "combo": "Tab",
+        "glfw": [
+          "GLFW_KEY_TAB"
+        ],
+        "repeatable": false,
+        "labelKey": "UIKeys.WORLD_KEYS_CYCLE_PANELS"
+      }
+    ]
+  }
+}

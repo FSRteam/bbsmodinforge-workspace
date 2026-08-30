@@ -90,6 +90,14 @@ field.textbox.area.w -= 20;
 - **弹簧内核**:`UITween` 内部支持 `spring` 分支(欠/临界/过阻尼闭式解,打断速度连续);
   接口 `snap/to/update/isSettled` 不变,调用方零改动。参数 `response`(秒)+ `damping`
   (阻尼比),经 `motion.speed` 缩放。settled 后必须短路回旧渲染路径(逐位等价红线)。
+- **滚动曲线优先级**:`scrollbars.use_theme_curve=true` 时,`Scroll` 的内容平滑滚动和滚动条
+  淡出必须直接消费当前主题 `scroll_smooth` / `scrollbar` 的 `type/easing`,不得再经过
+  `skins.motion_easing` 全局覆盖;关闭该开关后才以 `scrollbars.motion_easing` 把两条滚动动效
+  转为自定义 ease 曲线。`scrollbars.smoothness=false` 只关闭内容平滑,不关闭滚动条淡出;
+  后者仍由 `motion.enabled` 与主题 `scrollbar.enabled` 控制。内置主题若要呈现不同滚动手感,
+  必须显式声明 `scroll_smooth` 参数(允许 light 等主题通过 `base` 有意识继承)。
+  `UIMotionsTest` 必须在全局曲线已注册的真实启动形态下断言主题 spring 仍保留,并覆盖关闭
+  跟随后滚动专用曲线接管的路径。
 - **alpha 栈**:整元素淡入淡出统一走 `Batcher2D.pushAlpha/popAlpha`(乘子恒 1 时逐位
   等价);文字在极低 alpha 有 discard 跳变,由 Batcher2D 统一 clamp,调用点不处理。
 - **圆角**:半径来源仅 `BBSSettings.cornerChrome()/cornerPanel()/cornerWidget()` 三级 token,

@@ -28,7 +28,8 @@
     "07-17-replay-keyframe-consistency",
     "07-17-addon-api-lifecycle",
     "07-17-video-export-lifecycle",
-    "07-17-platform-resource-consistency"
+    "07-17-platform-resource-consistency",
+    "08-07-fsr-ik-preset-pose-navigation"
   ],
   "parent": null,
   "relatedFiles": [],

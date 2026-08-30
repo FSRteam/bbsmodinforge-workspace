@@ -1,0 +1,11 @@
+name = "bbs-film-home"
+main = "worker.js"
+compatibility_date = "2024-09-23"
+
+# KV namespace is provisioned by deploy.mjs; after `wrangler kv namespace create CONTENT`
+# paste the id here to manage the worker with wrangler instead.
+[[kv_namespaces]]
+binding = "CONTENT"
+id = "REPLACE_WITH_NAMESPACE_ID"
+
+# Set once with: npx wrangler secret put ADMIN_TOKEN

@@ -1,0 +1,8 @@
+bbs.ui.camera.tooltips.record -> [('film_clips', '录制视频')]
+bbs.ui.camera.tooltips.open_videos -> [('film_clips', '打开视频文件夹...')]
+bbs.ui.camera.tooltips.open_video_settings -> [('film_clips', '打开视频设置...')]
+bbs.ui.keys.list -> [('keys_labels', '按键列表')]
+bbs.ui.general.warning -> []
+bbs.ui.film.render_queue -> [('film_core', '从打开的标签页导出队列')]
+bbs.ui.film.screenshot -> [('film_core', '截屏')]
+bbs.ui.config.title -> [('settings', '设置')]

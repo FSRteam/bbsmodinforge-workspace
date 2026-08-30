@@ -1,0 +1,5 @@
+config.local.json
+webui/data/
+webui/config.local.json
+worker/*.log
+node_modules/

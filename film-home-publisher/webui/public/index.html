@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>影片首页内容推送台</title>
+<style>
+:root
+{
+	--bg: #14161b; --panel: #1c1f26; --panel2: #232732; --line: #2e3440;
+	--text: #e6e9ef; --muted: #8b93a3; --accent: #5b8cff; --ok: #4cc38a; --warn: #f0a232; --bad: #e5534b;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.6 "Segoe UI", "Microsoft YaHei", sans-serif; }
+header { display: flex; align-items: center; gap: 16px; padding: 10px 20px; background: var(--panel); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 10; }
+header h1 { font-size: 15px; margin: 0 12px 0 0; white-space: nowrap; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); display: inline-block; margin-right: 6px; }
+.dot.ok { background: var(--ok); } .dot.bad { background: var(--bad); }
+#workerUrlText { color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+nav { display: flex; gap: 4px; margin-left: auto; }
+nav button { background: transparent; color: var(--muted); border: 1px solid transparent; border-radius: 8px; padding: 6px 18px; font-size: 14px; cursor: pointer; }
+nav button.active { color: var(--text); background: var(--panel2); border-color: var(--line); }
+main { max-width: 1080px; margin: 0 auto; padding: 20px; }
+.toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+button.btn { background: var(--panel2); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 7px 16px; cursor: pointer; font-size: 13px; }
+button.btn:hover { border-color: var(--accent); }
+button.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+button.btn.danger:hover { border-color: var(--bad); color: var(--bad); }
+button.btn:disabled { opacity: .45; cursor: default; }
+button.iconbtn { background: transparent; border: 1px solid var(--line); color: var(--muted); border-radius: 6px; padding: 3px 9px; cursor: pointer; font-size: 12px; }
+button.iconbtn:hover { color: var(--text); border-color: var(--accent); }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; }
+.card .head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.card .head .title { font-weight: 600; color: var(--muted); font-size: 13px; }
+.card .head .spacer { flex: 1; }
+.grid2 { display: grid; grid-template-columns: 300px 1fr; gap: 16px; align-items: start; }
+.preview { width: 100%; aspect-ratio: 4/3; background: #101216; border: 1px dashed var(--line); border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
+.preview img { width: 100%; height: 100%; object-fit: contain; }
+.preview .empty { color: var(--muted); font-size: 12px; }
+.badge { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 20px; margin-left: 8px; }
+.badge.ok { background: rgba(76,195,138,.15); color: var(--ok); }
+.badge.bad { background: rgba(229,83,75,.15); color: var(--bad); }
+label.field { display: block; margin-bottom: 8px; }
+label.field span { display: block; font-size: 12px; color: var(--muted); margin-bottom: 3px; }
+input[type=text], input[type=password], input[type=date], select, textarea { width: 100%; background: var(--panel2); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; font-size: 13px; font-family: inherit; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+textarea { resize: vertical; min-height: 90px; }
+textarea.md { font-family: Consolas, "Cascadia Mono", monospace; font-size: 12.5px; line-height: 1.7; min-height: 160px; }
+.row { display: flex; gap: 10px; } .row > * { flex: 1; }
+.mdpreview { background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; font-size: 13px; min-height: 120px; }
+.mdpreview h2, .mdpreview h3 { margin: 10px 0 6px; } .mdpreview h2 { font-size: 16px; } .mdpreview h3 { font-size: 14.5px; }
+.mdpreview p { margin: 6px 0; } .mdpreview ul { margin: 6px 0; padding-left: 22px; }
+.mdpreview code { background: #101216; border-radius: 4px; padding: 1px 5px; font-family: Consolas, monospace; font-size: 12px; }
+.mdpreview pre { background: #101216; border-radius: 6px; padding: 8px 12px; overflow: auto; }
+.mdpreview blockquote { border-left: 3px solid var(--accent); margin: 6px 0; padding: 2px 12px; color: var(--muted); }
+.mdpreview img { max-width: 100%; border-radius: 6px; }
+.mdpreview a { color: var(--accent); }
+#toast { position: fixed; right: 20px; bottom: 20px; background: var(--panel2); border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 10px; padding: 10px 16px; font-size: 13px; max-width: 420px; opacity: 0; transform: translateY(8px); transition: all .25s; z-index: 99; pointer-events: none; }
+#toast.show { opacity: 1; transform: none; }
+#toast.ok { border-left-color: var(--ok); } #toast.bad { border-left-color: var(--bad); }
+.statusline { font-size: 12px; color: var(--muted); }
+.hint { font-size: 12px; color: var(--muted); margin: 4px 0 0; }
+.newsimg { width: 100%; aspect-ratio: 16/9; max-height: 180px; background: #101216; border: 1px dashed var(--line); border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.newsimg img { width: 100%; height: 100%; object-fit: contain; }
+</style>
+</head>
+<body>
+<header>
+	<h1>🎬 影片首页内容推送台</h1>
+	<span><span class="dot" id="healthDot"></span><span id="healthText" style="font-size:12px;color:var(--muted)">检测中…</span></span>
+	<span id="workerUrlText"></span>
+	<nav>
+		<button data-tab="ads" class="active">广告</button>
+		<button data-tab="news">新闻</button>
+		<button data-tab="releases">版本发布</button>
+		<button data-tab="settings">设置</button>
+	</nav>
+</header>
+
+<main>
+	<section id="tab-ads">
+		<div class="toolbar">
+			<button class="btn primary" id="pushAds">推送广告到线上</button>
+			<button class="btn" id="resetAds">从线上拉取覆盖</button>
+			<button class="btn" id="addAd">＋ 添加广告位</button>
+			<span class="statusline" id="adsStatus"></span>
+		</div>
+		<p class="hint">广告图规格为 <b>4:3</b>（例 1600×1200）。比例不符时可点「居中裁切」。推送后客户端拉取该内容，拉取失败时自动回退上次成功的数据。</p>
+		<div id="adsList"></div>
+	</section>
+
+	<section id="tab-news" style="display:none">
+		<div class="toolbar">
+			<button class="btn primary" id="pushNews">推送新闻到线上</button>
+			<button class="btn" id="resetNews">从线上拉取覆盖</button>
+			<button class="btn" id="addNews">＋ 添加新闻</button>
+			<span class="statusline" id="newsStatus"></span>
+		</div>
+		<p class="hint">新闻正文使用 <b>Markdown</b>（支持标题/加粗/列表/引用/代码/链接/图片）。tag 决定首页徽标颜色：更新=蓝、公告=橙、教程=绿。</p>
+		<div id="newsList"></div>
+	</section>
+
+	<section id="tab-releases" style="display:none">
+		<div class="card">
+			<div class="head"><span class="title" id="releaseFormTitle">发布新版本</span><span class="spacer"></span>
+				<button class="btn" id="newRelease">新建</button></div>
+			<div class="row">
+				<label class="field"><span>版本号（如 0.0.12 或 0.0.13-beta.1）</span><input type="text" id="relVersion" placeholder="0.0.12"></label>
+				<label class="field" style="max-width:130px"><span>频道</span>
+					<select id="relChannel"><option value="stable">正式版</option><option value="preview">预览版</option></select></label>
+				<label class="field" style="max-width:170px"><span>更新日期</span><input type="date" id="relDate"></label>
+			</div>
+			<label class="field"><span>下载 URL（jar 直链，必须 https；自动安装与「前往下载」都用它）</span><input type="text" id="relUrl" placeholder="https://…"></label>
+			<div class="row">
+				<label class="field"><span>SHA-256（自动安装前校验，可留空=仅通知）</span><input type="text" id="relSha" placeholder="64 位十六进制"></label>
+				<div style="max-width:150px;align-self:end">
+					<button class="btn" id="relPickJar">从 jar 文件计算</button>
+					<input type="file" id="relJarFile" accept=".jar,.zip" style="display:none">
+				</div>
+			</div>
+			<label class="field" style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="relMandatory" style="width:auto"> 强制更新（弹窗不提供「跳过此版本」）</label>
+			<label class="field"><span>更新内容 Markdown（客户端弹窗展示）</span><textarea class="md" id="relNotes"></textarea></label>
+			<div class="row">
+				<button class="btn" id="relPreview">预览</button>
+				<button class="btn primary" id="releasePush">发布到线上</button>
+				<span class="statusline" id="relStatus"></span>
+			</div>
+			<div class="mdpreview" id="relMdPreview" style="display:none;margin-top:10px"></div>
+		</div>
+		<div class="card">
+			<div class="head"><span class="title">已发布版本（最多 20 条，超出请删除旧条目）</span><span class="spacer"></span>
+				<button class="btn" id="reloadReleases">刷新</button></div>
+			<div id="releaseList"></div>
+		</div>
+	</section>
+
+	<section id="tab-settings" style="display:none">
+		<div class="card">
+			<div class="head"><span class="title">Worker 连接</span></div>
+			<label class="field"><span>Worker 地址</span><input type="text" id="setUrl" placeholder="https://bbs-film-home.xxx.workers.dev"></label>
+			<label class="field"><span>Admin Token（推送密钥，仅保存在本机）</span><input type="password" id="setToken"></label>
+			<div class="row" style="max-width:420px">
+				<button class="btn primary" id="saveConfig">保存配置</button>
+				<button class="btn" id="testHealth">测试连接</button>
+			</div>
+			<p class="hint" id="healthDetail"></p>
+		</div>
+		<div class="card">
+			<div class="head"><span class="title">线上内容</span></div>
+			<div class="row" style="max-width:420px">
+				<button class="btn" id="pullAdsSettings">查看线上广告</button>
+				<button class="btn" id="pullNewsSettings">查看线上新闻</button>
+			</div>
+			<pre id="pullResult" class="mdpreview" style="max-height:320px;overflow:auto;margin-top:10px"></pre>
+		</div>
+	</section>
+</main>
+
+<div id="toast"></div>
+
+<script>
+"use strict";
+
+const $ = (sel) => document.querySelector(sel);
+const state = { ads: { items: [] }, news: { items: [] }, releases: { releases: [] }, config: { workerUrl: "", adminToken: "" } };
+let saveTimer = null;
+
+function toast(message, kind)
+{
+	const el = $("#toast");
+
+	el.textContent = message;
+	el.className = "show " + (kind || "");
+	clearTimeout(el._timer);
+	el._timer = setTimeout(() => el.className = "", 3200);
+}
+
+async function api(path, options)
+{
+	const response = await fetch(path, options);
+	const payload = await response.json().catch(() => ({}));
+
+	if (!response.ok)
+	{
+		throw new Error(payload.error || ("HTTP " + response.status));
+	}
+
+	return payload;
+}
+
+/* ---------- drafts & load ---------- */
+
+function scheduleSave(type)
+{
+	clearTimeout(saveTimer);
+	saveTimer = setTimeout(() => saveDraft(type), 600);
+}
+
+async function saveDraft(type)
+{
+	try
+	{
+		await api("/api/drafts?type=" + type, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(state[type]) });
+		$("#" + type + "Status").textContent = "草稿已保存 " + new Date().toLocaleTimeString();
+	}
+	catch (e)
+	{
+		toast("草稿保存失败: " + e.message, "bad");
+	}
+}
+
+function stripLocal(item)
+{
+	const clean = {};
+
+	for (const [key, value] of Object.entries(item))
+	{
+		if (!key.startsWith("_"))
+		{
+			clean[key] = value;
+		}
+	}
+
+	return clean;
+}
+
+async function loadAll()
+{
+	try
+	{
+		state.config = await api("/api/config");
+	}
+	catch (e)
+	{
+		toast("读取配置失败: " + e.message, "bad");
+	}
+
+	$("#workerUrlText").textContent = state.config.workerUrl || "未配置 Worker 地址";
+	$("#setUrl").value = state.config.workerUrl || "";
+	$("#setToken").value = state.config.adminToken || "";
+
+	for (const type of ["ads", "news"])
+	{
+		let data = null;
+
+		try
+		{
+			data = await api("/api/drafts?type=" + type);
+		}
+		catch (e) { /* fall through to remote */ }
+
+		if (!data || !Array.isArray(data.items))
+		{
+			const remote = await api("/api/current?type=" + type).catch(() => null);
+
+			if (remote && remote.payload && Array.isArray(remote.payload.items))
+			{
+				data = { items: remote.payload.items.map((item) => ({ ...item })) };
+			}
+		}
+
+		state[type] = data && Array.isArray(data.items) ? data : { items: [] };
+	}
+
+	renderAds();
+	renderNews();
+	checkHealth();
+}
+
+/* ---------- image helpers ---------- */
+
+const TARGET_RATIO = 4 / 3;
+
+function dataURLtoBytes(dataURL)
+{
+	const base64 = dataURL.slice(dataURL.indexOf(",") + 1);
+	const binary = atob(base64);
+	const bytes = new Uint8Array(binary.length);
+
+	for (let i = 0; i < binary.length; i++)
+	{
+		bytes[i] = binary.charCodeAt(i);
+	}
+
+	return bytes;
+}
+
+function measure(dataURL)
+{
+	return new Promise((resolve, reject) =>
+	{
+		const image = new Image();
+
+		image.onload = () => resolve({ w: image.naturalWidth, h: image.naturalHeight });
+		image.onerror = () => reject(new Error("图片解码失败"));
+		image.src = dataURL;
+	});
+}
+
+async function pickImage(file)
+{
+	const dataURL = await new Promise((resolve, reject) =>
+	{
+		const reader = new FileReader();
+
+		reader.onload = () => resolve(reader.result);
+		reader.onerror = () => reject(new Error("读取失败"));
+		reader.readAsDataURL(file);
+	});
+
+	const size = await measure(dataURL);
+	const compressed = await compressToPNG(dataURL);
+
+	return { dataURL: compressed.dataURL, w: compressed.w, h: compressed.h, mime: "image/png", ext: "png" };
+}
+
+function ratioOK(w, h)
+{
+	return Math.abs(w / h - TARGET_RATIO) <= TARGET_RATIO * 0.01;
+}
+
+/* Client display sizes are small (slide ~200px, detail ~360px), and the
+ * in-game decoder is PNG-only — so uploads are downscaled to 800×600 and
+ * re-encoded as PNG. This alone turns multi-MB source art into a few
+ * hundred KB without visible loss in game. */
+const MAX_IMAGE_W = 800;
+const MAX_IMAGE_H = 600;
+
+function compressToPNG(dataURL)
+{
+	return new Promise((resolve, reject) =>
+	{
+		const image = new Image();
+
+		image.onload = () =>
+		{
+			const scale = Math.min(1, MAX_IMAGE_W / image.naturalWidth, MAX_IMAGE_H / image.naturalHeight);
+			const canvas = document.createElement("canvas");
+
+			canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+			canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+
+			const ctx = canvas.getContext("2d");
+
+			ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+			resolve({ dataURL: canvas.toDataURL("image/png"), w: canvas.width, h: canvas.height });
+		};
+		image.onerror = () => reject(new Error("图片解码失败"));
+		image.src = dataURL;
+	});
+}
+
+function centerCrop4x3(dataURL)
+{
+	return new Promise((resolve, reject) =>
+	{
+		const image = new Image();
+
+		image.onload = () =>
+		{
+			const w = image.naturalWidth;
+			const h = image.naturalHeight;
+			let cw = w;
+			let ch = h;
+
+			if (w / h > TARGET_RATIO)
+			{
+				cw = Math.round(h * TARGET_RATIO);
+			}
+			else
+			{
+				ch = Math.round(w / TARGET_RATIO);
+			}
+
+			const scale = Math.min(1, MAX_IMAGE_W / cw, MAX_IMAGE_H / ch);
+			const canvas = document.createElement("canvas");
+
+			canvas.width = Math.max(1, Math.round(cw * scale));
+			canvas.height = Math.max(1, Math.round(ch * scale));
+
+			const ctx = canvas.getContext("2d");
+
+			ctx.drawImage(image, Math.round((w - cw) / 2), Math.round((h - ch) / 2), cw, ch, 0, 0, canvas.width, canvas.height);
+			resolve(canvas.toDataURL("image/png"));
+		};
+		image.onerror = () => reject(new Error("解码失败"));
+		image.src = dataURL;
+	});
+}
+
+/* ---------- ads tab ---------- */
+
+function renderAds()
+{
+	const list = $("#adsList");
+
+	list.innerHTML = "";
+
+	state.ads.items.forEach((ad, index) =>
+	{
+		const card = document.createElement("div");
+
+		card.className = "card";
+		card.innerHTML = `
+			<div class="head"><span class="title">广告位 ${index + 1}</span><span class="spacer"></span>
+				<button class="iconbtn" data-act="up">↑</button><button class="iconbtn" data-act="down">↓</button>
+				<button class="iconbtn" data-act="del" style="color:var(--bad)">删除</button></div>
+			<div class="grid2">
+				<div>
+					<div class="preview" data-role="preview"></div>
+					<div style="margin-top:8px"><button class="btn" data-act="pick">选择图片…</button>
+						<button class="btn" data-act="crop" style="display:none">居中裁切为 4:3</button></div>
+					<p class="hint" data-role="ratio"></p>
+					<input type="file" accept="image/*" style="display:none" data-role="file">
+				</div>
+				<div>
+					<label class="field"><span>复制链接（广告详情「复制链接」按钮内容，QQ 号或网址）</span><input type="text" data-field="link"></label>
+					<label class="field"><span>说明 Markdown（详情页大图旁展示）</span><textarea class="md" data-field="markdown"></textarea></label>
+				</div>
+			</div>`;
+
+		const preview = card.querySelector('[data-role=preview]');
+		const ratio = card.querySelector('[data-role=ratio]');
+		const cropBtn = card.querySelector('[data-act=crop]');
+		const file = card.querySelector('[data-role=file]');
+
+		const refreshPreview = () =>
+		{
+			preview.innerHTML = "";
+
+			if (ad._blob)
+			{
+				const img = document.createElement("img");
+
+				img.src = ad._blob;
+				preview.appendChild(img);
+			}
+			else if (ad.image && /^https?:/i.test(ad.image))
+			{
+				const img = document.createElement("img");
+
+				img.src = ad.image;
+				preview.appendChild(img);
+			}
+			else if (ad.image)
+			{
+				/* Bundled client resource (film_home/… in the jar): the
+				 * browser cannot render it, and pushing keeps it as-is. */
+				preview.innerHTML = '<span class="empty">📦 本地资源图(打包在客户端内)<br>' + esc(ad.image) + '<br>推送时原样保留</span>';
+			}
+			else
+			{
+				preview.innerHTML = '<span class="empty">未设置图片</span>';
+			}
+
+			if (ad._w)
+			{
+				const ok = ratioOK(ad._w, ad._h);
+
+				ratio.innerHTML = `${ad._w}×${ad._h} · ${(ad._w / ad._h).toFixed(3)} <span class="badge ${ok ? "ok" : "bad"}">${ok ? "4:3 ✓" : "比例不符"}</span>`;
+				cropBtn.style.display = ok ? "none" : "";
+			}
+			else
+			{
+				ratio.textContent = "";
+				cropBtn.style.display = "none";
+			}
+		};
+
+		card.querySelector('[data-field=link]').value = ad.link || "";
+		card.querySelector('[data-field=markdown]').value = ad.markdown || "";
+		refreshPreview();
+
+		card.addEventListener("input", (e) =>
+		{
+			if (e.target.dataset.field)
+			{
+				ad[e.target.dataset.field] = e.target.value;
+				scheduleSave("ads");
+			}
+		});
+		file.addEventListener("change", async () =>
+		{
+			if (!file.files.length) return;
+
+			try
+			{
+				const picked = await pickImage(file.files[0]);
+
+				Object.assign(ad, { _blob: picked.dataURL, _w: picked.w, _h: picked.h, _mime: picked.mime, _ext: picked.ext });
+				refreshPreview();
+				scheduleSave("ads");
+			}
+			catch (e)
+			{
+				toast(e.message, "bad");
+			}
+		});
+		cropBtn.addEventListener("click", async () =>
+		{
+			try
+			{
+				const cropped = await centerCrop4x3(ad._blob || ad.image);
+				const size = await measure(cropped);
+
+				Object.assign(ad, { _blob: cropped, _w: size.w, _h: size.h, _mime: "image/png", _ext: "png" });
+				refreshPreview();
+				scheduleSave("ads");
+				toast("已裁切为 4:3");
+			}
+			catch (e)
+			{
+				toast(e.message, "bad");
+			}
+		});
+
+		card.addEventListener("click", (e) =>
+		{
+			const act = e.target.dataset && e.target.dataset.act;
+
+			if (!act) return;
+
+			if (act === "pick") file.click();
+
+			if (act === "up" && index > 0)
+			{
+				[state.ads.items[index - 1], state.ads.items[index]] = [state.ads.items[index], state.ads.items[index - 1]];
+				renderAds();
+				scheduleSave("ads");
+			}
+
+			if (act === "down" && index < state.ads.items.length - 1)
+			{
+				[state.ads.items[index + 1], state.ads.items[index]] = [state.ads.items[index], state.ads.items[index + 1]];
+				renderAds();
+				scheduleSave("ads");
+			}
+
+			if (act === "del")
+			{
+				state.ads.items.splice(index, 1);
+				renderAds();
+				scheduleSave("ads");
+			}
+		});
+
+		list.appendChild(card);
+	});
+
+	$("#adsStatus").textContent = state.ads.items.length ? state.ads.items.length + " 个广告位" : "暂无广告位";
+}
+
+/* ---------- news tab ---------- */
+
+const TAGS = [["update", "更新"], ["notice", "公告"], ["tutorial", "教程"]];
+
+function esc(html)
+{
+	return html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function renderMarkdown(md)
+{
+	const lines = String(md || "").split(/\r?\n/);
+	let html = "";
+	let inCode = false;
+	let inList = false;
+
+	const closeList = () =>
+	{
+		if (inList)
+		{
+			html += "</ul>";
+			inList = false;
+		}
+	};
+
+	const inline = (text) => esc(text)
+		.replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, '<img src="$2" alt="$1">')
+		.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+		.replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>")
+		.replace(/`([^`]+)`/g, "<code>$1</code>");
+
+	for (const line of lines)
+	{
+		if (line.startsWith("```"))
+		{
+			closeList();
+
+			if (inCode)
+			{
+				html += "</pre>";
+				inCode = false;
+			}
+			else
+			{
+				html += "<pre>";
+				inCode = true;
+			}
+
+			continue;
+		}
+
+		if (inCode)
+		{
+			html += esc(line) + "\n";
+			continue;
+		}
+
+		if (line.startsWith("### ")) { closeList(); html += "<h3>" + inline(line.slice(4)) + "</h3>"; }
+		else if (line.startsWith("## ")) { closeList(); html += "<h2>" + inline(line.slice(3)) + "</h2>"; }
+		else if (line.startsWith("# ")) { closeList(); html += "<h2>" + inline(line.slice(2)) + "</h2>"; }
+		else if (line.startsWith("- "))
+		{
+			if (!inList)
+			{
+				html += "<ul>";
+				inList = true;
+			}
+
+			html += "<li>" + inline(line.slice(2)) + "</li>";
+		}
+		else if (line.startsWith("> ")) { closeList(); html += "<blockquote>" + inline(line.slice(2)) + "</blockquote>"; }
+		else if (line.trim() === "") { closeList(); }
+		else { closeList(); html += "<p>" + inline(line) + "</p>"; }
+	}
+
+	closeList();
+
+	if (inCode)
+	{
+		html += "</pre>";
+	}
+
+	return html;
+}
+
+function renderNews()
+{
+	const list = $("#newsList");
+
+	list.innerHTML = "";
+
+	state.news.items.forEach((item, index) =>
+	{
+		const card = document.createElement("div");
+
+		card.className = "card";
+		card.innerHTML = `
+			<div class="head"><span class="title">新闻 ${index + 1}</span><span class="spacer"></span>
+				<button class="iconbtn" data-act="prev">收起预览</button>
+				<button class="iconbtn" data-act="up">↑</button><button class="iconbtn" data-act="down">↓</button>
+				<button class="iconbtn" data-act="del" style="color:var(--bad)">删除</button></div>
+			<div class="grid2">
+				<div>
+					<div class="newsimg" data-role="preview"></div>
+					<div style="margin-top:8px"><button class="btn" data-act="pick">选择头图…</button>
+						<button class="btn danger" data-act="clearimg">清除头图</button></div>
+					<p class="hint" data-role="ratio"></p>
+					<input type="file" accept="image/*" style="display:none" data-role="file">
+				</div>
+				<div>
+					<div class="row">
+						<label class="field"><span>标题</span><input type="text" data-field="title"></label>
+						<label class="field" style="max-width:110px"><span>tag</span>
+							<select data-field="tag"><option value="update">更新</option><option value="notice">公告</option><option value="tutorial">教程</option></select></label>
+						<label class="field" style="max-width:160px"><span>日期</span><input type="date" data-field="date"></label>
+					</div>
+					<div class="row">
+						<label class="field"><span>摘要（卡片副行）</span><input type="text" data-field="summary"></label>
+						<label class="field"><span>外链 url（可选，详情页提供打开/复制）</span><input type="text" data-field="url"></label>
+					</div>
+					<label class="field"><span>正文 Markdown</span><textarea class="md" data-field="markdown"></textarea></label>
+					<div class="mdpreview" data-role="mdprev" style="display:none"></div>
+				</div>
+			</div>`;
+
+		const preview = card.querySelector('[data-role=preview]');
+		const ratio = card.querySelector('[data-role=ratio]');
+		const file = card.querySelector('[data-role=file]');
+		const mdprev = card.querySelector('[data-role=mdprev]');
+		const mdText = card.querySelector('[data-field=markdown]');
+
+		const refreshPreview = () =>
+		{
+			preview.innerHTML = "";
+
+			if (item._blob)
+			{
+				const img = document.createElement("img");
+
+				img.src = item._blob;
+				preview.appendChild(img);
+			}
+			else if (item.image && /^https?:/i.test(item.image))
+			{
+				const img = document.createElement("img");
+
+				img.src = item.image;
+				preview.appendChild(img);
+			}
+			else if (item.image)
+			{
+				preview.innerHTML = '<span class="empty" style="color:var(--muted);font-size:12px;text-align:center">📦 本地资源图(打包在客户端内)<br>' + esc(item.image) + '</span>';
+			}
+			else
+			{
+				preview.innerHTML = '<span class="empty" style="color:var(--muted);font-size:12px">无头图</span>';
+			}
+
+			ratio.textContent = item._w ? item._w + "×" + item._h : "";
+		};
+
+		card.querySelector('[data-field=title]').value = item.title || "";
+		card.querySelector('[data-field=tag]').value = item.tag || "update";
+		card.querySelector('[data-field=date]').value = item.date || "";
+		card.querySelector('[data-field=summary]').value = item.summary || "";
+		card.querySelector('[data-field=url]').value = item.url || "";
+		mdText.value = item.markdown || "";
+		refreshPreview();
+
+		card.addEventListener("input", (e) =>
+		{
+			if (!e.target.dataset.field) return;
+
+			item[e.target.dataset.field] = e.target.value;
+			scheduleSave("news");
+
+			if (e.target === mdText && mdprev.style.display !== "none")
+			{
+				mdprev.innerHTML = renderMarkdown(item.markdown);
+			}
+		});
+
+		file.addEventListener("change", async () =>
+		{
+			if (!file.files.length) return;
+
+			try
+			{
+				const picked = await pickImage(file.files[0]);
+
+				Object.assign(item, { _blob: picked.dataURL, _w: picked.w, _h: picked.h, _mime: picked.mime, _ext: picked.ext });
+				refreshPreview();
+				scheduleSave("news");
+			}
+			catch (e)
+			{
+				toast(e.message, "bad");
+			}
+		});
+
+		card.addEventListener("click", async (e) =>
+		{
+			const act = e.target.dataset && e.target.dataset.act;
+
+			if (!act) return;
+
+			if (act === "pick") file.click();
+
+			if (act === "clearimg")
+			{
+				delete item._blob;
+				item.image = "";
+				refreshPreview();
+				scheduleSave("news");
+			}
+
+			if (act === "prev")
+			{
+				const hidden = mdprev.style.display === "none";
+
+				mdprev.style.display = hidden ? "" : "none";
+				e.target.textContent = hidden ? "收起预览" : "预览";
+
+				if (hidden)
+				{
+					mdprev.innerHTML = renderMarkdown(item.markdown);
+				}
+			}
+
+			if (act === "up" && index > 0)
+			{
+				[state.news.items[index - 1], state.news.items[index]] = [state.news.items[index], state.news.items[index - 1]];
+				renderNews();
+				scheduleSave("news");
+			}
+
+			if (act === "down" && index < state.news.items.length - 1)
+			{
+				[state.news.items[index + 1], state.news.items[index]] = [state.news.items[index], state.news.items[index + 1]];
+				renderNews();
+				scheduleSave("news");
+			}
+
+			if (act === "del")
+			{
+				state.news.items.splice(index, 1);
+				renderNews();
+				scheduleSave("news");
+			}
+		});
+
+		list.appendChild(card);
+	});
+
+	$("#newsStatus").textContent = state.news.items.length ? state.news.items.length + " 条新闻" : "暂无新闻";
+}
+
+/* ---------- push ---------- */
+
+async function uploadItemImages(list)
+{
+	for (const item of list)
+	{
+		if (!item._blob) continue;
+
+		const bytes = dataURLtoBytes(item._blob);
+
+		const result = await api("/api/upload?ext=" + (item._ext || "png"), {
+			method: "POST",
+			headers: { "Content-Type": item._mime || "image/png" },
+			body: bytes
+		});
+
+		item.image = result.url;
+		delete item._blob;
+	}
+}
+
+async function push(type)
+{
+	try
+	{
+		await uploadItemImages(state[type].items);
+	}
+	catch (e)
+	{
+		toast("图片上传失败: " + e.message, "bad");
+
+		return;
+	}
+
+	const payload = { items: state[type].items.map(stripLocal) };
+
+	try
+	{
+		const result = await api("/api/push?type=" + type, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(payload)
+		});
+
+		if (type === "ads") renderAds(); else renderNews();
+		scheduleSave(type);
+		toast("推送成功：" + result.body, "ok");
+	}
+	catch (e)
+	{
+		toast("推送失败: " + e.message, "bad");
+	}
+}
+
+async function resetFromRemote(type)
+{
+	if (!confirm("从线上拉取覆盖当前编辑内容？未推送的本地修改将丢失。")) return;
+
+	try
+	{
+		const remote = await api("/api/current?type=" + type);
+
+		if (remote.payload && Array.isArray(remote.payload.items))
+		{
+			state[type] = { items: remote.payload.items.map((item) => ({ ...item })) };
+
+			if (type === "ads") renderAds(); else renderNews();
+			scheduleSave(type);
+			toast("已拉取线上内容", "ok");
+		}
+		else
+		{
+			toast("拉取失败: HTTP " + remote.status, "bad");
+		}
+	}
+	catch (e)
+	{
+		toast("拉取失败: " + e.message, "bad");
+	}
+}
+
+/* ---------- settings & health ---------- */
+
+async function checkHealth()
+{
+	const dot = $("#healthDot");
+	const text = $("#healthText");
+
+	dot.className = "dot";
+	text.textContent = "检测中…";
+
+	if (!state.config.workerUrl)
+	{
+		text.textContent = "未配置 Worker";
+		$("#healthDetail").textContent = "";
+
+		return;
+	}
+
+	try
+	{
+		const result = await api("/api/health");
+		const ok = result.ok;
+
+		dot.className = "dot " + (ok ? "ok" : "bad");
+		text.textContent = ok ? "Worker 在线" : "Worker 异常 (HTTP " + result.status + ")";
+		$("#healthDetail").textContent = ok ? "连接正常：" + result.body : "返回：" + result.status + " " + result.body;
+	}
+	catch (e)
+	{
+		dot.className = "dot bad";
+		text.textContent = "无法连接";
+		$("#healthDetail").textContent = e.message;
+	}
+}
+
+/* ---------- wiring ---------- */
+
+	document.querySelectorAll("nav button").forEach((button) =>
+	{
+		button.addEventListener("click", () =>
+		{
+			document.querySelectorAll("nav button").forEach((b) => b.classList.remove("active"));
+			button.classList.add("active");
+
+			for (const tab of ["ads", "news", "releases", "settings"])
+			{
+				$("#tab-" + tab).style.display = button.dataset.tab === tab ? "" : "none";
+			}
+
+			if (button.dataset.tab === "releases")
+			{
+				loadReleases();
+			}
+		});
+	});
+
+$("#addAd").addEventListener("click", () =>
+{
+	state.ads.items.push({ image: "", link: "", markdown: "", _w: 0, _h: 0 });
+	renderAds();
+	scheduleSave("ads");
+});
+$("#addNews").addEventListener("click", () =>
+{
+	state.news.items.push({
+		id: "news-" + Date.now().toString(36),
+		tag: "update",
+		date: new Date().toISOString().slice(0, 10),
+		title: "",
+		summary: "",
+		markdown: "",
+		image: "",
+		url: "",
+		_w: 0,
+		_h: 0
+	});
+	renderNews();
+	scheduleSave("news");
+});
+$("#pushAds").addEventListener("click", () => push("ads"));
+$("#pushNews").addEventListener("click", () => push("news"));
+$("#resetAds").addEventListener("click", () => resetFromRemote("ads"));
+$("#resetNews").addEventListener("click", () => resetFromRemote("news"));
+
+$("#saveConfig").addEventListener("click", async () =>
+{
+	try
+	{
+		await api("/api/config", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ workerUrl: $("#setUrl").value.trim(), adminToken: $("#setToken").value.trim() }) });
+		state.config.workerUrl = $("#setUrl").value.trim();
+		state.config.adminToken = $("#setToken").value.trim();
+		$("#workerUrlText").textContent = state.config.workerUrl || "未配置 Worker 地址";
+		checkHealth();
+		toast("配置已保存", "ok");
+	}
+	catch (e)
+	{
+		toast(e.message, "bad");
+	}
+});
+$("#testHealth").addEventListener("click", checkHealth);
+
+$("#pullAdsSettings").addEventListener("click", async () =>
+{
+	const remote = await api("/api/current?type=ads").catch((e) => ({ payload: null, error: e.message }));
+
+	$("#pullResult").textContent = remote.payload ? JSON.stringify(remote.payload, null, 2) : "拉取失败: " + (remote.error || remote.status);
+});
+$("#pullNewsSettings").addEventListener("click", async () =>
+{
+	const remote = await api("/api/current?type=news").catch((e) => ({ payload: null, error: e.message }));
+
+	$("#pullResult").textContent = remote.payload ? JSON.stringify(remote.payload, null, 2) : "拉取失败: " + (remote.error || remote.status);
+});
+
+/* ---------- releases tab ---------- */
+
+const MAX_RELEASES = 20;
+
+function parseVersion(v)
+{
+	const m = /^(\d+)\.(\d+)\.(\d+)(?:-beta\.(\d+))?$/.exec(String(v || "").trim());
+
+	return m ? [+m[1], +m[2], +m[3], m[4] === undefined ? Infinity : +m[4]] : null;
+}
+
+function compareVersions(a, b)
+{
+	const pa = parseVersion(a);
+	const pb = parseVersion(b);
+
+	if (!pa || !pb) return 0;
+
+	for (let i = 0; i < 4; i++)
+	{
+		if (pa[i] !== pb[i]) return pa[i] < pb[i] ? -1 : 1;
+	}
+
+	return 0;
+}
+
+function latestOf(list, channel)
+{
+	let best = null;
+
+	for (const release of list)
+	{
+		if (release.channel !== channel || release.revoked) continue;
+
+		if (!best || compareVersions(release.version, best.version) > 0) best = release;
+	}
+
+	return best;
+}
+
+let editingRelease = -1;
+
+function releaseFormFrom(release)
+{
+	$("#relVersion").value = release ? release.version || "" : "";
+	$("#relChannel").value = release ? release.channel || "stable" : "stable";
+	$("#relDate").value = release ? release.date || new Date().toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
+	$("#relUrl").value = release ? release.url || "" : "";
+	$("#relSha").value = release ? release.sha256 || "" : "";
+	$("#relMandatory").checked = release ? Boolean(release.mandatory) : false;
+	$("#relNotes").value = release ? release.notes || "" : "";
+	$("#relMdPreview").style.display = "none";
+	$("#releaseFormTitle").textContent = release ? "编辑版本 " + release.version + (release.channel === "preview" ? "（预览）" : "（正式）") : "发布新版本";
+	$("#releasePush").textContent = release ? "保存修改" : "发布到线上";
+	editingRelease = release ? state.releases.releases.indexOf(release) : -1;
+}
+
+async function pushReleases()
+{
+	if (state.releases.releases.length > MAX_RELEASES)
+	{
+		toast("版本列表超过 " + MAX_RELEASES + " 条，请先删除旧条目", "bad");
+
+		return;
+	}
+
+	try
+	{
+		const result = await api("/api/releases", {
+			method: "PUT",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ releases: state.releases.releases })
+		});
+
+		toast("已推送版本列表：" + result.body, "ok");
+		renderReleases();
+	}
+	catch (e)
+	{
+		toast("推送失败: " + e.message, "bad");
+	}
+}
+
+function renderReleases()
+{
+	const list = $("#releaseList");
+
+	list.innerHTML = "";
+
+	const releases = state.releases.releases;
+	const latestStable = latestOf(releases, "stable");
+	const latestPreview = latestOf(releases, "preview");
+
+	releases.forEach((release, index) =>
+	{
+		const isLatest = release === latestStable || release === latestPreview;
+		const card = document.createElement("div");
+
+		card.className = "card";
+		card.style.marginBottom = "8px";
+
+		const badges = [];
+
+		badges.push('<span class="badge ' + (release.channel === "preview" ? "bad" : "ok") + '">' + (release.channel === "preview" ? "预览版" : "正式版") + "</span>");
+
+		if (release.revoked) badges.push('<span class="badge bad">已撤回</span>');
+		if (release.mandatory && !release.revoked) badges.push('<span class="badge bad">强制更新</span>');
+		if (isLatest && !release.revoked) badges.push('<span class="badge ok">当前推送</span>');
+		if (release.sha256) badges.push('<span class="badge ok">校验 ✓</span>');
+
+		card.innerHTML = `
+			<div class="head" style="margin-bottom:4px"><span class="title" style="color:var(--text)">v${esc(release.version)}</span>${badges.join("")}
+				<span class="spacer"></span>${esc(release.date || "")}</div>
+			<div class="statusline" style="margin-bottom:6px">${esc(release.url || "（无下载链接）")}</div>
+			${release.revoked && release.revokedReason ? '<div class="statusline" style="color:var(--bad)">撤回原因：' + esc(release.revokedReason) + "</div>" : ""}
+			<div style="margin-top:6px">
+				<button class="iconbtn" data-act="edit">编辑</button>
+				${release.revoked
+					? '<button class="iconbtn" data-act="restore">恢复推送</button>'
+					: '<button class="iconbtn" data-act="revoke" style="color:var(--warn)">撤回</button>'}
+				<button class="iconbtn" data-act="del" style="color:var(--bad)">删除</button>
+			</div>`;
+
+		card.addEventListener("click", async (e) =>
+		{
+			const act = e.target.dataset && e.target.dataset.act;
+
+			if (!act) return;
+
+			if (act === "edit")
+			{
+				releaseFormFrom(release);
+				window.scrollTo({ top: 0, behavior: "smooth" });
+			}
+
+			if (act === "revoke")
+			{
+				const reason = prompt("撤回原因（会显示给已安装该版本的玩家，可留空）：") || "";
+
+				release.revoked = true;
+				release.revokedReason = reason;
+				await pushReleases();
+			}
+
+			if (act === "restore")
+			{
+				release.revoked = false;
+				release.revokedReason = "";
+				await pushReleases();
+			}
+
+			if (act === "del")
+			{
+				if (!confirm("删除版本 v" + release.version + "？")) return;
+
+				state.releases.releases.splice(index, 1);
+				await pushReleases();
+			}
+		});
+
+		list.appendChild(card);
+	});
+
+	$("#relStatus").textContent = releases.length + "/" + MAX_RELEASES + " 条 · 正式最新 " + (latestStable ? "v" + latestStable.version : "无") + " · 预览最新 " + (latestPreview ? "v" + latestPreview.version : "无");
+}
+
+async function loadReleases()
+{
+	try
+	{
+		const remote = await api("/api/releases");
+
+		if (remote.payload && Array.isArray(remote.payload.releases))
+		{
+			state.releases = { releases: remote.payload.releases.map((r) => ({ ...r })) };
+		}
+		else
+		{
+			toast("拉取版本列表失败: HTTP " + remote.status, "bad");
+		}
+	}
+	catch (e)
+	{
+		toast("拉取版本列表失败: " + e.message, "bad");
+	}
+
+	renderReleases();
+}
+
+$("#newRelease").addEventListener("click", () => releaseFormFrom(null));
+$("#reloadReleases").addEventListener("click", loadReleases);
+
+$("#releasePush").addEventListener("click", async () =>
+{
+	const version = $("#relVersion").value.trim();
+	const url = $("#relUrl").value.trim();
+	const sha = $("#relSha").value.trim();
+
+	if (!parseVersion(version))
+	{
+		toast("版本号格式应为 0.0.12 或 0.0.13-beta.1", "bad");
+
+		return;
+	}
+
+	if (url && !url.startsWith("https://"))
+	{
+		toast("下载 URL 必须 https", "bad");
+
+		return;
+	}
+
+	if (sha && !/^[a-f0-9]{64}$/.test(sha.toLowerCase()))
+	{
+		toast("SHA-256 应为 64 位十六进制", "bad");
+
+		return;
+	}
+
+	const release = {
+		version,
+		channel: $("#relChannel").value,
+		date: $("#relDate").value,
+		url,
+		sha256: sha.toLowerCase(),
+		notes: $("#relNotes").value,
+		mandatory: $("#relMandatory").checked,
+		revoked: false,
+		revokedReason: ""
+	};
+
+	const dupe = state.releases.releases.findIndex((r) => r.version === version && r.channel === release.channel && state.releases.releases.indexOf(r) !== editingRelease);
+
+	if (dupe >= 0)
+	{
+		toast("已存在同频道同版本号的条目", "bad");
+
+		return;
+	}
+
+	if (editingRelease >= 0 && editingRelease < state.releases.releases.length)
+	{
+		release.revoked = state.releases.releases[editingRelease].revoked;
+		release.revokedReason = state.releases.releases[editingRelease].revokedReason;
+		state.releases.releases[editingRelease] = release;
+	}
+	else
+	{
+		state.releases.releases.push(release);
+	}
+
+	await pushReleases();
+	releaseFormFrom(null);
+});
+
+$("#relPreview").addEventListener("click", () =>
+{
+	const pane = $("#relMdPreview");
+	const show = pane.style.display === "none";
+
+	pane.style.display = show ? "" : "none";
+	if (show) pane.innerHTML = renderMarkdown($("#relNotes").value) || "<p>（空）</p>";
+});
+
+$("#relPickJar").addEventListener("click", () => $("#relJarFile").click());
+$("#relJarFile").addEventListener("change", async () =>
+{
+	if (!$("#relJarFile").files.length) return;
+
+	const file = $("#relJarFile").files[0];
+
+	if (file.size > 120 * 1024 * 1024)
+	{
+		toast("文件超过 120MB，不支持计算", "bad");
+
+		return;
+	}
+
+	try
+	{
+		const buffer = await file.arrayBuffer();
+		const digest = await crypto.subtle.digest("SHA-256", buffer);
+		const hex = Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
+
+		$("#relSha").value = hex;
+		toast("SHA-256 已填入（" + file.name + "）", "ok");
+	}
+	catch (e)
+	{
+		toast("计算失败: " + e.message, "bad");
+	}
+});
+
+loadAll();
+</script>
+</body>
+</html>

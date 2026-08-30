@@ -1,0 +1,36 @@
+=== general (30 labels)
+  bbs.ui.transforms.alternate_invert                             交替反转
+
+选择多根骨骼时，每隔一根（第 2、4 根……）的旋转会反向。例如第 1 根骨骼沿 X 轴旋转 +90°，第 2 根会旋转 -90°。按手动选择顺序生效。
+  bbs.ui.transforms.combined                                     组合操控器
+  bbs.ui.transforms.context.copy                                 拷贝变换
+  bbs.ui.transforms.context.copy_world                           复制世界变换
+  bbs.ui.transforms.context.paste                                粘贴变换
+  bbs.ui.transforms.context.paste_rotation                       粘贴旋转
+  bbs.ui.transforms.context.paste_scale                          粘贴缩放
+  bbs.ui.transforms.context.paste_translation                    粘贴平移
+  bbs.ui.transforms.context.paste_world                          粘贴世界变换
+  bbs.ui.transforms.context.reset                                重置变换
+  bbs.ui.transforms.context.switch_global                        切换至全局
+  bbs.ui.transforms.context.switch_local                         切换局部坐标系
+  bbs.ui.transforms.editing                                      编辑中...
+  bbs.ui.transforms.keys.category                                变换
+  bbs.ui.transforms.keys.hide_gizmo                              隐藏 Gizmo（按住）
+  bbs.ui.transforms.keys.mirror_edit                             切换镜像编辑
+  bbs.ui.transforms.keys.toggle_axes                             切换 XYZ 坐标轴
+  bbs.ui.transforms.keys.toggle_fix                              切换肢体固定 (0 / 1)
+  bbs.ui.transforms.mirror_edit                                  镜像编辑
+
+启用后，编辑某根骨骼时，会实时将改动镜像到其左右侧对应骨骼，即使对应骨骼未被选中，也能无需同时选择两侧即可保持姿势对称。
+  bbs.ui.transforms.rotate                                       旋转
+  bbs.ui.transforms.rotate2                                      旋转（第二个）
+  bbs.ui.transforms.scale                                        缩放
+  bbs.ui.transforms.space.global                                 全局
+  bbs.ui.transforms.space.local                                  局部
+  bbs.ui.transforms.target.all                                   全部轴
+  bbs.ui.transforms.target.screen                                屏幕
+  bbs.ui.transforms.target.sphere                                球体
+  bbs.ui.transforms.target.view                                  视角
+  bbs.ui.transforms.translate                                    平移
+  bbs.ui.transforms.uniform_scale                                切换统一缩放
+
