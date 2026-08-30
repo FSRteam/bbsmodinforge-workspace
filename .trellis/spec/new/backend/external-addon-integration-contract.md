@@ -230,6 +230,42 @@ icon and decorator registration are plain static maps and can run during constru
   name, method signature, local-id pattern, and descriptor fields in a check that reads source or
   bytecode without loading BBS classes.
 
+### 3.4.3 Animated model previews inside addon UI
+
+An addon that renders a host model in its own panel — a narrator, a mascot, a preview — must
+own three things the host will not do for it.
+
+- **The clock.** `UIFormRenderer.renderUserModel` passes `.simulationOwner(this)`, so
+  `ModelFormRenderer.renderInUI` skips `advanceUIAnimation` (that branch is
+  `sourceOwner == null` only), and `UIModelRenderer.update()` only bumps `timer` and the stub
+  entity's age. Nothing reaches `Form#update`. Override `update()` and call
+  `this.form.update(this.entity)`, as `UIPickableFormRenderer` does. Without it the animator
+  stays on its starting keyframe pair while the partial tick keeps sweeping across it: the model
+  looks frozen and jittery at once.
+- **The model prefix.** `BOBJModelLoader` injects the shared animation set
+  (`Link.assets("actions.bobj")` plus `assets/emotes/*.bobj`) only into models whose id starts
+  with `emoticons/`. A `player/*` model's `getAnimations()` has no `emote_*` entry, so
+  `Animator.createAction` returns null for every one of them. Those armatures also lack the lower
+  arm bones (`low_left_arm`, `low_right_arm`) that the gesture animations drive, so an arm bend is
+  not merely unconfigured there — it is unreachable.
+- **The slot.** `Animator` reads a fixed slot list, and `controlActions` picks the primary action
+  from entity motion; a preview stub never moves, so the primary is always `idle`. Put the gesture
+  there. `base_pre` / `base_post` are *not* additive: `applyActions` runs them with `blend = 1F`
+  and `skipInitial = false`, so `animateGroup` lerps every bone they do not animate back to
+  `Transform.DEFAULT` — they overwrite the layer below.
+
+Hand `ModelForm.actions` a **new** `ActionsConfig` per switch. `ensureAnimator` re-runs
+`animator.setup(model, config, /* fade */ true)` only when the incoming config compares unequal
+to the copy it kept; mutating in place makes the two identical and the gesture never changes.
+That same setup call is what produces the cross-fade.
+
+A gesture name that is not in the animation set fails **silently**: `createAction` returns null,
+that slot has no playback, and whatever played before keeps playing. Keep the vocabulary in a
+bounded allow-list, degrade unknown names to `idle` at parse time, and verify every name in the
+list against the host jar's own `actions.bobj` (`^an <name>$`) from a check that reads the
+resource without loading BBS classes — `contentTestRuntimeOnly files(bbsJar)` is enough, and a
+missing jar should SKIP rather than FAIL.
+
 ### 3.4.4 Guided Dashboard navigation, anchors, and overlay contract
 
 - `BBSDashboardPanelIds` is the public source of truth for the nine built-in panel ids. Those ids
@@ -240,10 +276,15 @@ icon and decorator registration are plain static maps and can run during constru
   request was queued. `DASHBOARD_NOT_CREATED`, `NOT_DASHBOARD_SCREEN`, `PANEL_NOT_FOUND`,
   `REJECTED`, and `FAILED` remain distinct so callers can degrade deliberately.
 - `BBSDashboardAnchors` contains host-owned semantic anchor ids. Built-in and addon panel buttons
-  and content roots use `panelButton(panelId)` / `panelContent(panelId)`; the first tutorial range
-  also registers Dashboard settings/selectors and Morphing palette/demorph/from-mob controls.
-  Registration is explicit at the control construction site. Do not add a tooltip/L10n-key search
-  fallback: a renamed key would otherwise turn a host refactor into a silent pointer mismatch.
+  and content roots use `panelButton(panelId)` / `panelContent(panelId)`. The host also explicitly
+  registers stable first-level controls for all nine built-in panels: Morphing palette/list/editor,
+  Film selection/recorder/preview/duplicate/editor actions and timelines, Model Blocks list/picker/
+  toggles, Particles renderer/selection/dock/layout/playback controls, Model Editor panes, Textures
+  picker, Audio controls/editor, Graph canvas/expression/help, and Plugins list/actions. Dashboard
+  settings/selectors remain chrome anchors. Registration is explicit at the control construction
+  site. Do not add a tooltip/L10n-key search fallback: a renamed key would otherwise turn a host
+  refactor into a silent pointer mismatch. A public control that is not reachable is deliberately
+  omitted rather than exposed only to create an anchor.
 - `resolveDashboardAnchor(...)` recalculates from the live element tree on every call. The result is
   a value object containing the UI-scaled screen rectangle plus separate visible/hittable flags.
   It distinguishes an inactive panel, absent control, hidden control, and scroll-clipped control;
@@ -293,6 +334,15 @@ side="BOTH"
 game fails to load with no compile-time signal whatsoever. Always check the range against
 BBSFSR's actual `mod_version`.
 
+**Pitfall:** the Addon API version (`apiVersion "2.0"`, `BBSApiVersion.CURRENT`) is *not* the
+mod version. Writing the API version into this range (`[2.3.1,)`, `[2.0,)`) produces the same
+silent failure: NeoForge compares Maven versions, `0.0.11 < 2.0`, the dependency is unsatisfied
+and the addon never loads. Neither compilation nor a bare-JVM contract check can see it — read
+`new/gradle.properties`'s `mod_version`. Existing addons agree on the property name
+`bbs_version`; keep the toml side as `versionRange = "[${bbs_version},)"` and remember that
+`processResources`'s `inputs.properties` must list the same key, or the placeholder ships
+unexpanded.
+
 Do not declare a `connector` dependency, and do not ship `fabric.mod.json`: BBSFSR is
 native NeoForge and needs no Fabric compatibility layer.
 
@@ -317,6 +367,28 @@ native NeoForge and needs no Fabric compatibility layer.
   `java { toolchain.languageVersion = JavaLanguageVersion.of(java_version) }`.
 - Align `neo_version` with BBSFSR's value so the addon and BBS never disagree at runtime,
   and so the artifact cache is shared.
+
+### Immutable latest-FSR snapshot convention
+
+When the selected FSR checkout is being edited by another build/session, do not compile an
+addon against a JAR that is still being written or against a moving source tree whose timestamp
+changes during the addon build. Finish one serialized `jar` build in the selected FSR checkout,
+copy the resulting JAR into the addon `TEMP/` directory, and record its SHA-256 and source path.
+The addon should consume that immutable snapshot through `compileOnly files(...)`; its verifier
+must reject a missing or structurally incomplete snapshot, while source freshness is checked when
+the next snapshot is produced. This keeps the addon build reproducible and prevents a partial
+FSR artifact from being treated as a valid compatibility result.
+
+Good:
+
+```text
+new-fs25-sync/build/libs/BBS_FSR_beta_v0.0.11.jar
+  -> bfx-light/TEMP/BBS_FSR_beta_v0.0.11-fs25-latest.jar
+  -> SHA-256 recorded in PORT_STATUS.md
+```
+
+Bad: point `compileOnly` at a JAR in a concurrently changing `build/` tree and rely only on
+file timestamps after the build has already started.
 
 **Debugging stalled NeoForge builds:** default Gradle output hides the cause entirely. A
 build sitting on one task for tens of minutes needs `--info` before any other diagnosis;
@@ -463,6 +535,20 @@ the workspace's other standalone addons do not exercise this path.
 - Any BBS change to a method targeted by a workspace addon must propagate to that addon in the
   same verification session: rebuild one fresh core jar, compile the addon against it, inspect
   that the strict target descriptor still exists, then run the client and execute the target UI.
+- For transformation Mixins, do not anchor an injection to a concrete rotation implementation
+  such as `rotateZ(F)` or a quaternion helper. BBS may replace Euler calls with a unified rotation
+  path without changing the transform contract. Anchor the pivot/transform behavior to the stable
+  `translate(Vector3fc)` boundary (or another descriptor guaranteed by the current core), and use
+  `@Redirect` when the injected behavior must mutate the receiver of that invocation. A successful
+  compile is not evidence that the old invocation still exists: inspect the fresh core bytecode and
+  treat a `Scanned 0 target(s)` startup error as a stale implementation that must be fixed, not
+  downgraded with `require=0`.
+- When the host replaces a wrapper with a delegated overload or moves the side effect behind a
+  cache (for example, `updateMesh(StencilMap)` delegating to `updateMesh(StencilMap, Matrix4f[])`
+  and the vertex upload moving into `updateGeometry(Matrix4f[])`), migrate the injection to the
+  final side-effect method with its exact descriptor. If addon state changes the cached output,
+  explicitly invalidate or force-refresh that cache and verify both the modified and restored paths;
+  an injection on the old wrapper can compile while never running.
 - NeoForge parses every declared Mixin config on a dedicated server before it filters client-only
   entries. A companion `IMixinConfigPlugin` named by a client config must therefore be common-safe
   and compiled into `src/main`; it may gate optional targets, but it must not reference Minecraft
@@ -480,6 +566,7 @@ the workspace's other standalone addons do not exercise this path.
 | Multiple Gradle invocations target the same BBS `build/` tree | Wait for every writer to finish, then rerun one serialized main/client/jar build; do not trust intermediate classes or jars. |
 | A client is still alive when the core jar would be copied or rebuilt | Stop the client first. Never hot-replace the jar and continue using that JVM. |
 | A host UI edit changes an invocation overload, descriptor, or branch cardinality | Search every workspace addon Mixin targeting that method, update the semantic injection boundary, and verify every reachable layout branch with strict `require` still enabled. |
+| A host transform changes from Euler rotation calls to a unified/quaternion path | Move pivot injection to the stable translation boundary, match the `@Redirect` receiver/argument/return descriptor exactly, inspect the fresh core bytecode, and keep `defaultRequire: 1`; never hide the drift with `require=0`. |
 | A long-lived client reports several unrelated BBS `ClassNotFoundException`s after its jar changed on disk | Treat it as artifact lifecycle corruption, restart from an audited stable jar, and do not patch the reported classes individually. |
 | Config omits `refmap` and targets only BBS classes | This is the expected working state, not a missing-artifact warning. |
 | Dedicated server reports `ClassNotFoundException` for a client Mixin plugin | Move the plugin implementation to the common source set and keep its logic client-API-free; do not remove the client config from the manifest. |
@@ -857,4 +944,51 @@ Correct:
 Texture rendered = EffectRenderState.active
     ? dissolveTextures.lookup(original, EffectRenderState.amount)
     : original;
+```
+
+## 11.6 VFX Light form and fallback contract
+
+When an external light addon registers forms with BBSFSR, keep the following boundaries explicit:
+
+- Form registration links use the addon namespace (for example `new Link("vfxlights", "point_light")`).
+  An `InternalAssetsSourcePack` must use the same prefix and the addon's physical mod id; using the
+  global `assets` source can resolve an icon against the BBS core jar after packaging.
+- `FormRenderingContext.world` is the absolute semantic transform for `ENTITY` and `MODEL_BLOCK`.
+  `context.stack` is camera-relative for those paths, so adding the camera to a semantic-world matrix
+  shifts a light twice and makes it move with the camera.
+- Grouped keyframe values (`BaseKeyframeFactoryValue`) are edited by copying the current struct and
+  calling `value.set(copy)`. Mutating a field in place without notification disconnects undo/keyframe
+  listeners even though the renderer can read the new number.
+- When a form exposes several logical editing domains, register separate `UIFormPanel` instances with
+  `UIForm.registerPanel` (for example Light, Air and Style) instead of putting every control in one
+  default panel. Keep the domain set consistent across the four VFX Light forms when their inherited
+  values are runtime-editable; an Ambient form must not silently lose Air/Style/Toon/Barn controls.
+- If Iris/Fabric shadow hooks are not ported, a fallback consumer must still be registered on the
+  current `BBSClientApi` tick/world callbacks and must document which advanced controls it cannot honor.
+  A registry submission or a visible UI control alone is not evidence that a frame changed. A vanilla
+  fallback should copy the completed depth buffer and reconstruct visible positions before applying
+  attenuation; a source-only glow is not a lighting consumer and can disappear behind an active FSR
+  render target.
+- Model-block lights must carry their owning `BlockPos`. A client block-break callback clears the
+  persisted snapshot immediately, and the collector must reject stale chunk-section submissions during
+  a short kill window so the old render buffer cannot recreate the light before the next frame.
+
+### Wrong vs Correct
+
+Wrong:
+
+```java
+new InternalAssetsSourcePack(MOD_ID, Link.ASSETS, "assets/vfxlights/bbs_override", Owner.class);
+light.x = semanticOrigin.x + camera.getPosition().x;
+form.air.getOriginalValue().beam = value;
+```
+
+Correct:
+
+```java
+new InternalAssetsSourcePack(MOD_ID, MOD_ID, "assets/vfxlights", Owner.class);
+light.x = semanticOrigin.x;
+LightAir copy = form.air.getOriginalValue().copy();
+copy.beam = value;
+form.air.set(copy);
 ```

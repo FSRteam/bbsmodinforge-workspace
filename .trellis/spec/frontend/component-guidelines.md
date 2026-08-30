@@ -97,3 +97,76 @@ Regression coverage should assert the behavior through the real scroll container
 - `scrollSize` shrinks after collapse and grows after expansion;
 - an old bottom scroll offset is clamped to the new range;
 - every responsive layout branch still contains the section.
+
+### Keyframe property panels across channel rebuilds
+
+`KeyframeChannel.fromData(...)` replaces the channel's `Keyframe` objects and their
+mutable value objects. A mounted property panel can therefore outlive both the
+`Keyframe` and `Transform` instances that it was constructed with. Object identity is
+only a fast path; it is not a stable key after a submit, undo, or channel reload.
+
+When an editor keeps a panel mounted across a rebuild:
+
+- resolve the live keyframe in the same channel by object identity first, then by the
+  stable keyframe id and tick;
+- use the current selection index only as a same-sheet fallback when stable lookup fails;
+- replace the panel's keyframe reference with the live object before the next edit;
+- refresh every child control that caches the value object, including transform, pose
+  metadata, color, and lighting controls;
+- keep per-axis selection and drag snapshots indexed by sheet and keyframe index instead
+  of by `Keyframe` object.
+
+Wrong:
+
+```java
+int index = sheet.channel.getKeyframes().indexOf(panelKeyframe);
+Transform base = panelTransform.getTransform();
+```
+
+Correct:
+
+```java
+int index = PoseCurveKeyframeResolver.indexOf(sheet.channel.getKeyframes(), panelKeyframe);
+Keyframe<?> live = sheet.channel.get(index);
+panel.setKeyframe(live);
+panelTransform.setTransform((Transform) live.getValue());
+```
+
+Regression coverage must use distinct old/live keyframe objects with the same id and
+tick, a changed value object, and a same-tick keyframe with a different id. A runtime
+check must still load the strict Mixin targets because compilation does not validate the
+injected panel synchronization path.
+
+### Optional GPU batches may contain zero vertices
+
+UI overlays whose geometry depends on selection, interpolation mode, hidden channels,
+or available keyframes can legitimately emit no vertices in a frame. Finalizing those
+batches with `BufferBuilder.buildOrThrow()` turns a normal empty state into a screen
+render crash.
+
+Use `build()` and skip the upload when it returns `null`. Reserve `buildOrThrow()` for a
+path that emits vertices unconditionally before finalization.
+
+Wrong:
+
+```java
+BufferUploader.drawWithShader(builder.buildOrThrow());
+```
+
+Correct:
+
+```java
+MeshData mesh = builder.build();
+
+if (mesh != null)
+{
+    BufferUploader.drawWithShader(mesh);
+}
+```
+
+For Mixin-provided UI rendering, regression verification must cover both halves:
+
+- run an empty-buffer probe on the render thread and require it to complete without a
+  draw or exception;
+- inspect or exercise the transformed target so the injected method is proven to call
+  the guarded submission path, not merely compile beside it.

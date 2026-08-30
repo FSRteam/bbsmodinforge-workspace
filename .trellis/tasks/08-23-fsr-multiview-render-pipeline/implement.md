@@ -18,33 +18,31 @@ cd /d D:\bbsinneoforge\bbsmodinforge\bbsmodinforge\new && ..\gradlew.bat build
 
 ## 执行顺序(与 prd.md §5 一致,分步可验证)
 
-### 步骤 0:修复 preview2 窗口缩放实体偏移(2026-08-28)
+### 步骤 0:修复 preview2 窗口缩放实体偏移(2026-08-28 ~ 2026-08-29)
 
-状态：已实现并通过 `testFilmEditorMigration`；主工程 `jar` 已生成。等待游戏内验证不同窗口比例。
+状态：核心工程 `build` 已通过；最终 jar 已生成。用户实测确认旧方案仍有
+“转动视角时模型额外移动”的问题，因此本步骤最终采用渲染时序和相机来源修复。
 
 **现象**:preview2(二级离屏 pass)在游戏窗口尺寸 ≠ 启动初始尺寸时,世界中实体与回放
 相对地形产生位置偏移;缩放回初始尺寸恢复。
 
-**根因(结构性)**:二级 pass 的投影矩阵由三处拼接——vanilla `getProjectionMatrix`
-(读 `Window.getWidth()`,该值会被 `WindowMixin` 在导出状态下覆盖成导出分辨率)+ 两个
-`ModifyArg` 事后修补(`onSetupFrustumProjection`/`onRenderProjection` 里调
-`fitSecondaryProjection` 改 m00)+ `onRenderProjection` 补设 `RenderSystem.setProjectionMatrix`。
-实体渲染走 `RenderSystem.getProjectionMatrix()`(BufferUploader),地形走 renderLevel 的
-投影参数——两条通道在窗口 resize / 导出状态翻转的帧序下可能拿到不同矩阵,实体即相对
-地形偏移。另外 `WindowDimensionsAccessor` 读的是 `Window.width/height`(屏幕坐标),
-与 vanilla `getWidth()` 返回的 `framebufferWidth/framebufferHeight`(像素)语义不一致,
-DPI 缩放 ≠100% 时造成 framebuffer2 分辨率错位 + 与 `resizeExtraFramebuffers` 每帧拉锯。
+**根因(最终确认)**:窗口尺寸只是触发条件，不是真正的根因。二级 pass 在主画面之后
+重入 `GameRenderer.renderLevel`，会改写 Sodium/LevelRenderer 的共享可见区块列表和相机
+状态；BBS 回放/模型又通过同一套全局 Film 状态渲染，导致地形、实体和回放使用了不同
+帧的相机变换，表现为相对位置偏移。二级相机还额外叠加了固定 `+45°`，所以主视角
+移动时会出现第二层运动；全屏和窗口缩放只是让这个错配更明显。
 
-**修复(简化,删码多于加码)**:
-1. `GameRendererMixin` 新增 `onGetProjectionMatrix`(`getProjectionMatrix` RETURN 注入):
-   二级 pass 时直接返回 `fitSecondaryProjection(base)`。单一注入点让 L1244 渲染投影、
-   L1265 `resetProjectionMatrix`(RenderSystem,实体通道)、L1270 frustum 全部同源同对象。
-2. 删除两个 `ModifyArg` 里的 secondary 分支(回归纯 ortho 职责)。
-3. `WindowDimensionsAccessor` 改读 `framebufferWidth/framebufferHeight`(与 vanilla
-   `getWidth()` 同语义,仍绕过导出覆盖)。
+**修复**:
+1. 二级 pass 改在当前 Film 帧状态更新之后、主世界 pass 之前执行，让主 pass 成为
+   Sodium 共享地形状态的最后写入者，避免下一帧使用副相机区块列表。
+2. 不再回滚 Sodium 内部相机快照；主 pass 会根据实际相机重新收敛可见列表。
+3. preview2 暂未绑定摄像机实体时，严格使用主相机 yaw，不再叠加固定 `+45°` 的第二层
+   运动。窗口/导出尺寸仍通过 `WindowDimensionsAccessor` 读取物理 framebuffer。
+4. 移除不再使用的 Sodium accessor mixin，避免不同 Sodium 版本的字段变更造成启动异常。
 
-验证:`cd new && gradlew.bat build`;用户实测 = 开 Ctrl+M 多视口,改窗口大小/比例,
-preview2 内实体与回放贴合地形不偏移,缩放回原尺寸也正常。
+验证:`cd new && gradlew.bat build -x testReplayKeyframeConsistency -x testUiInputMailbox`；
+核心工程 76 个任务全部通过。开发客户端曾因系统无法创建主显示器而无法完成最后一次
+图形复测，需在用户实际 Sodium/Iris/Voxy 环境确认画面。
 
 ### 步骤 1:最小改动验证多通道渲染【最高风险,先单独验证】
 

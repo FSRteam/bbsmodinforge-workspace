@@ -168,6 +168,30 @@ same `(button, generation)` and add an integration test that reaches the real
 owner. See the UI gesture contract in
 `.trellis/spec/new/backend/quality-guidelines.md`.
 
+### Multi-pass world rendering and shared renderer state
+
+When a client renders the same world more than once in a frame, treat the
+renderer, camera, framebuffer, projection, and visible-section lists as one
+cross-layer contract. A second `renderLevel` call can mutate shared culling and
+simulation state even when its OpenGL target is isolated.
+
+Required review points:
+
+- Render the auxiliary pass only after the current Film/replay frame state has
+  been advanced, otherwise it consumes the previous frame's entity transforms.
+- Make the primary pass the final writer of shared terrain/culling state, or
+  provide a truly independent renderer state. Restoring a few camera scalar
+  fields does not restore cached visible lists.
+- Do not add an implicit camera rotation/translation to a validation mirror.
+  Until a real per-view camera owner exists, use the primary camera pose exactly;
+  otherwise mouse-look becomes a second movement layer in model/replay output.
+- Keep physical framebuffer dimensions and export/UI dimensions separate, and
+  gate any export-size accessors while the auxiliary camera is active.
+
+This boundary needs a visual smoke test with window resize, fullscreen, and
+camera rotation. A projection-only unit test cannot detect entity/terrain drift
+or stateful replay movement.
+
 ---
 
 ## Checklist for Cross-Layer Features
@@ -405,6 +429,15 @@ GameRenderer.mainCamera reference -> world/entity render context -> private fram
 - Compute model/entity positions from the secondary render context and its
   camera. Do not use the main preview's saved view/projection matrices as a
   fallback for a secondary draw.
+- Start a secondary world pass from an identity world model-view matrix. The
+  pass is commonly invoked after vanilla has installed the GUI orthographic
+  matrix and its `-11000` translation; carrying that GUI transform into a
+  world pass produces aspect-ratio-dependent entity offsets after window
+  resizing.
+- Keep a live secondary pose contract explicit: copying the current main
+  camera pose into a separate camera object is allowed and must happen every
+  frame when the view follows the active camera mode. A one-time fallback pose
+  is not equivalent to a live view and makes mode switches appear frozen.
 - Restore the renderer camera reference, entity-dispatcher camera, culling
   bookkeeping, framebuffer, projection, and model-view state in one `finally`
   block. The restoration must run when a renderer or shader throws.

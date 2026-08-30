@@ -51,7 +51,35 @@ key decode to `false` (getBool default).
 ## Validation
 
 - [x] `compileJava compileClientJava`
-- [ ] full `gradlew build`
-- [ ] in-game manual matrix: opaque block behind translucent render-last block; two render-last
-  blocks at different depths; look-at + shadow + transform parity; toggle round-trip through
-  rejoin.
+- [x] full `gradlew build` — BUILD SUCCESSFUL in 5m44s, `build/libs/BBS_FSR_beta_v0.0.11.jar`
+  produced (with `--project-cache-dir .gradle/codex-sound-jar-build -PbbsPreferMirror=true`;
+  the default `build/neoForm` cache had been corrupted by repeatedly interrupted runs and had
+  to be rebuilt from scratch). Note: an earlier full-build attempt failed `testUiInputMailbox`
+  on a **pre-existing** local change; the passing final run used the warm alternate cache.
+- [ ] in-game manual matrix (awaiting user retest after the pose-capture fix): opaque block
+  behind translucent render-last block; two render-last blocks at different depths; look-at +
+  shadow + transform parity; toggle round-trip through rejoin.
+
+## Bugfix 2026-08-29 (user test: "开启后伪装直接消失")
+
+First cut replayed through the AFTER_BLOCK_ENTITIES event's PoseStack. That stack is
+camera-relative **without** the per-block translate the vanilla BE loop applies before calling
+the dispatcher (`posestack.translate(blockX - camX, ...)`) — every render-last model drew at the
+camera origin and was effectively invisible.
+
+Fix: the queue entry now **captures the dispatcher's current PoseStack at enqueue time** (which
+already contains the block-position translate). The replay draws through the exact transform
+the immediate path would have used; `flush` no longer needs the event stack. `renderDeferred`
+also skips the shadow (it already drew during the BE pass, where draw order does not matter) —
+the first cut drew it twice.
+
+Verified while fixing:
+
+- `renderingWorld` stays true until `onWorldRenderEnd` (renderLevel RETURN) — AFTER_BLOCK_ENTITIES
+  is inside renderLevel, so `canDeferWorldTranslucency()` still routes translucent texels of a
+  render-last model into `FormTranslucentQueue`, which flushes later at the translucent boundary
+  (correct: the render-last model's own translucent parts still sort globally).
+- The model VAO path draws through RenderSystem directly (no vertex consumer); the `bufferSource`
+  passed to flush is only used by the shadow path, which no longer runs there.
+- The RenderSystem model-view stack pushed at renderLevel start (`matrix4fstack.mul(modelView)`)
+  is popped only after AFTER_BLOCK_ENTITIES — the replay's shader state matches the BE pass.

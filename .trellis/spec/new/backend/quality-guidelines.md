@@ -18,6 +18,74 @@ Questions to answer:
 
 (To be filled by the team)
 
+## Scenario: FS 2.5.1 translucent queue and missing-texture migration
+
+### 1. Scope / Trigger
+
+Apply when porting FS 2.5.1 rendering/settings behavior into the NeoForge FSR worktree.
+
+### 2. Signatures
+
+- `FormTranslucentQueue.begin()` reads `BBSSettings.translucencyQueue`.
+- `FormTranslucentQueue.quadPlaneNormal(Matrix4f, Matrix4f)` returns the camera-space quad normal.
+- `TextureManager` keeps missing links in a private `Set<Link> failed`.
+- `Recorder.update()` calls `landMark()` before the countdown early return.
+
+### 3. Contracts
+
+- A disabled translucency queue leaves `isActive()` false so forms use the immediate single-pass path;
+  existing saved settings remain authoritative.
+- Flat billboard/framebuffer commands pass their plane normal into the queue and sort by squared
+  distance to the plane; model/entity commands keep origin-distance sorting.
+- Fabulous rendering rebinds `Minecraft.getInstance().getMainRenderTarget()` before replaying queued
+  forms so the final Fabulous blit cannot overwrite them.
+- The shared error texture is never inserted into `textures`; a failed link is retried only after
+  `delete`, `createTexture`, or watchdog invalidation clears its failure marker.
+- A recording mark is released as soon as the teleported player reaches it, including during countdown;
+  timeout remains a separate fallback.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Queue setting is false | No deferred commands are retained; draw immediately. |
+| Large flat form is orbiting the camera | Sort remains stable until the camera crosses the form plane. |
+| Fabulous graphics is enabled | Main render target is bound before queue replay. |
+| Missing texture is requested repeatedly | Return the shared error texture without re-reading every frame. |
+| Missing file appears later | Watchdog clears the failure marker and the next request may load it. |
+| Teleport lands while countdown is active | Clear the mark immediately; do not shift server action clips. |
+
+### 5. Good / Base / Bad Cases
+
+- Good: a missing PBR companion texture returns the shared placeholder, and deleting/reloading its link
+  does not delete that placeholder for unrelated forms.
+- Good: a billboard and a model at the same origin retain stable painter ordering while the camera orbits.
+- Base: queue enabled, Iris layout captured, and normal FSR shader/lightmap/overlay state restored.
+- Bad: storing `getError()` in `textures`, or using the quad centre as the only sort key for a large plane.
+
+### 6. Tests Required
+
+- `compileClientJava` and `build` on the independent `new-fs25-sync` worktree.
+- `testUiInputMailbox` and `testFilmEditorMigration` real execution tasks.
+- Static source assertions for queue setting, plane-normal propagation, failed-link cleanup, and
+  countdown mark release.
+- Manual Fabulous/Iris smoke test when the client environment is available.
+
+### 7. Wrong vs Correct
+
+Wrong:
+
+```java
+this.textures.put(link, this.getError());
+```
+
+Correct:
+
+```java
+this.failed.add(link);
+return this.getError();
+```
+
 ---
 
 ## Forbidden Patterns
@@ -159,6 +227,91 @@ if (BBSRendering.isRenderingWorld()
     && !context.modelRenderer)
 {
     FormTranslucentQueue.ensureStarted();
+}
+```
+
+## Scenario: Deferred translucent command state ownership
+
+### 1. Scope / Trigger
+
+Apply when a form captures a Minecraft `RenderType`, `VertexBuffer`, or grouped
+label/item/block layer for replay through `FormTranslucentQueue`, especially when
+Iris or Sodium is present.
+
+### 2. Signatures
+
+- `FormTranslucentQueue.resetBlend()` establishes standard source-alpha blending.
+- `CustomVertexConsumerProvider.drawLayer(...)` captures
+  `BBSRendering.captureIrisVertexLayout()` while the layer still owns its buffer.
+- `RenderLayerCommand(..., Runnable prepare, boolean extendedLayout)` carries that
+  layout to the deferred draw.
+- `BBSRendering.applyIrisVertexLayout(boolean)` returns the previous value;
+  `restoreIrisVertexLayout(boolean)` restores it in `finally`.
+
+### 3. Contracts
+
+- Blend state is command-local. `RenderType.clearRenderState()` may disable blending,
+  so every top-level command and every child of a `GroupCommand` must call
+  `resetBlend()` before drawing.
+- A deferred vanilla mesh is drawn with the Iris extended-layout flag captured at
+  upload time. Never infer the layout later from whichever buffer Iris is currently
+  flushing.
+- FSR-built plain `DefaultVertexFormat` buffers pass `extendedLayout=false`.
+- Form tint and Color Pose alpha use `RecolorVertexConsumer`. Sodium bulk writes
+  bypass `setColor()` and must not replace this path.
+- Depth-write and cull ownership remain per command; blend/layout restoration does
+  not weaken the existing far-to-near queue and self-occlusion contract.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Previous deferred `RenderType` disabled blending | Reset standard alpha blending before the next command. |
+| Grouped label child clears its state | Reset blending before the next child while preserving child order. |
+| Iris layout at replay differs from capture | Temporarily apply the captured layout and restore the caller layout in `finally`. |
+| Mesh was built directly by BBS | Mark it as plain layout (`false`). |
+| Sodium is loaded | Keep tint/alpha on `RecolorVertexConsumer`; do not use the bulk writer substitute. |
+
+### 5. Good / Base / Bad Cases
+
+- Good: a semi-transparent Color Pose model follows a deferred item or text layer
+  and remains tinted and translucent.
+- Good: a vanilla-format item mesh captured under Iris replays with its captured
+  stride, then restores Iris' current flag.
+- Base: without Iris, layout helpers are no-ops while per-command blend reset still
+  applies.
+- Bad: enable blending once at the start of `flush()` and assume later
+  `RenderType.clearRenderState()` leaves it enabled.
+- Bad: read `ImmediateState.renderWithExtendedVertexFormat` only at replay time.
+- Bad: route form alpha through Sodium's bulk writer, which bypasses `setColor()`.
+
+### 6. Tests Required
+
+- `testFilmEditorMigration` asserts at least one top-level and one grouped
+  `resetBlend()` call, captured layout propagation, apply/restore in `finally`, and
+  the absence of the Sodium bulk tint branch.
+- `compileClientJava` verifies Iris and Minecraft signatures.
+- `runClient` with Sodium and Iris installed must complete resource reload without
+  `MixinApplyError`, `InvalidInjectionException`, or a new crash report.
+- Manual visual matrix: Color Pose alpha at `1`, `0.5`, and near zero; consecutive
+  model/item/label/particle layers; Iris off and an active Iris shader pack.
+
+### 7. Wrong vs Correct
+
+Wrong:
+
+```java
+RenderSystem.enableBlend();
+for (DrawCommand command : pending) command.draw();
+```
+
+Correct:
+
+```java
+for (DrawCommand command : pending)
+{
+    resetBlend();
+    command.draw();
 }
 ```
 
@@ -2911,5 +3064,71 @@ moveWithBoundedAccessDeniedRetry(staging, target);
 ## Code Review Checklist
 
 <!-- What reviewers should check -->
+
+## Scenario: Deferred depth effects and view-space matrices
+
+### 1. Scope / Trigger
+
+Apply when a NeoForge 1.21.1 addon queues form transforms for a later fullscreen pass that
+reconstructs scene positions from the depth buffer with an inverse projection matrix.
+
+### 2. Signatures
+
+- Form matrix: `FormRenderContext.stack.last().pose()`.
+- Active camera model-view: `RenderSystem.getModelViewMatrix()`.
+- Deferred view-space matrix:
+  `new Matrix4f(RenderSystem.getModelViewMatrix()).mul(formMatrix)`.
+
+### 3. Contracts
+
+- The form stack is camera-relative on the migrated BBSFSR render path; camera rotation remains in
+  the active RenderSystem model-view matrix.
+- A shader that computes `viewPosition = inverseProjection * ndcDepth` requires every compared
+  origin, normal, axis, and tangent to be in the same view space.
+- Compose and copy the matrix when the effect is queued. Do not keep the mutable pose-stack matrix
+  reference or defer the conversion until an unrelated later render stage.
+- Keep the conversion at the queue boundary so all shader uniforms derived from the stored matrix
+  share one coordinate-space contract.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Shader reconstructs view-space depth but receives the raw form stack | Reject; the effect can slide or rotate with the camera. |
+| Queue stores a pose-stack matrix reference | Reject; copy it before the stack is mutated. |
+| Shader reconstructs world space with inverse view-projection | Supply world-space origins and axes instead; do not apply this view-space rule blindly. |
+| Projection and queued transform come from different frames | Drop or fence the entry rather than mixing frames. |
+
+### 5. Good / Base / Bad Cases
+
+- Good: ground cracks queue `modelView * formMatrix`; their origin and tangent axes stay fixed while
+  the player rotates and moves the camera.
+- Base: a purely geometric effect drawn immediately through the same pose stack needs no deferred
+  conversion.
+- Bad: depth is reconstructed in view space while `uOrigin`, `uUp`, `uTanU`, and `uTanV` come from
+  the raw camera-relative form stack.
+
+### 6. Tests Required
+
+- Compile the client source set and build the release addon JAR.
+- Launch a real client through shader/resource reload and require API READY with no Mixin or shader
+  uniform failure.
+- In-world, hold the effect centre fixed; rotate, pitch, and translate the camera and assert the
+  pattern remains anchored while its configured radius/animation still changes normally.
+
+### 7. Wrong vs Correct
+
+Wrong:
+
+```java
+QUEUE.add(new Entry(new Matrix4f(formMatrix), parameters));
+```
+
+Correct:
+
+```java
+Matrix4f viewMatrix = new Matrix4f(RenderSystem.getModelViewMatrix()).mul(formMatrix);
+QUEUE.add(new Entry(viewMatrix, parameters));
+```
 
 (To be filled by the team)
