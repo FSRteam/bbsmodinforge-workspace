@@ -22,6 +22,8 @@ import mchorse.bbs_mod.api.client.film.BBSFilmSession;
 import mchorse.bbs_mod.api.client.film.BBSFilmSnapshotApplyRequest;
 import mchorse.bbs_mod.api.client.film.BBSFilmSnapshotResult;
 import mchorse.bbs_mod.BBSModClient;
+import mchorse.bbs_mod.l10n.L10n;
+import mchorse.bbs_mod.l10n.keys.IKey;
 import mchorse.bbs_mod.ui.dashboard.UIDashboard;
 import mchorse.bbs_mod.ui.film.UIFilmPanel;
 import mchorse.bbs_mod.ui.film.controller.UIFilmController;
@@ -57,6 +59,7 @@ import java.util.function.Consumer;
 public final class TogetherClientNetwork
 {
     public static final Map<UUID, Integer> PLAYER_COLORS = new ConcurrentHashMap<>();
+    private static final Map<UUID, String> PLAYER_NAMES = new ConcurrentHashMap<>();
     public static final Map<UUID, String> PLAYERS_IN_FILM_SCREEN = new ConcurrentHashMap<>();
     private static final Map<String, Map<Integer, UUID>> REPLAY_FORM_LOCKS = new ConcurrentHashMap<>();
     public static volatile boolean damageControlActive;
@@ -90,6 +93,7 @@ public final class TogetherClientNetwork
         }
 
         register(TogetherMessageIds.PLAYER_COLOR, TogetherClientNetwork::handleColors);
+        register(TogetherMessageIds.SESSION_OPEN, TogetherClientNetwork::handleSessionOpen);
         register(TogetherMessageIds.SESSION_CLOSE, TogetherClientNetwork::handleSessionClose);
         register(TogetherMessageIds.MUTATION, TogetherClientNetwork::handleMutation);
         register(TogetherMessageIds.SNAPSHOT_REQUEST, TogetherClientNetwork::handleSnapshotRequest);
@@ -118,6 +122,7 @@ public final class TogetherClientNetwork
     {
         connected = false;
         PLAYER_COLORS.clear();
+        PLAYER_NAMES.clear();
         PLAYERS_IN_FILM_SCREEN.clear();
         REPLAY_FORM_LOCKS.clear();
         damageControlActive = false;
@@ -212,12 +217,40 @@ public final class TogetherClientNetwork
         connected = true;
     }
 
+    private static void handleSessionOpen(FriendlyByteBuf input)
+    {
+        String document = TogetherWire.readText(input, TogetherLimits.MAX_DOCUMENT_ID_BYTES, "document id");
+        UUID participant = input.readUUID();
+        String displayName = TogetherWire.readText(input, TogetherLimits.MAX_TEXT_BYTES, "player name");
+        int color = input.readInt();
+        long sequence = input.readVarLong();
+        TogetherWire.requireFullyRead(input);
+
+        PLAYER_NAMES.put(participant, displayName);
+        PLAYER_COLORS.put(participant, color);
+
+        LocalSession current = matching(document);
+        if (current == null || participant.equals(localPlayerId()))
+        {
+            return;
+        }
+
+        /* A reconnect/open starts a new presence epoch. Clear the old overlay
+         * with the open watermark so the next presence sample can repopulate
+         * it without showing stale coordinates or selections. */
+        BBSClientApi.clearRemoteFilmPresence(BBSTogetherMod.DESCRIPTOR, new BBSFilmPresenceClearRequest(
+            current.sessionId, current.revision, sequence, participant.toString()
+        ));
+        resendLastPresence(current);
+    }
+
     private static void handleSessionClose(FriendlyByteBuf input)
     {
         String document = TogetherWire.readText(input, TogetherLimits.MAX_DOCUMENT_ID_BYTES, "document id");
         UUID participant = input.readUUID();
         long sequence = input.readVarLong();
         TogetherWire.requireFullyRead(input);
+        PLAYER_NAMES.remove(participant);
         LocalSession current = matching(document);
         if (current == null)
         {
@@ -273,7 +306,11 @@ public final class TogetherClientNetwork
             sequence,
             mutations
         );
-        BBSClientApi.applyRemoteFilmMutations(BBSTogetherMod.DESCRIPTOR, batch).thenAccept(result -> updateAfterApply(current, result));
+        BBSClientApi.applyRemoteFilmMutations(BBSTogetherMod.DESCRIPTOR, batch).thenAccept(result ->
+        {
+            updateAfterApply(current, result);
+            notifyRemoteSync(current, source, result.applied());
+        });
     }
 
     private static void handleSnapshotRequest(FriendlyByteBuf input)
@@ -370,7 +407,11 @@ public final class TogetherClientNetwork
             {
                 BBSClientApi.applyRemoteFilmSnapshot(BBSTogetherMod.DESCRIPTOR, new BBSFilmSnapshotApplyRequest(
                     current.sessionId, current.revision, metadata.sequence(), completed.bytes()
-                )).thenAccept(result -> updateAfterApply(current, result));
+                )).thenAccept(result ->
+                {
+                    updateAfterApply(current, result);
+                    notifyRemoteSync(current, source, result.applied());
+                });
             }
         }
         else if (metadata.kind() == TogetherTransferKind.ASSET_MANIFEST)
@@ -392,6 +433,8 @@ public final class TogetherClientNetwork
         long sequence = input.readVarLong();
         byte[] payload = TogetherWire.readBytes(input, TogetherLimits.BROKER_C2S_BYTES - 1024, "presence");
         TogetherWire.requireFullyRead(input);
+        PLAYER_NAMES.put(source, displayName);
+        PLAYER_COLORS.put(source, color);
         LocalSession current = matching(document);
         if (current == null || source.equals(localPlayerId()))
         {
@@ -956,6 +999,24 @@ public final class TogetherClientNetwork
         return bytes;
     }
 
+    private static void resendLastPresence(LocalSession current)
+    {
+        byte[] bytes = current.lastPresence;
+        if (bytes != null && current.lastPresenceRevision == current.revision)
+        {
+            sendPresence(current, bytes);
+        }
+    }
+
+    private static void sendPresence(LocalSession current, byte[] bytes)
+    {
+        send(TogetherMessageIds.PRESENCE, output ->
+        {
+            TogetherWire.writeText(output, current.documentId, TogetherLimits.MAX_DOCUMENT_ID_BYTES, "document id");
+            TogetherWire.writeBytes(output, bytes, TogetherLimits.BROKER_C2S_BYTES - 1024, "presence");
+        });
+    }
+
     private static void updateAfterApply(LocalSession expected, BBSFilmApplyResult result)
     {
         if (session != expected)
@@ -973,6 +1034,34 @@ public final class TogetherClientNetwork
             send(TogetherMessageIds.SNAPSHOT_REQUEST, output ->
                 TogetherWire.writeText(output, expected.documentId, TogetherLimits.MAX_DOCUMENT_ID_BYTES, "document id"));
         }
+    }
+
+    private static void notifyRemoteSync(LocalSession expected, UUID source, boolean applied)
+    {
+        if (!applied)
+        {
+            return;
+        }
+
+        Minecraft.getInstance().execute(() ->
+        {
+            if (session != expected)
+            {
+                return;
+            }
+
+            UIFilmPanel panel = filmPanelIfCreated();
+            if (panel == null || panel.getData() == null || panel.getContext() == null
+                || !expected.documentId.equals(panel.getData().getId()))
+            {
+                return;
+            }
+
+            String name = PLAYER_NAMES.getOrDefault(source, source.toString());
+            String message = L10n.lang("bbs_together.notification.synced").get()
+                + " " + name + ": " + expected.documentId;
+            panel.getContext().notifyOrUpdate(IKey.raw(message), mchorse.bbs_mod.utils.colors.Colors.BLUE);
+        });
     }
 
     private static LocalSession matching(String document)
@@ -1085,11 +1174,9 @@ public final class TogetherClientNetwork
             }
             current.revision = presence.revision();
             byte[] bytes = encodePresence(presence);
-            send(TogetherMessageIds.PRESENCE, output ->
-            {
-                TogetherWire.writeText(output, current.documentId, TogetherLimits.MAX_DOCUMENT_ID_BYTES, "document id");
-                TogetherWire.writeBytes(output, bytes, TogetherLimits.BROKER_C2S_BYTES - 1024, "presence");
-            });
+            current.lastPresence = bytes;
+            current.lastPresenceRevision = presence.revision();
+            sendPresence(current, bytes);
         }
 
         @Override
@@ -1121,6 +1208,8 @@ public final class TogetherClientNetwork
         private final String documentId;
         private volatile long revision;
         private volatile long serverSequence = -1;
+        private volatile byte[] lastPresence;
+        private volatile long lastPresenceRevision = -1;
 
         private LocalSession(long sessionId, String documentId, long revision)
         {

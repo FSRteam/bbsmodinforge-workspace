@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_21",
   "client": [
     "IUIKeyframeGraphMixin",
+    "MorphRendererMixin",
     "UIDataOverlayPanelMixin",
     "UIFilmPanelMixin",
     "UIReplayListMixin",
