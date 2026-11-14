@@ -43,9 +43,10 @@ event to register itself.
 
 ### 3.2 Pick API 1.x unless you need Addon 2.0 capabilities
 
-API 2.0's `BBSAddonRegistrationContext` exposes only
-`resources()/forms()/settings()/clips()/particles()/network()/events()`. It has **no**
-facade for form renderers, editor panels, icons, or L10n — those go through static entry
+API 2.0's common `BBSAddonRegistrationContext` exposes only
+`resources()/forms()/settings()/clips()/particles()/network()/events()`. Client-only
+Dashboard content is registered separately through `BBSClientApi.registerDashboardPanel(...)`;
+form renderers, form editor panels, standalone icons, and L10n still use the static entry
 points regardless of which API generation you pick. So for an addon whose needs are
 "register a form + render it + edit it", API 1.x plus the static entry points in §3.4 is
 strictly less machinery.
@@ -74,6 +75,10 @@ bootstrap class, so the common `@Mod` class never references a client-only type.
 | L10n | `@Subscribe registerL10n(RegisterL10nEvent e)` captures `e.l10n`; `onClientStarted` registers the provider after the source pack | `Link.source` must equal the source-pack prefix; do not encode `assets/<namespace>` in the link path. Registering the provider during the earlier event makes the initial reload print missing-asset failures. |
 | Add form to the "Extra" picker category | `BBSModClient.getFormCategories().addExtraForm(Form)` (`FormCategories.java:80`) | Purpose-built public API; also calls `markDirty()`. Paired `removeExtraForm` (`:94`) |
 | Extra controls on a string keyframe editor | `UIStringKeyframeFactory.registerDecorator(IStringKeyframeDecorator)` (`:18`) | Receives `(factory, track)` where `track` is the sheet id; use `factory.addControl(UIElement)` and `factory.setStringValue(String)` |
+| Dashboard panel | `BBSClientApi.registerDashboardPanel(BBSAddonDescriptor, BBSDashboardPanelSpec, BBSDashboardPanelFactory)` | Requires `CLIENT_UI`; host composes `<addonId>:<localId>`, owns the wrapper, and isolates factory/lifecycle failures. |
+| Dashboard panel navigation | `BBSClientApi.navigateDashboardPanel(BBSAddonDescriptor, String)` | Requires `CLIENT_UI`; accepts stable built-in ids or an addon panel's full `<addonId>:<localId>` id and completes after the client-thread switch takes effect. |
+| Dashboard control anchor | `BBSClientApi.resolveDashboardAnchor(BBSAddonDescriptor, String)` | Requires `CLIENT_UI`; returns a fresh screen-space value snapshot and never exposes the host `UIElement`. |
+| Dashboard guide overlay | `BBSClientApi.registerDashboardOverlay(BBSAddonDescriptor, BBSDashboardOverlayFactory)` | Requires `CLIENT_UI`; one initially hidden root-layer slot per addon with explicit visibility and unregister ownership. |
 | Client lifecycle / tick hooks | `BBSClientApi.onClientStarted` (`:82`), `onStartClientTick` (`:97`), `onEndClientTick` (`:107`), `onClientStopping` (`:87`), `onDisconnect` (`:92`), `onEndWorldTick` (`:102`) | One-to-one replacements for the Fabric `ClientLifecycleEvents` / `ClientTickEvents` an addon ported from BBS CML will be using |
 | Game directory | `BBSMod.getGameFolder()` (`:322`) | Prefer over `FMLPaths` — one less platform API in an addon that already depends on BBS |
 | Timeline track colour / icon | Reflection on private `UIReplaysEditor.COLORS` / `ICONS` (`:86,87`) | **No public channel.** Degrade to default styling on failure; never propagate |
@@ -104,6 +109,18 @@ pendingL10n.reload()
   In `onClientStarted`, register the pack, register the provider, then reload L10n in that order.
 - Guard pack registration against repeated lifecycle delivery, while L10n provider registration
   may use identity de-duplication.
+- `registerOne` promises one link for *every* language. An addon that ships a subset of the
+  languages BBS supports must use `register(Function<String, List<Link>>)` and return an empty
+  list for the languages it does not carry. `L10n.reload(...)` loads `DEFAULT_LANGUAGE` first and
+  then the active language, printing `Failed to load <link> language file!` plus a stack trace for
+  every link it cannot resolve — a French client should never see an addon's language files in that
+  output. Returning nothing is safe: `en_us` is always loaded first and remains the fallback layer.
+- A missing translation key never throws. `getKey(key)` seeds `content` with the key itself and
+  `getKey(key, fallback)` seeds it with the fallback, and `LangKey.get()` returns `content`. The
+  observable defect is therefore silent: an English reader sees the addon's fallback language, and
+  a `FormatKey` whose specifier count no longer matches the arguments catches the exception and
+  renders the raw key. Neither is visible to javac or to a "does the key resolve" smoke check, so
+  the key set the code requests must be verified against the shipped language files (see §6).
 
 #### 4. Validation & Error Matrix
 
@@ -114,6 +131,10 @@ pendingL10n.reload()
 | `Link.path` starts with `assets/<namespace>/` | Remove that prefix; the pack's internal root already owns it. |
 | L10n event fires before the pack exists | Capture the `L10n` instance only; defer provider registration until after pack registration. |
 | Client lifecycle callback runs again | Do not register a duplicate source pack. |
+| Addon ships fewer languages than BBS supports | Use `register(...)` and answer with an empty list for the rest; do not let `registerOne` fabricate links to files that are not in the jar. |
+| A language file omits a key the code requests | Treat it as a defect even though nothing throws; the reader silently gets the fallback language. |
+| A language file's `%s` count differs from the arguments the code passes | Treat it as a defect; `FormatKey` swallows the exception and renders the raw key. |
+| A language file declares a key nothing reads | Remove it; it is dead weight that no runtime check will ever surface. |
 
 #### 5. Good / Base / Bad Cases
 
@@ -132,6 +153,13 @@ pendingL10n.reload()
 - Run the client and assert its complete console and logs contain no missing addon translation asset.
 - Assert at least one addon translation key exists in `L10n.getStrings()` and resolves to a
   value other than the bare key.
+- Assert the key set the code requests against every shipped language file, without loading BBS
+  classes: each requested key is present and non-empty, its `%s` count equals what the code passes,
+  and no language file declares a key nothing reads. Derive the language list from the addon's own
+  authoritative declaration rather than restating it in the test, so a language added to the
+  provider without a file fails the check instead of being skipped.
+- Prove the check has teeth: delete one key and change one format string's specifier count, confirm
+  the check fails, then restore. A key-contract check that was never seen failing is not evidence.
 
 #### 7. Wrong vs Correct
 
@@ -150,9 +178,137 @@ l10n.registerOne((language) -> new Link(NS, "strings/" + language + ".json"));
 l10n.reload();
 ```
 
+An addon that ships only a subset of languages answers per language instead:
+
+```java
+static final Set<String> TRANSLATED_LANGUAGES = Set.of("zh_cn", "en_us");
+
+l10n.register((language) -> TRANSLATED_LANGUAGES.contains(language)
+    ? Collections.singletonList(new Link(NS, "strings/" + language + ".json"))
+    : Collections.emptyList());
+l10n.reload();
+```
+
 Anything registered after `BBSResources.init()` rebuilds form categories gets wiped, so
 source packs and `addExtraForm` belong in an `onClientStarted` callback. Renderer, panel,
 icon and decorator registration are plain static maps and can run during construction.
+
+### 3.4.2 Addon Dashboard panel contract
+
+- Declare `BBSAddonCapability.CLIENT_UI` and call
+  `BBSClientApi.registerDashboardPanel(...)` during the addon client bootstrap.
+- `BBSDashboardPanelSpec.id()` is owner-local and matches
+  `[a-z0-9][a-z0-9_.-]{0,63}`. Never pass a namespaced/full id; the host composes
+  `<addonId>:<localId>` and applies first-wins.
+- The factory returns `BBSDashboardPanelContent` with one non-null, unattached
+  `UIElement` root. The host owns the `UIDashboardPanel` wrapper and mounts the
+  root full-size without exposing internal Dashboard types.
+- Client-thread callback order is
+  `open -> appear -> update* -> disappear -> close`. A Dashboard is reused
+  across screen sessions, so session resources belong in `open/close` and
+  selection resources in `appear/disappear`.
+- Rejected registration is recorded at `REGISTER_CLIENT`; factory or lifecycle
+  failure is recorded at `CLIENT_SETUP` and isolated. Addon registrations are
+  startup-only and have no unload facade.
+- The legacy `RegisterDashboardPanelsEvent` remains available and is still
+  emitted after host-owned API contributions are projected.
+- The content root must not extend a host panel class. The host wraps the root in its own
+  `UIExtensionDashboardPanel` and refuses a root that already has a parent, so
+  `extends UIElement implements BBSDashboardPanelContent` is the only shape that works.
+  Extending `UIDashboardPanel` compiles and then fails at registration.
+- A `BBSDashboardPanelSpec.title(...)` key is read on every tooltip draw, and the spec is
+  normally built during addon construction — before `BBSModClient.getL10n()` exists. Pass a
+  deferred `IKey` that resolves on each `get()`; a key captured at construction either NPEs or
+  pins the language that was active when the Dashboard was first built. The same applies to any
+  panel text that stays mounted while the reader changes language or theme.
+- Registration is best-effort from the addon's side: log `BBSRegistrationResult` and continue.
+  A rejected panel costs the addon its entry and must not take the Dashboard down.
+- Nothing about this chain is checked by javac when the client entry point is reached by name
+  through reflection (the usual shape for keeping client classes off a dedicated server). A
+  renamed entry class, a non-static `initialize`, an illegal local panel id, or a descriptor the
+  host rejects all present identically in-game: the panel is simply absent. Pin the entry-point
+  name, method signature, local-id pattern, and descriptor fields in a check that reads source or
+  bytecode without loading BBS classes.
+
+### 3.4.3 Animated model previews inside addon UI
+
+An addon that renders a host model in its own panel — a narrator, a mascot, a preview — must
+own three things the host will not do for it.
+
+- **The clock.** `UIFormRenderer.renderUserModel` passes `.simulationOwner(this)`, so
+  `ModelFormRenderer.renderInUI` skips `advanceUIAnimation` (that branch is
+  `sourceOwner == null` only), and `UIModelRenderer.update()` only bumps `timer` and the stub
+  entity's age. Nothing reaches `Form#update`. Override `update()` and call
+  `this.form.update(this.entity)`, as `UIPickableFormRenderer` does. Without it the animator
+  stays on its starting keyframe pair while the partial tick keeps sweeping across it: the model
+  looks frozen and jittery at once.
+- **The model prefix.** `BOBJModelLoader` injects the shared animation set
+  (`Link.assets("actions.bobj")` plus `assets/emotes/*.bobj`) only into models whose id starts
+  with `emoticons/`. A `player/*` model's `getAnimations()` has no `emote_*` entry, so
+  `Animator.createAction` returns null for every one of them. Those armatures also lack the lower
+  arm bones (`low_left_arm`, `low_right_arm`) that the gesture animations drive, so an arm bend is
+  not merely unconfigured there — it is unreachable.
+- **The slot.** `Animator` reads a fixed slot list, and `controlActions` picks the primary action
+  from entity motion; a preview stub never moves, so the primary is always `idle`. Put the gesture
+  there. `base_pre` / `base_post` are *not* additive: `applyActions` runs them with `blend = 1F`
+  and `skipInitial = false`, so `animateGroup` lerps every bone they do not animate back to
+  `Transform.DEFAULT` — they overwrite the layer below.
+
+Hand `ModelForm.actions` a **new** `ActionsConfig` per switch. `ensureAnimator` re-runs
+`animator.setup(model, config, /* fade */ true)` only when the incoming config compares unequal
+to the copy it kept; mutating in place makes the two identical and the gesture never changes.
+That same setup call is what produces the cross-fade.
+
+A gesture name that is not in the animation set fails **silently**: `createAction` returns null,
+that slot has no playback, and whatever played before keeps playing. Keep the vocabulary in a
+bounded allow-list, degrade unknown names to `idle` at parse time, and verify every name in the
+list against the host jar's own `actions.bobj` (`^an <name>$`) from a check that reads the
+resource without loading BBS classes — `contentTestRuntimeOnly files(bbsJar)` is enough, and a
+missing jar should SKIP rather than FAIL.
+
+### 3.4.4 Guided Dashboard navigation, anchors, and overlay contract
+
+- `BBSDashboardPanelIds` is the public source of truth for the nine built-in panel ids. Those ids
+  are semantic API values, not class names or translation keys. Addon panels remain addressable by
+  the full id already composed by the panel registry: `<addonId>:<localId>`.
+- `navigateDashboardPanel(...)` accepts calls from any thread and performs the switch on the
+  Minecraft client thread. Its future means **the target panel is active**, not merely that the
+  request was queued. `DASHBOARD_NOT_CREATED`, `NOT_DASHBOARD_SCREEN`, `PANEL_NOT_FOUND`,
+  `REJECTED`, and `FAILED` remain distinct so callers can degrade deliberately.
+- `BBSDashboardAnchors` contains host-owned semantic anchor ids. Built-in and addon panel buttons
+  and content roots use `panelButton(panelId)` / `panelContent(panelId)`. The host also explicitly
+  registers stable first-level controls for all nine built-in panels: Morphing palette/list/editor,
+  Film selection/recorder/preview/duplicate/editor actions and timelines, Model Blocks list/picker/
+  toggles, Particles renderer/selection/dock/layout/playback controls, Model Editor panes, Textures
+  picker, Audio controls/editor, Graph canvas/expression/help, and Plugins list/actions. Dashboard
+  settings/selectors remain chrome anchors. Registration is explicit at the control construction
+  site. Do not add a tooltip/L10n-key search fallback: a renamed key would otherwise turn a host
+  refactor into a silent pointer mismatch. A public control that is not reachable is deliberately
+  omitted rather than exposed only to create an anchor.
+- `resolveDashboardAnchor(...)` recalculates from the live element tree on every call. The result is
+  a value object containing the UI-scaled screen rectangle plus separate visible/hittable flags.
+  It distinguishes an inactive panel, absent control, hidden control, and scroll-clipped control;
+  it never returns a `UIElement` or caches coordinates across resize, scroll, or UI-scale changes.
+- `registerDashboardOverlay(...)` is first-wins and allows one overlay per addon. The returned
+  `BBSDashboardOverlaySubscription` starts hidden, owns `setVisible`, and must be closed when the
+  addon no longer owns the content. Rejection uses normal `BBSRegistrationResult` semantics;
+  factory and lifecycle failures are isolated and recorded at `CLIENT_SETUP`.
+- The host mounts overlay content outside every reusable panel. Root render order is Dashboard
+  `main` (panel + taskbar), addon guide layer, modal `menu.overlay`, then existing root tool/debug
+  layers. Panel switches therefore keep the guide alive, while confirmation/settings overlays and
+  host debug tools remain authoritative.
+- The host forces both its wrapper and the addon content root to `EventPropagation.PASS`. Empty
+  guide space must reach the real panel below; only visible interactive descendants may consume
+  input. Pure render children should remain non-interactive. Taskbar auto-hide still observes the
+  global pointer and is not driven by whether the guide consumed an event.
+- Root-layer guide models continue advancing through their renderer/context clock. Do not add a
+  `UIDashboard.update()` forwarding channel: doing so would rebind guide animation to the selected
+  panel lifecycle that this API exists to escape.
+
+Required regression coverage: built-in ids versus the real taskbar registrations in both
+directions, explicit anchor wiring, typed client-thread navigation/anchor failures, overlay factory
+and lifecycle isolation, blank-area input pass-through, idempotent unregister, and retained Addon
+2.0 JVM descriptors.
 
 ### 3.5 Do not extend a registration surface by overwriting it
 
@@ -178,6 +334,15 @@ side="BOTH"
 game fails to load with no compile-time signal whatsoever. Always check the range against
 BBSFSR's actual `mod_version`.
 
+**Pitfall:** the Addon API version (`apiVersion "2.0"`, `BBSApiVersion.CURRENT`) is *not* the
+mod version. Writing the API version into this range (`[2.3.1,)`, `[2.0,)`) produces the same
+silent failure: NeoForge compares Maven versions, `0.0.11 < 2.0`, the dependency is unsatisfied
+and the addon never loads. Neither compilation nor a bare-JVM contract check can see it — read
+`new/gradle.properties`'s `mod_version`. Existing addons agree on the property name
+`bbs_version`; keep the toml side as `versionRange = "[${bbs_version},)"` and remember that
+`processResources`'s `inputs.properties` must list the same key, or the placeholder ships
+unexpanded.
+
 Do not declare a `connector` dependency, and do not ship `fabric.mod.json`: BBSFSR is
 native NeoForge and needs no Fabric compatibility layer.
 
@@ -202,6 +367,28 @@ native NeoForge and needs no Fabric compatibility layer.
   `java { toolchain.languageVersion = JavaLanguageVersion.of(java_version) }`.
 - Align `neo_version` with BBSFSR's value so the addon and BBS never disagree at runtime,
   and so the artifact cache is shared.
+
+### Immutable latest-FSR snapshot convention
+
+When the selected FSR checkout is being edited by another build/session, do not compile an
+addon against a JAR that is still being written or against a moving source tree whose timestamp
+changes during the addon build. Finish one serialized `jar` build in the selected FSR checkout,
+copy the resulting JAR into the addon `TEMP/` directory, and record its SHA-256 and source path.
+The addon should consume that immutable snapshot through `compileOnly files(...)`; its verifier
+must reject a missing or structurally incomplete snapshot, while source freshness is checked when
+the next snapshot is produced. This keeps the addon build reproducible and prevents a partial
+FSR artifact from being treated as a valid compatibility result.
+
+Good:
+
+```text
+new-fs25-sync/build/libs/BBS_FSR_beta_v0.0.11.jar
+  -> bfx-light/TEMP/BBS_FSR_beta_v0.0.11-fs25-latest.jar
+  -> SHA-256 recorded in PORT_STATUS.md
+```
+
+Bad: point `compileOnly` at a JAR in a concurrently changing `build/` tree and rely only on
+file timestamps after the build has already started.
 
 **Debugging stalled NeoForge builds:** default Gradle output hides the cause entirely. A
 build sitting on one task for tens of minutes needs `--info` before any other diagnosis;
@@ -348,6 +535,24 @@ the workspace's other standalone addons do not exercise this path.
 - Any BBS change to a method targeted by a workspace addon must propagate to that addon in the
   same verification session: rebuild one fresh core jar, compile the addon against it, inspect
   that the strict target descriptor still exists, then run the client and execute the target UI.
+- For transformation Mixins, do not anchor an injection to a concrete rotation implementation
+  such as `rotateZ(F)` or a quaternion helper. BBS may replace Euler calls with a unified rotation
+  path without changing the transform contract. Anchor the pivot/transform behavior to the stable
+  `translate(Vector3fc)` boundary (or another descriptor guaranteed by the current core), and use
+  `@Redirect` when the injected behavior must mutate the receiver of that invocation. A successful
+  compile is not evidence that the old invocation still exists: inspect the fresh core bytecode and
+  treat a `Scanned 0 target(s)` startup error as a stale implementation that must be fixed, not
+  downgraded with `require=0`.
+- When the host replaces a wrapper with a delegated overload or moves the side effect behind a
+  cache (for example, `updateMesh(StencilMap)` delegating to `updateMesh(StencilMap, Matrix4f[])`
+  and the vertex upload moving into `updateGeometry(Matrix4f[])`), migrate the injection to the
+  final side-effect method with its exact descriptor. If addon state changes the cached output,
+  explicitly invalidate or force-refresh that cache and verify both the modified and restored paths;
+  an injection on the old wrapper can compile while never running.
+- NeoForge parses every declared Mixin config on a dedicated server before it filters client-only
+  entries. A companion `IMixinConfigPlugin` named by a client config must therefore be common-safe
+  and compiled into `src/main`; it may gate optional targets, but it must not reference Minecraft
+  client classes or exist only in `src/client`.
 
 ### 7.4 Validation & Error Matrix
 
@@ -361,8 +566,10 @@ the workspace's other standalone addons do not exercise this path.
 | Multiple Gradle invocations target the same BBS `build/` tree | Wait for every writer to finish, then rerun one serialized main/client/jar build; do not trust intermediate classes or jars. |
 | A client is still alive when the core jar would be copied or rebuilt | Stop the client first. Never hot-replace the jar and continue using that JVM. |
 | A host UI edit changes an invocation overload, descriptor, or branch cardinality | Search every workspace addon Mixin targeting that method, update the semantic injection boundary, and verify every reachable layout branch with strict `require` still enabled. |
+| A host transform changes from Euler rotation calls to a unified/quaternion path | Move pivot injection to the stable translation boundary, match the `@Redirect` receiver/argument/return descriptor exactly, inspect the fresh core bytecode, and keep `defaultRequire: 1`; never hide the drift with `require=0`. |
 | A long-lived client reports several unrelated BBS `ClassNotFoundException`s after its jar changed on disk | Treat it as artifact lifecycle corruption, restart from an audited stable jar, and do not patch the reported classes individually. |
 | Config omits `refmap` and targets only BBS classes | This is the expected working state, not a missing-artifact warning. |
+| Dedicated server reports `ClassNotFoundException` for a client Mixin plugin | Move the plugin implementation to the common source set and keep its logic client-API-free; do not remove the client config from the manifest. |
 | Build passes but no client run was performed | Verification is incomplete because injection target lookup has not run. |
 | `runClient` stops before Mixin config selection with `Failed to locate a primary monitor` | Treat it as a NeoForge early-window environment failure. Temporarily set `runs/client/config/fml.toml` `earlyWindowControl = false`, retry the same verification command, and restore the local value afterward. Do not weaken Mixin checks or edit addon/BBS source. |
 
@@ -374,6 +581,8 @@ the workspace's other standalone addons do not exercise this path.
   callback return only when the list uses the particle icon; file/model lists retain BBS sorting.
 - Base: Iris is absent, so the Iris-only config is skipped while common and client configs
   still apply.
+- Good: the client Mixin config names a common-safe plugin in `src/main`; a dedicated server parses
+  the config without loading client classes, while the client applies the gated Physics Mod target.
 - Base: the early splash cannot resolve a monitor, but disabling only `earlyWindowControl`
   lets the real client window load, the verifier pass, and the local setting be restored.
 - Bad: accept `./gradlew build` as proof that 76 migrated injection signatures are valid.
@@ -381,6 +590,8 @@ the workspace's other standalone addons do not exercise this path.
   requirements to make an unrelated environment failure disappear.
 - Bad: place a logger next to a Mixin because both are client-only; Mixin owns the whole
   package regardless of Java-side intent.
+- Bad: keep the companion plugin in `src/client` because every listed Mixin is client-only; the
+  dedicated server still loads the plugin class while reading `neoforge.mods.toml`.
 - Bad: override `sortElements()`, branch on an addon marker, then call `super.sortElements()`
   for ordinary instances; that reaches `UIList`, bypassing `UIDataPathList` sorting.
 
@@ -513,4 +724,357 @@ Correct:
 UIKeyframeSheet sheet = new UIKeyframeSheet(0, false, poseChannel, modelForm.pose);
 sheet.selection.add(poseKeyframe);
 poseKeyframes.addSheet(sheet);
+```
+
+## 9. Client-started versus server-connected network timing
+
+### 9.1 Scope / Trigger
+
+Apply when an external addon registers client broker receivers during startup and sends an
+initial handshake, settings state, or another C2S payload after joining a server.
+
+### 9.2 Signatures
+
+- Startup-only initialization: `BBSClientApi.onClientStarted(Consumer<Minecraft>)`.
+- Play-connection event: `ClientPlayerNetworkEvent.LoggingIn` on `NeoForge.EVENT_BUS`.
+- Transport entry: `BBSClientApi.sendNetworkToServer(BBSAddonDescriptor, ResourceLocation, FriendlyByteBuf)`.
+- Active connection check: `Minecraft.getInstance().getConnection() != null`.
+
+### 9.3 Contracts
+
+- `onClientStarted` means BBS client resources and callbacks are ready. It also fires at the
+  main menu, where no server connection exists, so it must not send C2S packets.
+- Register receivers and non-network client state during construction/startup, but send the
+  first hello/color/session payload from `ClientPlayerNetworkEvent.LoggingIn`.
+- Every addon-owned C2S helper must fail closed before encoding/sending when the Minecraft
+  connection is absent. This also protects settings callbacks at the title screen and late
+  callbacks during disconnect.
+- Protocol `connected` state remains false until the server acknowledges the addon handshake.
+  Disconnect and client stopping clear that state and all session-owned data idempotently.
+
+### 9.4 Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Main menu invokes `onClientStarted` | Register resources/UI only; send no C2S payload and log no handler failure. |
+| A setting callback fires with no connection | Return `false`/no-op before calling `PacketDistributor.sendToServer`. |
+| `LoggingIn` fires with an active play connection | Send one addon hello and initial client state. |
+| Server acknowledgment has not arrived | Keep collaboration features disconnected; do not treat local registration as a negotiated session. |
+| Disconnect or client stop | Clear connection, Film session, locks, transfers, and progress state; reconnect starts with a fresh hello. |
+
+### 9.5 Good / Base / Bad Cases
+
+- Good: translations activate at the main menu; joining a server fires `LoggingIn`, sends the
+  hello, and the server reply enables collaboration.
+- Base: the player stays at the main menu, so the addon remains registered but disconnected
+  without warnings or exceptions.
+- Bad: call `sendNetworkToServer` from `onClientStarted`; NeoForge's
+  `PacketDistributor.sendToServer` dereferences a missing connection and aborts the remaining
+  startup handlers.
+
+### 9.6 Tests Required
+
+- Start a development client to the main menu and assert no `client-started handler failed`,
+  `NullPointerException`, or addon C2S send appears.
+- Join a local or dedicated server and assert exactly one hello is sent after `LoggingIn`, then
+  assert server acknowledgment changes the addon connection state.
+- Disconnect and reconnect; assert cleanup runs and the next connection performs a fresh
+  handshake without retaining Film sessions, locks, or transfers.
+- Fire an addon settings callback at the title screen and assert the guarded sender returns
+  without invoking the broker transport.
+
+### 9.7 Wrong vs Correct
+
+Wrong:
+
+```java
+BBSClientApi.onClientStarted(client -> sendHello());
+```
+
+Correct:
+
+```java
+BBSClientApi.onClientStarted(client -> activateClientResources());
+NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingIn event) -> sendHello());
+
+private static boolean send(ResourceLocation id, FriendlyByteBuf payload)
+{
+    if (Minecraft.getInstance().getConnection() == null)
+    {
+        return false;
+    }
+
+    return BBSClientApi.sendNetworkToServer(DESCRIPTOR, id, payload);
+}
+```
+
+## 10. Version-port target verification and semantic-boundary migration
+
+### 10.1 Scope / Trigger
+
+Apply when porting a Mixin-bearing external addon across BBSFSR versions where
+host methods, package paths, or the ownership of a behavior have changed.
+
+### 10.2 Signatures
+
+- A changed transform hotkey entry point may be `UIPropTransform.enableMode(TransformOp)`;
+  do not assume the old integer overload still exists.
+- `ValueChangeUndo` is currently
+  `mchorse.bbs_mod.ui.film.utils.undo.ValueChangeUndo`.
+- Every BBS target uses `@Mixin(value = Target.class, remap = false)` and every
+  accessor/invoker uses an explicit `remap = false`.
+- The addon verifier must load every unique BBS target class and emit one final
+  `runtime verification passed` marker.
+
+### 10.3 Contracts
+
+- Treat a missing old method as an API-boundary change, not as an optional injection:
+  find the new method that owns the same behavior and keep strict injection requirements.
+- Remove an old injection only when the current host owns the same behavior at a
+  documented boundary; record that evidence in the migration design.
+- A verifier target string must match the runtime class's fully qualified name. A
+  wrong package is a failed fixture and must not be hidden by a caught exception.
+- Runtime verification must run after BBS client startup and stop the client in a
+  `finally` block when automatic exit is enabled.
+
+### 10.4 Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Old target method is absent | Adapt to the current semantic boundary or fail startup; never lower `require`. |
+| Host behavior moved into a strategy/helper | Inject at the public entry point only when that preserves the old addon behavior; otherwise document native coverage and remove the obsolete hook. |
+| Verifier target package is stale | Correct the target string and require the class to load; do not catch `ClassNotFoundException` as success. |
+| Compile succeeds but no client run occurs | Treat verification as incomplete because Mixin target resolution has not executed. |
+| Runtime verifier reports a handler failure | Fix the target/configuration and require the final pass marker before completion. |
+
+### 10.5 Good / Base / Bad Cases
+
+- Good: port `enableMode(I)V` to `enableMode(TransformOp)` after checking the
+  current source, and verify the transformed class at runtime.
+- Base: a removed `useRayDrag()` hook is covered by the new drag-strategy ray
+  gate, while PoseCurve's translation hotkey remains intercepted explicitly.
+- Bad: keep a stale `useRayDrag` injection, change `require` to zero, or list a
+  non-existent `mchorse.bbs_mod.utils.undo.ValueChangeUndo` verifier target.
+
+### 10.6 Tests Required
+
+- Run `testPoseCurveLogic` and a full `build` against the fresh local BBSFSR jar.
+- Run `runClient -Pverify=1` and assert the final pass marker, no addon
+  `client-started handler failed`, and no critical injection failure.
+- Audit the addon jar for `neoforge.mods.toml`, every declared Mixin config,
+  no `fabric.mod.json`, and no bundled `mchorse/bbs_mod/**` classes.
+- Search sources for Fabric/intermediary names and stale target descriptors.
+
+### 10.7 Wrong vs Correct
+
+Wrong:
+
+```java
+@Inject(method = "useRayDrag", require = 0, at = @At("HEAD"))
+```
+
+Correct:
+
+```java
+@Inject(
+    method = "enableMode(Lmchorse/bbs_mod/ui/framework/elements/input/drag/TransformOp;)V",
+    at = @At("HEAD"),
+    cancellable = true
+)
+```
+
+## 11. Host shader ownership and effect-state isolation
+
+### 11.1 Scope / Trigger
+
+Apply when an external addon adds a model effect by replacing a BBS shader supplier,
+copying a BBS core shader, or publishing resources under `assets/bbs/shaders/core/`.
+
+### 11.2 Contracts
+
+- Normal BBS rendering remains owned by the host. An addon must not unconditionally replace
+  `BBSShaders.getModel()` or another host shader supplier for previews, picker passes, world
+  rendering, and unrelated forms.
+- Prefer effect inputs that survive the active rendering pipeline, such as bounded texture,
+  material, mesh, or framebuffer state. If one such path works with both the BBS shader and
+  Iris/vanilla entity shaders, use it everywhere and remove the duplicate custom shader path.
+- When a custom shader is unavoidable, select it only inside the explicit effect render scope.
+  Restore the host program and every static effect flag in `finally`; deferred draw suppliers
+  must capture the intended program instead of reading an effect flag after the scope ends.
+- A copied host shader is a versioned external contract. For every target BBSFSR update, compare
+  its attributes, samplers, uniforms, imported helpers, fog-distance semantics, alpha/discard
+  rules, and pass-control branches such as `PassMode` before accepting the addon build.
+- Keep addon programs uniquely named. Never shadow the host's `model.json`, `model.vsh`, or
+  `model.fsh` in-place to obtain load-order-dependent behavior.
+
+### 11.3 Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Effect is inactive | Return the exact host shader and leave host uniforms/state untouched. |
+| Addon shader copy differs from the current host contract | Update and exercise every render context, or remove the copy in favor of a pipeline-independent effect. |
+| UI preview is invisible while other forms render | Compare UI fog-distance semantics and global host-shader interception before changing model data or textures. |
+| Host adds a uniform or render pass | Treat the addon copy as incompatible until the control flow and deferred paths are audited. |
+| Iris bypasses the addon shader | Move the effect to shared texture/material/mesh/framebuffer state; do not maintain two visually divergent implementations. |
+
+### 11.4 Tests Required
+
+- Render a normal model form in the form picker/UI preview and in the world with the effect off.
+- Render one effect copy, then another normal model in the same frame and verify state restoration.
+- Exercise opaque and translucent model textures so the host's split/deferred pass still runs.
+- Repeat the world smoke test with vanilla rendering and the supported Iris/Sodium profile.
+- Inspect the release JAR for accidental host `model.*` overrides and stale shader/Mixin classes.
+- Do not accept compilation or a title-screen-only launch as visual rendering evidence.
+
+### 11.5 Wrong vs Correct
+
+Wrong:
+
+```java
+@ModifyReturnValue(method = "getModel", at = @At("RETURN"))
+private static ShaderInstance replaceEveryModelShader(ShaderInstance host)
+{
+    return addonModelShader;
+}
+```
+
+Correct:
+
+```java
+Texture rendered = EffectRenderState.active
+    ? dissolveTextures.lookup(original, EffectRenderState.amount)
+    : original;
+```
+
+## 11.6 VFX Light form and fallback contract
+
+When an external light addon registers forms with BBSFSR, keep the following boundaries explicit:
+
+- Form registration links use the addon namespace (for example `new Link("vfxlights", "point_light")`).
+  An `InternalAssetsSourcePack` must use the same prefix and the addon's physical mod id; using the
+  global `assets` source can resolve an icon against the BBS core jar after packaging.
+- `FormRenderingContext.world` is the absolute semantic transform for `ENTITY` and `MODEL_BLOCK`.
+  `context.stack` is camera-relative for those paths, so adding the camera to a semantic-world matrix
+  shifts a light twice and makes it move with the camera.
+- Grouped keyframe values (`BaseKeyframeFactoryValue`) are edited by copying the current struct and
+  calling `value.set(copy)`. Mutating a field in place without notification disconnects undo/keyframe
+  listeners even though the renderer can read the new number.
+- When a form exposes several logical editing domains, register separate `UIFormPanel` instances with
+  `UIForm.registerPanel` (for example Light, Air and Style) instead of putting every control in one
+  default panel. Keep the domain set consistent across the four VFX Light forms when their inherited
+  values are runtime-editable; an Ambient form must not silently lose Air/Style/Toon/Barn controls.
+- If Iris/Fabric shadow hooks are not ported, a fallback consumer must still be registered on the
+  current `BBSClientApi` tick/world callbacks and must document which advanced controls it cannot honor.
+  A registry submission or a visible UI control alone is not evidence that a frame changed. A vanilla
+  fallback should copy the completed depth buffer and reconstruct visible positions before applying
+  attenuation; a source-only glow is not a lighting consumer and can disappear behind an active FSR
+  render target.
+- Model-block lights must carry their owning `BlockPos`. A client block-break callback clears the
+  persisted snapshot immediately, and the collector must reject stale chunk-section submissions during
+  a short kill window so the old render buffer cannot recreate the light before the next frame.
+
+### Wrong vs Correct
+
+Wrong:
+
+```java
+new InternalAssetsSourcePack(MOD_ID, Link.ASSETS, "assets/vfxlights/bbs_override", Owner.class);
+light.x = semanticOrigin.x + camera.getPosition().x;
+form.air.getOriginalValue().beam = value;
+```
+
+Correct:
+
+```java
+new InternalAssetsSourcePack(MOD_ID, MOD_ID, "assets/vfxlights", Owner.class);
+light.x = semanticOrigin.x;
+LightAir copy = form.air.getOriginalValue().copy();
+copy.beam = value;
+form.air.set(copy);
+```
+
+## 12. FSR 2.6 physics-addon migration baseline
+
+### 12.1 Scope / Trigger
+
+Apply when a separate NeoForge addon is ported from the upstream Fabric/Yarn physics source
+to the FSR 2.6 API2 surface while the host artifact still carries the mod version
+`BBS_FSR_beta_v0.0.11`.
+
+### 12.2 Signatures
+
+- Host artifact: `BBS_FSR_beta_v0.0.11.jar`, verified by SHA-256 before compilation.
+- Common registration: `BBSApi.registerAddon(Supplier<? extends BBSAddon>)` from the NeoForge
+  `@Mod` constructor.
+- Addon registration: `BBSAddon.descriptor()` plus
+  `BBSAddon.register(BBSAddonRegistrationContext)`.
+- Client renderer registration: `FormUtilsClient.register(Class<? extends Form>,
+  IFormRendererFactory)` during the client bridge initialization.
+- Client bridge entry point: a common-side reflection call to a client-only static
+  `initialize()` method, guarded by `FMLEnvironment.dist == Dist.CLIENT`.
+
+### 12.3 Contracts
+
+- Record the exact host artifact path and SHA-256 in the migration baseline. The artifact's
+  `0.0.11` mod version must not be used to infer pre-2.6 API behavior.
+- Keep the common source set free of `net.minecraft.client` and renderer classes. The NeoForge
+  `client` source set is an explicit allow-list; the upstream Fabric/Yarn client is retained as
+  `legacyClient` migration input and must not enter the release jar.
+- Register API2 common capabilities (forms, settings, source pack, and clips) in the host's
+  startup registration window. Register the supported client renderers with
+  `FormUtilsClient.register`; do not wait for a later lifecycle event or reintroduce the old
+  Fabric renderer event.
+- Use the FSR 2.6 `FormColorBlend.blend(color, tint, false)` signature and preserve the explicit
+  multiply-mode argument.
+- Keep unsupported StructureForm destruction, Chain renderer, editor panels, film hooks, and
+  old Fabric mixins out of the advertised migrated slice until their API2 adapters exist.
+
+### 12.4 Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Host jar path or SHA-256 differs from the recorded baseline | Stop and refresh the baseline before interpreting compiler results. |
+| Dedicated-server class loading reaches a client renderer | Fail the client bridge closed; common addon registration must remain usable. |
+| `legacyClient` source is selected by the normal client compilation | Reject the build configuration; only the explicit NeoForge client allow-list may compile. |
+| Renderer registration is delayed until a post-start event | Reject; register through `FormUtilsClient` during client bridge initialization. |
+| FSR 2.6 `FormColorBlend.blend` is called with the old arity | Fix the call to include the explicit third argument. |
+| A deferred feature has no supported API2 hook | Keep its source as migration input and document it as unsupported; do not ship a stale Mixin. |
+| Release jar contains Fabric metadata or legacy client classes | Reject the artifact and inspect source-set and resource assembly. |
+
+### 12.5 Good / Base / Bad Cases
+
+- Good: the recorded SHA matches `new-fs26-sync`, common registration passes on a dedicated
+  server, and the client bridge registers Cloth and Balloon renderers from Mojmap classes.
+- Base: the jar version remains `0.0.11`, but the baseline explicitly identifies it as the FSR
+  2.6 host and records the API signatures that were checked.
+- Bad: infer that the host is pre-2.6 from its version string, compile the whole Fabric client
+  into the NeoForge source set, or keep a stale StructureForm Mixin with `require = 0`.
+
+### 12.6 Tests Required
+
+- Verify the host jar SHA-256 before running the migration checks.
+- Run `compileJava compileClientJava`, the addon registration/settings/pose/cache checks, and
+  `jarJar`; then run a clean `build`.
+- Inspect the all artifact for `META-INF/neoforge.mods.toml`, the expected client bridge and
+  renderer classes, and `assets/bbs_physics` resources.
+- Assert the release jar contains no `fabric.mod.json`, no Fabric/Yarn references, and no
+  `legacyClient` classes.
+- Treat the old Fabric `client-compile.log` as stale input, not as current FSR 2.6 evidence.
+
+### 12.7 Wrong vs Correct
+
+Wrong:
+
+```java
+// The filename says 0.0.11, so use the pre-2.6 renderer event and compile every client class.
+RegisterFormRenderersEvent.register(ClothForm.class, ClothFormRenderer::new);
+```
+
+Correct:
+
+```java
+// Verify the FSR 2.6 jar, then register only the migrated Mojmap client slice.
+FormUtilsClient.register(ClothForm.class, ClothFormRenderer::new);
+FormUtilsClient.register(BalloonForm.class, BalloonFormRenderer::new);
+FormColorBlend.blend(color, tint, false);
 ```

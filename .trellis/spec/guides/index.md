@@ -51,6 +51,20 @@ These guides help you **ask the right questions before coding**.
 
 → Read [Code Reuse Thinking Guide](./code-reuse-thinking-guide.md)
 
+### When Verifying Build / Test Results
+
+- [ ] Did the task you invoked actually **execute** tests, or only compile them?
+      Gradle abbreviation-matches task names: `gradlew uiMirrorDemandTest` silently
+      resolves to `uiMirrorDemandTestClasses` (compile-only, EXIT=0, zero tests run).
+      The executing task in `new/` is **`testUiMirrorDemand`**. Always confirm the
+      test-execution task appeared in the task list, not just the exit code.
+- [ ] Did you read the **real** exit code? In cmd, `cmd /c "... & echo EXIT=%ERRORLEVEL%"`
+      expands `%ERRORLEVEL%` at parse time and always prints 0. Use PowerShell
+      `$LASTEXITCODE` after the call, and confirm with the log tail.
+- [ ] Green build but the artifact is stale? Cross-project deps here are **jar files on
+      disk** (`bbs-web-remote` consumes `new/build/libs/BBS_FSR_beta_v0.0.11.jar`).
+      Changing `new/` source does nothing for `bbs-web-remote` until you rebuild that jar.
+
 ### When Verifying AI Cross-Review Results
 
 - [ ] Reviewer claims "user input can be malicious" → Check the actual data source (internal manifest? user config? external API?)

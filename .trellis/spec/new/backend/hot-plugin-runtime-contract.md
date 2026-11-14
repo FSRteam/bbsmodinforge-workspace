@@ -7,15 +7,22 @@ generation routing, contribution ownership, file watching, client projection
 refresh, or runtime shutdown. It does not apply to NeoForge mod loading or the
 startup-only Addon API 2.0.
 
+The marketplace additions below are implemented in the isolated
+`workspaces/fsr-mbh-host` branch pending integration into the original `new/`.
+
 ## 2. Signatures
 
 - Public entrypoint: `BBSPlugin.prepare(BBSPluginContext)`, `start()`, and
   `stop(BBSPluginStopReason)`.
 - Runtime control: `BBSPluginManager.start()`, `rescan()`, `reload(id)`,
   `enable(id)`, `disable(id)`, `diagnostics()`, and `close()`.
+- Marketplace operations return `CompletableFuture<PluginOperationResult>`:
+  `BBSMod.installPlugin(Path, id, version, sha256, size)`, `removePlugin(id)`,
+  `setPluginEnabled(id, enabled)` and `setPluginLocalWatch(id, watch)`.
+  `getPluginPreferences(id)` reads persistent enabled/watch/pending state.
 - Active route identity: `PluginOwner(pluginId, generation)`.
 - Structural registration facades (additive, `prepare`-phase only): `BBSPluginContext.forms()/clips()/particles()`;
-  client-only `BBSPluginClientContext.keyMappings()/renderers()`. Shape aligns with the
+  client-only `BBSPluginClientContext.keyMappings()/renderers()/dashboardPanels()`. Shape aligns with the
   corresponding Addon API 2.0 registries; see §8 for the generation contract these facades feed.
 - Artifact manifest: `META-INF/bbs-plugin.json`, schema `1`, one plugin per JAR.
 - Default source directory: `config/bbs/plugins/`; verified shadow artifacts:
@@ -25,12 +32,25 @@ startup-only Addon API 2.0.
 
 - `autoApply` defaults to `true`. A stable create/replace/delete is applied by
   the serial lifecycle controller without a normal rescan command.
-- Any user-facing installer that writes into `config/bbs/plugins/` follows the
-  same source-artifact contract as an external build copy: stage a temporary
-  file in that directory, close it, then atomically replace the final JAR. If
-  the install updates an existing `pluginId`, retire sibling source JARs for
-  that plugin before publishing the new file so watcher reconciliation sees one
-  owner artifact instead of a transient `DUPLICATE_ID` pair.
+- User-facing installation uses the host transaction: validate expected identity,
+  version, size and hash; stage and verify candidate plus incumbent backups;
+  write the journal before retiring sources; publish one stable JAR and activate.
+  Failed activation restores the known previous bytes. Recovery preserves later
+  external changes and disables an uncertain plugin for explicit recovery.
+  Watcher reconciliation is serialized with the transaction.
+- Global auto-apply, enabled/local-watch choices, pending restart intentions and
+  failed hashes are persistent. Local file watch is not provider online update.
+  Busy retries retain manual versus automatic intent and reconcile current paths;
+  a restored unchanged source cancels an obsolete deferred removal.
+- `reload=restart` SPI artifacts are admitted only during the one-time startup
+  phase. Normal runtime operations stage them; forbidden loader/native entries
+  remain rejected even at startup. Dependency checks use active and verified
+  enabled installed/pending graphs. A pending-only dependency forces its dependent
+  to stage for restart. Enabled pending dependents protect required plugins from
+  removal, disable and incompatible replacement. No automatic dependency install.
+- Never block the Minecraft thread on an installation future: the structural
+  safepoint itself must execute there. Outcomes distinguish APPLIED,
+  PENDING_RESTART, DEFERRED_BUSY, REJECTED and FAILED.
 - Manual smoke and local update scripts must keep versioned build artifacts
   outside `config/bbs/plugins/`. Publish every generation through one stable
   source name (for example, `fixture.jar`); temporary and backup names must not
@@ -70,6 +90,9 @@ startup-only Addon API 2.0.
 | Callback throws `Throwable` | Contain at the plugin boundary and record bounded diagnostics. |
 | Drain or deterministic teardown timeout | Mark `RESTART_REQUIRED` and block further automatic reload for that plugin. |
 | WatchService overflow or invalid key | Perform full reconciliation; uncertain files must not cause false unload. |
+| Valid restart-only SPI installed while running | Persist pending operation; execute only after next startup validation. |
+| Required dependency exists only as verified pending startup candidate | Stage dependent for restart; do not execute it hot. |
+| Failure saving pending removal state | Roll back the journal; never delete at next start after reporting FAILED. |
 
 ## 5. Good / Base / Bad Cases
 
@@ -79,9 +102,8 @@ startup-only Addon API 2.0.
 - Good: keep `fixture-1.0.jar` and `fixture-2.0.jar` in the build output, then
   copy the desired version to `config/bbs/plugins/fixture.jar.tmp` and atomically
   replace the sole `config/bbs/plugins/fixture.jar` source.
-- Good: the Dashboard install/update flow removes older source JARs for the
-  same plugin id, writes the replacement to a same-directory temp file, then
-  atomically moves it into place.
+- Good: Dashboard install/update verifies the complete candidate and rollback
+  backups before retiring any incumbent source, then atomically publishes.
 - Good: v3 fails during `prepare`; v2 continues serving events and assets.
 - Base: deleting the only active source drains and unloads its generation.
 - Bad: publish the candidate before fencing incumbent acquisition; callers can
@@ -99,6 +121,9 @@ startup-only Addon API 2.0.
 - `testPluginHotReload`: drop-in install, same-id replace, failed-candidate
   retention, content replace, delete/unload, watcher stability/overflow, event
   routing, owner cleanup, and classloader telemetry.
+- `PluginInstallationLifecycleTest` executes startup-only code, pending-version
+  dependency order/protection, persistent policy, interrupted transactions,
+  failed-policy-write rollback, restored-source retry and manual watch-off retry.
 - `testAddonLifecycle`, `testClientStructuralRegistration`, and
   `testBinaryCompatibility`: prove the new path is additive.
 - `compileJava`, `compileClientJava`, and `pluginHotReloadTestClasses`.
@@ -171,16 +196,18 @@ generation cannot remove a newly committed one. See §8.2.
 
 ## 8. Structural Capability Contract (Generation 2)
 
-Applies to the six capabilities that flipped `hotSafe=true` in this
-generation: `forms`, `clips`, `particles`, `key_mappings`, `entity_renderer`,
-`block_entity_renderer`. Everything in §§1–7 still holds; this section only
-adds the contract for these capabilities.
+Applies to the six capabilities that previously flipped `hotSafe=true` plus
+the additive `dashboard_panels` capability: `forms`, `clips`, `particles`,
+`key_mappings`, `entity_renderer`, `block_entity_renderer`, and
+`dashboard_panels`. Everything in §§1–7 still holds; this section only adds
+the contract for these capabilities.
 
 ### 8.1 Capability matrix
 
 | Capability | Status |
 | --- | --- |
 | `forms`, `clips`, `particles`, `key_mappings`, `entity_renderer`, `block_entity_renderer` | `hotSafe = true`; validator no longer rejects on these alone. |
+| `dashboard_panels` | `hotSafe = true`; available only through the client extension facade and staged before publication. |
 | `minecraft_registry`, `mixin`, `access_transformer`, `coremod`, `jni`, `native_library` | Unchanged hard boundary: `RESTART_REQUIRED`. These are not reachable through the FSR/Addon channel even at startup, only as a NeoForge mod. |
 | Manifest declares `reload=restart` | Still forces a restart regardless of capability declarations. |
 | Structural jar entries (mixin json, AT cfg, coremod, native, NeoForge metadata) | Still rejected before entrypoint class loading, independent of capability flags. |
@@ -202,6 +229,10 @@ adds the contract for these capabilities.
 - Facades are only open during `prepare` and seal afterward (same seal
   pattern as the existing event registration facade); every registration
   handle they hand back is ledger-owned and revocable.
+- Dashboard panel contributions additionally retain an immutable
+  `(pluginId, generation)` owner and the exact contribution identity. Removing
+  an old ledger entry only detaches the panel when that identity is still
+  current, so late old-generation cleanup cannot remove its replacement.
 
 ### 8.3 Main-thread safepoint and what "atomic publish" means
 
@@ -214,7 +245,7 @@ adds the contract for these capabilities.
   deadlock and does not skip the guard/snapshot/teardown/rebuild sequence.
 - Design note `design.md` §2.6 draws "atomic publish (root swap)" as a box
   between teardown and commit. Read that box as the **host-visible structural
-  registration surface switch** — the six surfaces in §8.2 flipping from the
+  registration surface switch** — the surfaces in §8.2 flipping from the
   old generation's entries to the new generation's entries — which does
   complete inside the single safepoint closure above and is therefore atomic
   with respect to any reader on the main thread during that window.
@@ -300,3 +331,33 @@ until the type is registered again.
 - Addon API 2.0 entries carry no recorded loader and keep the original
   single-argument `Class.forName(name)` call, resolving against the caller's
   own loader — this pre-existing semantic is unchanged.
+
+### 8.10 Dashboard panel projection
+
+- A plugin must declare `dashboard_panels`; otherwise facade registration
+  fails during candidate preparation. The facade accepts a local id, title,
+  icon, and content factory and composes the public id as
+  `<pluginId>:<localId>`.
+- Registration is staged in `PluginStructuralRegistrationWindow`. Candidate
+  preparation does not mutate the active Dashboard. Apply and reverse-ledger
+  cleanup run inside the client structural safepoint and one Dashboard
+  projection batch.
+- Projection-batch teardown rechecks contribution identity before applying
+  every queued removal. If candidate activation fails and the coordinator
+  reactivates the incumbent in the same batch, the incumbent's earlier queued
+  removal is stale and must be skipped.
+- The host registry stores contributions without retaining a Dashboard.
+  Dashboard construction projects the current snapshot; an existing Dashboard
+  receives install, in-place replacement, or removal only on the client
+  thread.
+- Replacing a selected panel calls old `disappear/close`, preserves the button
+  position, then calls new `open/appear`. Removing a selected panel first
+  switches to Film or another host fallback, then closes and detaches the
+  plugin content.
+- Content callbacks follow `open -> appear -> update* -> disappear -> close`
+  per screen session. Factory and callback failures are diagnosed per owner
+  and isolated from the Dashboard and other panels.
+- Tests must cover capability rejection, pre-commit invisibility, v1-to-v2
+  selected replacement, failed-candidate incumbent retention, identity-safe
+  late cleanup, removal fallback, callback isolation, and a
+  production-shaped text/button smoke fixture.

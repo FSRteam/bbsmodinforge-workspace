@@ -52,55 +52,37 @@ Questions to answer:
 
 ---
 
-## Bone List Display Contract (2.5 hierarchy tree)
-
-Every bone list backed by `UIBoneTreeList` renders flat unless the host feeds hierarchy
-metadata. The 2.5 migration wired this for `IModel` paths (model form panel, IK/physics/
-constraints panels, bone pickers, film model keyframes); `BoneHierarchy`-backed lists
-(mob forms' vanilla model parts, pose form bones) must feed it too:
-
-```java
-Map<String, String> labels = hierarchy.getLabels();
-
-this.groups.list.setHierarchy(hierarchy, null, labels);   // tree metadata
-this.groups.setSource(hierarchy.getBoneIds(), labels, false); // hierarchy order, no sort
-this.groups.filter(reset);
-```
-
-Signatures:
-
-- `setHierarchy(IModel model, Predicate<String> hidden)` — tree from a model's root/child keys.
-- `setHierarchy(BoneHierarchy hierarchy, Predicate<String> hidden, Map<String, String> labels)`
-  — tree from `BoneHierarchy.Bone` (`id`/`parentId`/`depth`). Layer roots and orphans
-  (parentId absent from the id set) become separate roots; a hidden bone dissolves into
-  its children in place; ids missing from the label map fall back to the raw id.
-- `getLabels()` — stable display names (e.g. `inner_armor_rightArm`); **no indent
-  parameter** — the tree list draws indentation/connectors itself.
-
-Invariants:
-
-- `BoneHierarchy.getBoneIds()` is pre-order: per-layer recursion with children sorted by
-  natural name order, layers ordered primary-first then by name. The parent-grouping
-  rebuild (`boneHierarchyRoots`) reproduces the exact list order — do not re-sort.
-- `treeLabel == fullLabel == labels[id]` — flat search mode (host sets
-  `list.flat(!query.isEmpty())`) and tree mode agree on labels.
-- Search flattening is the host's job (`UIBoneList.filter`), not the tree list's.
-- `fillAttachments(form, keys)` walks ModelForm subtrees (`formBoneNodes`) AND
-  PoseForm bones (`formBoneHierarchyNodes` → `boneHierarchyRoots` + `remapFormKeys`);
-  node ids are matrix keys (`combinePaths(formPath, bone.id())`), labels are display
-  names. Without the PoseForm branch, mob/pose form bones fall flat as raw ids.
-
-### Gotcha: flat MobForm bone lists are a legacy style
-
-Before 2.5 the pose editor's bone list was `UIBoneHierarchyList` (flat label rows) and
-`fillGroups(BoneHierarchy)` cleared tree metadata (`setHierarchy(null, null)`). Since 2.5,
-new BoneHierarchy-backed lists must NOT clear metadata — pass the hierarchy so rows render
-as a tree. `setHierarchy(null, null)` remains correct only for plain string lists
-(`fillGroups(Collection)`, e.g. film anchor bones), which are intentionally flat + sorted.
-
----
-
 ## Common Mistakes
+
+### Dashboard document ownership and lifecycle
+
+`UIEditorDashboardPanel.documentTabs` (`UITabList`) owns document identity and
+selection. Data panels keep their public `tabs` and `currentTab` compatibility
+views synchronized with that owner; audio panels use the same owner. Route a tab
+request through `IUITabsHost.openTab(...)` and the panel's `showTab(...)` callback.
+For asynchronous loads, compare against the identity of the data actually loaded,
+not only the requested tab, before treating a selection as complete. A previous
+load may still be visible when the next tab is requested.
+
+Dashboard subclasses register lifecycle work in their constructors with `onOpen`,
+`onClose`, `onAppear`, and `onDisappear`. Entering callbacks run parent first;
+leaving callbacks run child first so a child flushes widgets into its data before
+the parent saves. `open`/`close` apply to every registered panel. World and playback
+effects belong to `appear`/`disappear`, which apply to the visible panel. Public
+lifecycle methods remain virtual for existing FSR addon descriptors; core panels
+use callbacks to avoid bypassing inherited saves.
+
+The real document strip is `UIDataTabs extends UITabStrip`. Selection, closing,
+and tab geometry must use its shared owner; the top bar reserves the action width
+through `setRightInsetPx(...)`. Preserve legacy public tab/scroll adapters without
+creating a second selection or scroll owner.
+
+`UIPanelBase.buttonTabs` is the actual `UITabStrip` owner for panel selectors.
+Register and select panels through that strip; its highlight follows the rail's
+content edge. The public `buttons` field retains its `UIScrollView` descriptor as
+an alias to the same instance for existing FSR addons. Keep `changeDirection` and
+deferred panel replacement during captured input; do not reintroduce a second
+active-fill renderer or a separate tab list.
 
 ### Curve editor coordinate transforms
 
@@ -145,3 +127,76 @@ Regression coverage should assert the behavior through the real scroll container
 - `scrollSize` shrinks after collapse and grows after expansion;
 - an old bottom scroll offset is clamped to the new range;
 - every responsive layout branch still contains the section.
+
+### Keyframe property panels across channel rebuilds
+
+`KeyframeChannel.fromData(...)` replaces the channel's `Keyframe` objects and their
+mutable value objects. A mounted property panel can therefore outlive both the
+`Keyframe` and `Transform` instances that it was constructed with. Object identity is
+only a fast path; it is not a stable key after a submit, undo, or channel reload.
+
+When an editor keeps a panel mounted across a rebuild:
+
+- resolve the live keyframe in the same channel by object identity first, then by the
+  stable keyframe id and tick;
+- use the current selection index only as a same-sheet fallback when stable lookup fails;
+- replace the panel's keyframe reference with the live object before the next edit;
+- refresh every child control that caches the value object, including transform, pose
+  metadata, color, and lighting controls;
+- keep per-axis selection and drag snapshots indexed by sheet and keyframe index instead
+  of by `Keyframe` object.
+
+Wrong:
+
+```java
+int index = sheet.channel.getKeyframes().indexOf(panelKeyframe);
+Transform base = panelTransform.getTransform();
+```
+
+Correct:
+
+```java
+int index = PoseCurveKeyframeResolver.indexOf(sheet.channel.getKeyframes(), panelKeyframe);
+Keyframe<?> live = sheet.channel.get(index);
+panel.setKeyframe(live);
+panelTransform.setTransform((Transform) live.getValue());
+```
+
+Regression coverage must use distinct old/live keyframe objects with the same id and
+tick, a changed value object, and a same-tick keyframe with a different id. A runtime
+check must still load the strict Mixin targets because compilation does not validate the
+injected panel synchronization path.
+
+### Optional GPU batches may contain zero vertices
+
+UI overlays whose geometry depends on selection, interpolation mode, hidden channels,
+or available keyframes can legitimately emit no vertices in a frame. Finalizing those
+batches with `BufferBuilder.buildOrThrow()` turns a normal empty state into a screen
+render crash.
+
+Use `build()` and skip the upload when it returns `null`. Reserve `buildOrThrow()` for a
+path that emits vertices unconditionally before finalization.
+
+Wrong:
+
+```java
+BufferUploader.drawWithShader(builder.buildOrThrow());
+```
+
+Correct:
+
+```java
+MeshData mesh = builder.build();
+
+if (mesh != null)
+{
+    BufferUploader.drawWithShader(mesh);
+}
+```
+
+For Mixin-provided UI rendering, regression verification must cover both halves:
+
+- run an empty-buffer probe on the render thread and require it to complete without a
+  draw or exception;
+- inspect or exercise the transformed target so the injected method is proven to call
+  the guarded submission path, not merely compile beside it.
